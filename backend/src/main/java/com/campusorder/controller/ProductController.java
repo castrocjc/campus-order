@@ -89,5 +89,23 @@ public class ProductController {
                 "Menú disponible",
                 productService.getMenu()
         );
+    }
+
+    @PatchMapping("/{productId}/toggle-active")
+    public ApiResponse<ProductResponseDTO> toggleProductActive(@PathVariable Long productId) {
+        return new ApiResponse<>(
+                true,
+                "Estado del producto actualizado correctamente",
+                productService.toggleProductActive(productId)
+        );
+    }
+
+    @GetMapping("/admin")
+    public ApiResponse<List<ProductResponseDTO>> getAllProductsAdmin() {
+        return new ApiResponse<>(
+                true,
+                "Lista completa de productos",
+                productService.getAllProductsAdmin()
+        );
     }    
 }

@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import {
-  Alert,
   Image,
   StyleSheet,
   Text,
@@ -21,19 +20,35 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleRegister = async () => {
-    if (!name || !email || !password) {
-      Alert.alert("Campos incompletos", "Completa nombre, correo y contraseña.");
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      setErrorMessage("Completa nombre, correo y contraseña.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email.trim())) {
+      setErrorMessage("Ingresa un correo válido.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setErrorMessage("La contraseña debe tener al menos 6 caracteres.");
       return;
     }
 
     try {
       setLoading(true);
 
+      setErrorMessage("");
+      setSuccessMessage("");
+
       await registerUser({
-        name,
-        email,
+        name: name.trim(),
+        email: email.trim(),
         password,
       });
 
@@ -42,14 +57,16 @@ export default function RegisterScreen() {
       setTimeout(() => {
         router.replace("/");
       }, 1500);
-    } catch (error: any) {
-      Alert.alert("Error", error.message || "No se pudo crear la cuenta.");
-    } finally {
+        } catch (error: any) {
+          setErrorMessage(error.message || "No se pudo crear la cuenta.");
+        } finally {
       setLoading(false);
     }
   };
 
-  return (
+return (
+  <>
+    <Stack.Screen options={{ headerShown: false }} />
     <View style={styles.container}>
       <View style={styles.card}>
         <Image source={logo} style={styles.logo} />
@@ -65,12 +82,21 @@ export default function RegisterScreen() {
           </Text>
         ) : null}
 
+        {errorMessage ? (
+          <Text style={styles.errorMessage}>
+            {errorMessage}
+          </Text>
+        ) : null}
+
         <TextInput
           style={styles.input}
           placeholder="Nombre completo"
           placeholderTextColor="#9b8b82"
           value={name}
-          onChangeText={setName}
+          onChangeText={(text) => {
+            setName(text);
+            setErrorMessage("");
+          }}
         />
 
         <TextInput
@@ -78,7 +104,10 @@ export default function RegisterScreen() {
           placeholder="Correo electrónico"
           placeholderTextColor="#9b8b82"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(text) => {
+            setEmail(text);
+            setErrorMessage("");
+          }}
           autoCapitalize="none"
           keyboardType="email-address"
         />
@@ -89,7 +118,10 @@ export default function RegisterScreen() {
           placeholderTextColor="#9b8b82"
           secureTextEntry
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(text) => {
+            setPassword(text);
+            setErrorMessage("");
+          }}
         />
 
         <TouchableOpacity
@@ -98,7 +130,7 @@ export default function RegisterScreen() {
           disabled={loading}
         >
           <Text style={styles.primaryButtonText}>
-            {loading ? "Creando cuenta..." : "Crear cuenta"}
+            {loading ? "Creando..." : "Crear cuenta"}
           </Text>
         </TouchableOpacity>
 
@@ -110,7 +142,8 @@ export default function RegisterScreen() {
         </TouchableOpacity>
       </View>
     </View>
-  );
+  </>
+);
 }
 
 const styles = StyleSheet.create({
@@ -161,33 +194,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     backgroundColor: "#fff",
   },
-  primaryButton: {
-    backgroundColor: "#f57c00",
-    borderRadius: 16,
-    padding: 16,
-    alignItems: "center",
-    marginTop: 4,
-  },
-  disabledButton: {
-    opacity: 0.7,
-  },
-  primaryButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "800",
-  },
-  secondaryButton: {
-    borderRadius: 16,
-    padding: 16,
-    alignItems: "center",
-    marginTop: 14,
-    backgroundColor: "#3b1f12",
-  },
-  secondaryButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "800",
-  },
   successMessage: {
   backgroundColor: "#e7f7ed",
   color: "#1f7a3f",
@@ -196,5 +202,45 @@ const styles = StyleSheet.create({
   textAlign: "center",
   fontWeight: "700",
   marginBottom: 16,
+  },
+  errorMessage: {
+    backgroundColor: "#fdecea",
+    color: "#b42318",
+    padding: 12,
+    borderRadius: 12,
+    textAlign: "center",
+    fontWeight: "700",
+    marginBottom: 16,
+  },
+  primaryButton: {
+    backgroundColor: "#f57c00",
+    borderRadius: 16,
+    padding: 16,
+    alignItems: "center",
+    marginTop: 4,
+  },
+
+  disabledButton: {
+    opacity: 0.7,
+  },
+
+  primaryButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "800",
+  },
+
+  secondaryButton: {
+    borderRadius: 16,
+    padding: 16,
+    alignItems: "center",
+    marginTop: 14,
+    backgroundColor: "#3b1f12",
+  },
+
+  secondaryButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "800",
   },
 });

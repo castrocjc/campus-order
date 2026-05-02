@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import {
   Image,
   StyleSheet,
@@ -45,7 +45,9 @@ export default function HomeScreen() {
     }
   };
 
-  return (
+return (
+  <>
+    <Stack.Screen options={{ headerShown: false }} />
     <View style={styles.container}>
       <View style={styles.leftPanel}>
         <Image source={logo} style={styles.logo} />
@@ -110,8 +112,8 @@ export default function HomeScreen() {
         </View>
       </View>
     </View>
-  );
-}
+  </>
+);}
 
 const styles = StyleSheet.create({
   container: {

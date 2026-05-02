@@ -53,7 +53,7 @@ public class ProductService {
                 .toList();
     }
 
-    private ProductResponseDTO mapToDTO(Product product) {
+        private ProductResponseDTO mapToDTO(Product product) {
         return new ProductResponseDTO(
                 product.getId(),
                 product.getName(),
@@ -61,9 +61,11 @@ public class ProductService {
                 product.getPrice(),
                 product.getStock(),
                 product.getImageUrl(),
-                product.getCategory().getName()
+                product.getCategory().getId(),
+                product.getCategory().getName(),
+                product.getActive()
         );
-    }
+        }
 
     public void deleteProduct(Long productId) {
 
@@ -124,4 +126,23 @@ public class ProductService {
                 ))
                 .toList();
     }
+
+        public ProductResponseDTO toggleProductActive(Long productId) {
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        product.setActive(!Boolean.TRUE.equals(product.getActive()));
+
+        Product updated = productRepository.save(product);
+
+        return mapToDTO(updated);
+        }
+
+        public List<ProductResponseDTO> getAllProductsAdmin() {
+        return productRepository.findAllByOrderByIdDesc()
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
+        }        
 }

@@ -27,8 +27,11 @@ export async function loginUser({
 export function saveAuthData(data: any) {
   localStorage.setItem("token", data.token);
 
-  if (data.user) {
-    localStorage.setItem("user", JSON.stringify(data.user));
+  const decodedToken = decodeToken(data.token);
+  console.log("TOKEN DECODIFICADO:", decodedToken);
+
+  if (decodedToken) {
+    localStorage.setItem("user", JSON.stringify(decodedToken));
   }
 }
 
@@ -44,4 +47,15 @@ export function getUser() {
 export function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("user");
+}
+
+export function decodeToken(token: string) {
+  try {
+    const payload = token.split(".")[1];
+    const decodedPayload = atob(payload);
+    return JSON.parse(decodedPayload);
+  } catch (error) {
+    console.error("Error decodificando token", error);
+    return null;
+  }
 }

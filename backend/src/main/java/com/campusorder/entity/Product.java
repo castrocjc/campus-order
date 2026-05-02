@@ -4,11 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "products")
-@Where(clause = "active = true")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
