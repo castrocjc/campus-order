@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8081";
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export async function loginUser({
   email,
@@ -7,7 +7,7 @@ export async function loginUser({
   email: string;
   password: string;
 }) {
-  const response = await fetch(`${API_URL}/api/auth/login`, {
+  const response = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

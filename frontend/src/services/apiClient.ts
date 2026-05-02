@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8081";
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export async function apiRequest(
   endpoint: string,

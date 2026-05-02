@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8081";
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export async function registerUser({
   name,
@@ -9,7 +9,7 @@ export async function registerUser({
   email: string;
   password: string;
 }) {
-  const response = await fetch(`${API_URL}/api/users`, {
+  const response = await fetch(`${API_URL}/users`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
