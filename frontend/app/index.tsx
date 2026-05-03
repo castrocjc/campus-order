@@ -16,8 +16,8 @@ const logo = require("../assets/cofigo-logo.png");
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { width, height } = useWindowDimensions();
-  const isMobile = width < 768;
+  const { width } = useWindowDimensions();
+  const isMobile = width < 760;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -52,19 +52,15 @@ export default function HomeScreen() {
       <ScrollView
         style={styles.screen}
         contentContainerStyle={[
-          styles.scrollContent,
-          { minHeight: height },
-          isMobile && styles.scrollContentMobile,
+          styles.content,
+          isMobile ? styles.contentMobile : styles.contentDesktop,
         ]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={[styles.page, isMobile && styles.pageMobile]}>
-          <View style={[styles.heroPanel, isMobile && styles.heroPanelMobile]}>
-            <Image
-              source={logo}
-              style={[styles.logo, isMobile && styles.logoMobile]}
-            />
+        <View style={[styles.shell, isMobile && styles.shellMobile]}>
+          <View style={[styles.hero, isMobile && styles.heroMobile]}>
+            <Image source={logo} style={[styles.logo, isMobile && styles.logoMobile]} />
 
             <Text style={[styles.brand, isMobile && styles.brandMobile]}>
               COFIGO
@@ -74,19 +70,21 @@ export default function HomeScreen() {
               Pide hoy, disfruta sin esperas
             </Text>
 
-            <Text style={[styles.title, isMobile && styles.titleMobile]}>
-              Pide tu comida universitaria sin hacer cola
-            </Text>
+            {!isMobile && (
+              <>
+                <Text style={styles.title}>
+                  Pide tu comida universitaria sin hacer cola
+                </Text>
 
-            <Text
-              style={[styles.description, isMobile && styles.descriptionMobile]}
-            >
-              Consulta el menú, realiza tu pedido anticipado y recógelo en el
-              horario que elijas.
-            </Text>
+                <Text style={styles.description}>
+                  Consulta el menú, realiza tu pedido anticipado y recógelo en el
+                  horario que elijas.
+                </Text>
+              </>
+            )}
           </View>
 
-          <View style={[styles.formPanel, isMobile && styles.formPanelMobile]}>
+          <View style={[styles.loginArea, isMobile && styles.loginAreaMobile]}>
             <View style={[styles.card, isMobile && styles.cardMobile]}>
               <Text style={[styles.cardTitle, isMobile && styles.cardTitleMobile]}>
                 Bienvenido
@@ -146,100 +144,111 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff8f1",
   },
 
-  scrollContent: {
+  content: {
     flexGrow: 1,
     backgroundColor: "#fff8f1",
-    justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 40,
+  },
+
+  contentDesktop: {
+    justifyContent: "center",
+    paddingHorizontal: 48,
     paddingVertical: 48,
   },
 
-  scrollContentMobile: {
+  contentMobile: {
     justifyContent: "flex-start",
     paddingHorizontal: 20,
-    paddingTop: 28,
-    paddingBottom: 36,
+    paddingTop: 18,
+    paddingBottom: 32,
   },
 
-  page: {
+  shell: {
     width: "100%",
-    maxWidth: 1180,
+    maxWidth: 1120,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 56,
   },
 
-  pageMobile: {
-    maxWidth: 520,
+  shellMobile: {
+    maxWidth: 460,
     flexDirection: "column",
+    alignItems: "center",
     justifyContent: "flex-start",
-    gap: 22,
   },
 
-  heroPanel: {
-    flex: 1,
+  hero: {
+    width: "50%",
+    maxWidth: 540,
+    paddingRight: 32,
     alignItems: "flex-start",
   },
 
-  heroPanelMobile: {
+  heroMobile: {
     width: "100%",
+    maxWidth: 420,
+    paddingRight: 0,
     alignItems: "center",
+    marginBottom: 14,
   },
 
-  formPanel: {
-    flex: 1,
+  loginArea: {
+    width: "50%",
     alignItems: "center",
+    paddingLeft: 32,
   },
 
-  formPanelMobile: {
+  loginAreaMobile: {
     width: "100%",
+    paddingLeft: 0,
   },
 
   logo: {
-    width: 126,
-    height: 126,
+    width: 130,
+    height: 130,
     resizeMode: "contain",
-    marginBottom: 18,
+    marginBottom: 12,
   },
 
   logoMobile: {
-    width: 78,
-    height: 78,
-    marginBottom: 8,
+    width: 82,
+    height: 82,
+    marginBottom: 6,
   },
 
   brand: {
-    fontSize: 54,
-    lineHeight: 60,
+    fontSize: 56,
+    lineHeight: 62,
     fontWeight: "900",
     color: "#3b1f12",
-    letterSpacing: 2,
+    letterSpacing: 1.5,
   },
 
   brandMobile: {
-    fontSize: 36,
-    lineHeight: 40,
+    fontSize: 34,
+    lineHeight: 38,
     textAlign: "center",
   },
 
   slogan: {
     fontSize: 16,
+    lineHeight: 22,
     fontWeight: "800",
     color: "#f57c00",
     marginTop: 2,
-    marginBottom: 30,
+    marginBottom: 28,
   },
 
   sloganMobile: {
-    fontSize: 15,
-    marginBottom: 14,
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 0,
     textAlign: "center",
   },
 
   title: {
-    maxWidth: 540,
+    maxWidth: 520,
     fontSize: 42,
     lineHeight: 50,
     fontWeight: "900",
@@ -247,26 +256,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
-  titleMobile: {
-    maxWidth: 360,
-    fontSize: 27,
-    lineHeight: 33,
-    textAlign: "center",
-    marginBottom: 10,
-  },
-
   description: {
-    maxWidth: 520,
+    maxWidth: 500,
     fontSize: 18,
     lineHeight: 28,
     color: "#6b5b52",
-  },
-
-  descriptionMobile: {
-    maxWidth: 360,
-    fontSize: 15,
-    lineHeight: 22,
-    textAlign: "center",
   },
 
   card: {
@@ -297,12 +291,13 @@ const styles = StyleSheet.create({
   },
 
   cardTitleMobile: {
-    fontSize: 27,
-    lineHeight: 32,
+    fontSize: 26,
+    lineHeight: 31,
   },
 
   cardSubtitle: {
     fontSize: 15,
+    lineHeight: 21,
     color: "#7a6a61",
     marginBottom: 20,
   },
