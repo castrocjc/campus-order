@@ -81,8 +81,25 @@ export default function HomeScreen() {
 
   const loadProducts = async () => {
     try {
-      const data = await getMenu();
-      setProducts(data);
+      const response = await getMenu();
+
+      // agrupar por categoría
+      const grouped: any = {};
+
+      response.forEach((p: any) => {
+        const category = p.categoryName || "Otros";
+
+        if (!grouped[category]) {
+          grouped[category] = {
+            category,
+            products: [],
+          };
+        }
+
+        grouped[category].products.push(p);
+      });
+
+      setProducts(Object.values(grouped));
     } catch (error) {
       console.error("Error cargando menú", error);
     } finally {
