@@ -112,6 +112,11 @@ const handleSubmit = async () => {
 
   if (!form.name || !form.price || !form.stock || !form.categoryId) {
     setErrorMessage("Completa los campos obligatorios.");
+
+    setTimeout(() => {
+      setErrorMessage("");
+    }, 3000);
+
     return;
   }
 
@@ -142,6 +147,10 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error("Error guardando producto:", error);
     setErrorMessage("No se pudo guardar el producto.");
+
+    setTimeout(() => {
+      setErrorMessage("");
+    }, 3000);
   }
 };
 
