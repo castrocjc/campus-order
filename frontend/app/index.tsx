@@ -58,9 +58,8 @@ export default function HomeScreen() {
           style={styles.screen}
           contentContainerStyle={[
             styles.container,
-            isMobile ? styles.containerMobile : styles.containerDesktop,
+            isMobile && styles.containerMobile,
           ]}
-          keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
           <View style={[styles.leftPanel, isMobile && styles.leftPanelMobile]}>
@@ -162,14 +161,10 @@ const styles = StyleSheet.create({
     gap: 80,
   },
 
-  containerMobile: {
-    minHeight: "100%",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    paddingHorizontal: 20,
-    paddingTop: 28,
-    paddingBottom: 28,
-  },
+containerMobile: {
+  flexDirection: "column",
+  justifyContent: "flex-start",
+},
 
   leftPanel: {
     flex: 1,
@@ -179,8 +174,8 @@ const styles = StyleSheet.create({
 leftPanelMobile: {
   flex: 0,
   paddingHorizontal: 24,
-  paddingTop: 24,
-  paddingBottom: 8,
+  paddingTop: 36,
+  paddingBottom: 12,
   alignItems: "center",
 },
 
@@ -194,7 +189,7 @@ rightPanelMobile: {
   flex: 0,
   width: "100%",
   paddingHorizontal: 20,
-  paddingTop: 0,
+  paddingTop: 8,
   paddingBottom: 28,
   justifyContent: "flex-start",
 },
@@ -250,10 +245,10 @@ slogan: {
 
 titleMobile: {
   maxWidth: "100%",
-  fontSize: 26,
-  lineHeight: 31,
+  fontSize: 24,
+  lineHeight: 30,
   textAlign: "center",
-  marginBottom: 10,
+  marginBottom: 8,
 },
 
   description: {
