@@ -83,26 +83,11 @@ export default function HomeScreen() {
     try {
       const response = await getMenu();
 
-      const productList = Array.isArray(response)
+      const menuList = Array.isArray(response)
         ? response
         : response?.data ?? [];
 
-      const grouped: any = {};
-
-      productList.forEach((p: any) => {
-        const category = p.categoryName || "Otros";
-
-        if (!grouped[category]) {
-          grouped[category] = {
-            category,
-            products: [],
-          };
-        }
-
-        grouped[category].products.push(p);
-      });
-
-      setProducts(Object.values(grouped));
+      setProducts(menuList);
     } catch (error) {
       console.error("Error cargando menú", error);
     } finally {
