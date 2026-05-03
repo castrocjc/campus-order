@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Stack, useRouter } from "expo-router";
 import {
   Image,
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,7 +16,7 @@ const logo = require("../assets/cofigo-logo.png");
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const isMobile = width < 768;
 
   const [email, setEmail] = useState("");
@@ -38,6 +36,7 @@ export default function HomeScreen() {
 
       const data = await loginUser({ email, password });
       saveAuthData(data);
+
       router.replace("/home");
     } catch (error: any) {
       setErrorMessage(error.message || "No se pudo iniciar sesión.");
@@ -50,19 +49,18 @@ export default function HomeScreen() {
     <>
       <Stack.Screen options={{ headerShown: false }} />
 
-      <KeyboardAvoidingView
+      <ScrollView
         style={styles.screen}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { minHeight: height },
+          isMobile && styles.scrollContentMobile,
+        ]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <ScrollView
-          style={styles.screen}
-          contentContainerStyle={[
-            styles.container,
-            isMobile && styles.containerMobile,
-          ]}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={[styles.leftPanel, isMobile && styles.leftPanelMobile]}>
+        <View style={[styles.page, isMobile && styles.pageMobile]}>
+          <View style={[styles.heroPanel, isMobile && styles.heroPanelMobile]}>
             <Image
               source={logo}
               style={[styles.logo, isMobile && styles.logoMobile]}
@@ -80,13 +78,15 @@ export default function HomeScreen() {
               Pide tu comida universitaria sin hacer cola
             </Text>
 
-            <Text style={[styles.description, isMobile && styles.descriptionMobile]}>
+            <Text
+              style={[styles.description, isMobile && styles.descriptionMobile]}
+            >
               Consulta el menú, realiza tu pedido anticipado y recógelo en el
               horario que elijas.
             </Text>
           </View>
 
-          <View style={[styles.rightPanel, isMobile && styles.rightPanelMobile]}>
+          <View style={[styles.formPanel, isMobile && styles.formPanelMobile]}>
             <View style={[styles.card, isMobile && styles.cardMobile]}>
               <Text style={[styles.cardTitle, isMobile && styles.cardTitleMobile]}>
                 Bienvenido
@@ -134,8 +134,8 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </View>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </View>
+      </ScrollView>
     </>
   );
 }
@@ -146,153 +146,159 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff8f1",
   },
 
-  container: {
+  scrollContent: {
     flexGrow: 1,
     backgroundColor: "#fff8f1",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 40,
+    paddingVertical: 48,
   },
 
-  containerDesktop: {
-    minHeight: "100%",
+  scrollContentMobile: {
+    justifyContent: "flex-start",
+    paddingHorizontal: 20,
+    paddingTop: 28,
+    paddingBottom: 36,
+  },
+
+  page: {
+    width: "100%",
+    maxWidth: 1180,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 64,
-    paddingVertical: 48,
-    gap: 80,
+    justifyContent: "space-between",
+    gap: 56,
   },
 
-containerMobile: {
-  flexDirection: "column",
-  justifyContent: "flex-start",
-},
-
-  leftPanel: {
-    flex: 1,
-    justifyContent: "center",
+  pageMobile: {
+    maxWidth: 520,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    gap: 22,
   },
 
-leftPanelMobile: {
-  flex: 0,
-  paddingHorizontal: 24,
-  paddingTop: 36,
-  paddingBottom: 12,
-  alignItems: "center",
-},
-
-  rightPanel: {
+  heroPanel: {
     flex: 1,
-    justifyContent: "center",
+    alignItems: "flex-start",
+  },
+
+  heroPanelMobile: {
+    width: "100%",
     alignItems: "center",
   },
 
-rightPanelMobile: {
-  flex: 0,
-  width: "100%",
-  paddingHorizontal: 20,
-  paddingTop: 8,
-  paddingBottom: 28,
-  justifyContent: "flex-start",
-},
-
-  logo: {
-    width: 130,
-    height: 130,
-    resizeMode: "contain",
-    marginBottom: 14,
+  formPanel: {
+    flex: 1,
+    alignItems: "center",
   },
 
-logoMobile: {
-  width: 72,
-  height: 72,
-  marginBottom: 6,
-},
+  formPanelMobile: {
+    width: "100%",
+  },
+
+  logo: {
+    width: 126,
+    height: 126,
+    resizeMode: "contain",
+    marginBottom: 18,
+  },
+
+  logoMobile: {
+    width: 78,
+    height: 78,
+    marginBottom: 8,
+  },
 
   brand: {
-    fontSize: 52,
+    fontSize: 54,
+    lineHeight: 60,
     fontWeight: "900",
     color: "#3b1f12",
     letterSpacing: 2,
   },
 
-brandMobile: {
-  fontSize: 34,
-  lineHeight: 38,
-  textAlign: "center",
-},
+  brandMobile: {
+    fontSize: 36,
+    lineHeight: 40,
+    textAlign: "center",
+  },
 
-slogan: {
-  fontSize: 15,
-  fontWeight: "700",
-  color: "#f57c00",
-  marginBottom: 14,
-  textAlign: "center",
-},
+  slogan: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#f57c00",
+    marginTop: 2,
+    marginBottom: 30,
+  },
 
   sloganMobile: {
     fontSize: 15,
+    marginBottom: 14,
     textAlign: "center",
-    marginBottom: 18,
   },
 
   title: {
-    maxWidth: 520,
+    maxWidth: 540,
     fontSize: 42,
+    lineHeight: 50,
     fontWeight: "900",
     color: "#2b160d",
-    lineHeight: 48,
     marginBottom: 16,
   },
 
-titleMobile: {
-  maxWidth: "100%",
-  fontSize: 24,
-  lineHeight: 30,
-  textAlign: "center",
-  marginBottom: 8,
-},
-
-  description: {
-    maxWidth: 500,
-    fontSize: 18,
-    color: "#6b5b52",
-    lineHeight: 28,
+  titleMobile: {
+    maxWidth: 360,
+    fontSize: 27,
+    lineHeight: 33,
+    textAlign: "center",
+    marginBottom: 10,
   },
 
-descriptionMobile: {
-  maxWidth: "100%",
-  fontSize: 15,
-  lineHeight: 21,
-  textAlign: "center",
-  marginBottom: 8,
-},
+  description: {
+    maxWidth: 520,
+    fontSize: 18,
+    lineHeight: 28,
+    color: "#6b5b52",
+  },
+
+  descriptionMobile: {
+    maxWidth: 360,
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: "center",
+  },
 
   card: {
     width: "100%",
-    maxWidth: 420,
+    maxWidth: 430,
     backgroundColor: "#ffffff",
     padding: 36,
     borderRadius: 28,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 20,
+    shadowOffset: { width: 0, height: 10 },
     elevation: 5,
   },
 
-cardMobile: {
-  maxWidth: "100%",
-  padding: 22,
-  borderRadius: 24,
-},
+  cardMobile: {
+    maxWidth: "100%",
+    padding: 22,
+    borderRadius: 24,
+  },
 
   cardTitle: {
     fontSize: 32,
+    lineHeight: 38,
     fontWeight: "900",
     color: "#3b1f12",
     marginBottom: 6,
   },
 
   cardTitleMobile: {
-    fontSize: 26,
+    fontSize: 27,
+    lineHeight: 32,
   },
 
   cardSubtitle: {
@@ -315,7 +321,8 @@ cardMobile: {
     borderWidth: 1,
     borderColor: "#ead8c8",
     borderRadius: 14,
-    padding: 15,
+    paddingHorizontal: 15,
+    paddingVertical: 15,
     fontSize: 15,
     marginBottom: 16,
     backgroundColor: "#fff",
