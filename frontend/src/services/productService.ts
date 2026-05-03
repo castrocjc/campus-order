@@ -29,11 +29,22 @@ export async function updateProduct(productId: number, payload: any) {
 }
 
 export async function toggleProductActive(productId: number) {
-  const result = await apiRequest(`/api/products/${productId}/toggle-active`, {
-    method: "PATCH",
-  });
+  try {
+    const result = await apiRequest(`/api/products/${productId}/toggle-active`, {
+      method: "PATCH",
+    });
 
-  return result.data;
+    return result.data;
+  } catch (error: any) {
+    console.error("Error en toggleProductActive:", error);
+
+    throw {
+      message:
+        error?.message ||
+        error?.response?.data?.message ||
+        "No se pudo cambiar el estado del producto.",
+    };
+  }
 }
 
 export async function deleteProduct(productId: number) {

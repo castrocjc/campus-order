@@ -59,8 +59,8 @@ export default function AdminProducts() {
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>("ALL");
   const [searchText, setSearchText] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");  
+  const [message, setMessage] = useState<string | null>(null);
+  const [messageType, setMessageType] = useState<"success" | "error">("success");
 
   const [form, setForm] = useState<ProductForm>({
     name: "",
@@ -106,16 +106,22 @@ export default function AdminProducts() {
     setEditingProductId(null);
   };
 
+const showMessage = (
+  text: string,
+  type: "success" | "error" = "success"
+) => {
+  setMessageType(type);
+  setMessage(text);
+
+  setTimeout(() => {
+    setMessage(null);
+  }, 1200);
+};
+
 const handleSubmit = async () => {
-  setSuccessMessage("");
-  setErrorMessage("");
 
   if (!form.name || !form.price || !form.stock || !form.categoryId) {
-    setErrorMessage("Completa los campos obligatorios.");
-
-    setTimeout(() => {
-      setErrorMessage("");
-    }, 3000);
+    showMessage("Completa los campos obligatorios.", "error");
 
     return;
   }
@@ -132,25 +138,18 @@ const handleSubmit = async () => {
   try {
     if (editingProductId) {
       await updateProduct(editingProductId, payload);
-      setSuccessMessage("Producto actualizado correctamente.");
+      showMessage("Producto actualizado correctamente.", "success");
     } else {
       await createProduct(payload);
-      setSuccessMessage("Producto creado correctamente.");
+      showMessage("Producto creado correctamente.", "success");
     }
 
     resetForm();
     loadProducts();
 
-    setTimeout(() => {
-      setSuccessMessage("");
-    }, 3000);
   } catch (error) {
     console.error("Error guardando producto:", error);
-    setErrorMessage("No se pudo guardar el producto.");
-
-    setTimeout(() => {
-      setErrorMessage("");
-    }, 3000);
+    showMessage("No se pudo guardar el producto.", "error");
   }
 };
 
@@ -168,30 +167,20 @@ const handleSubmit = async () => {
   };
 
   const handleToggleActive = async (product: Product) => {
-    setSuccessMessage("");
-    setErrorMessage("");
 
     try {
       await toggleProductActive(product.id);
       await loadProducts();
 
-      setSuccessMessage(
+      showMessage(
         product.active
           ? "Producto desactivado correctamente."
-          : "Producto activado correctamente."
+          : "Producto activado correctamente.",
+        "success"
       );
-
-      setTimeout(() => {
-        setSuccessMessage("");
-      }, 3000);
     } catch (error) {
       console.error("Error cambiando estado:", error);
-
-      setErrorMessage("No se pudo cambiar el estado del producto.");
-
-      setTimeout(() => {
-        setErrorMessage("");
-      }, 3000);
+      showMessage("No se pudo cambiar el estado del producto.", "error");
     }
   };
 
@@ -257,6 +246,20 @@ const handleSubmit = async () => {
       <Stack.Screen options={{ headerShown: false }} />
 
       <View style={styles.screen}>
+
+        {message && (
+          <View style={styles.toastContainer}>
+            <Text
+              style={[
+                styles.toast,
+                messageType === "error" && styles.toastError,
+              ]}
+            >
+              {message}
+            </Text>
+          </View>
+        )}
+
         <View style={styles.topStickyBar}>
           <View style={styles.header}>
             <View>
@@ -462,19 +465,6 @@ const handleSubmit = async () => {
 
           <View style={styles.productFormColumn}>
             <View style={styles.formCard}>
-
-              {successMessage ? (
-                <View style={styles.successMessageBox}>
-                  <Text style={styles.successMessageText}>{successMessage}</Text>
-                </View>
-              ) : null}
-
-              {errorMessage ? (
-                <View style={styles.errorMessageBox}>
-                  <Text style={styles.errorMessageText}>{errorMessage}</Text>
-                </View>
-              ) : null}
-
               <View style={styles.formHeaderRow}>
                 <View>
                   <Text style={styles.sectionTitle}>{formTitle}</Text>
@@ -1004,32 +994,27 @@ const styles = StyleSheet.create({
     fontSize: 15,
     paddingVertical: 12,
   },
-successMessageBox: {
-  backgroundColor: "#d1e7dd",
-  borderWidth: 1,
-  borderColor: "#badbcc",
-  borderRadius: 14,
-  paddingVertical: 10,
+toastContainer: {
+  position: "absolute",
+  top: 70,
+  left: 0,
+  right: 0,
+  alignItems: "center",
+  zIndex: 100000,
+},
+toast: {
+  alignSelf: "center",
+  backgroundColor: "#e7f7ed",
+  color: "#1f7a3f",
+  paddingVertical: 6,
   paddingHorizontal: 12,
-  marginBottom: 12,
-},
-successMessageText: {
-  color: "#0f5132",
-  fontWeight: "800",
+  borderRadius: 999,
+  fontWeight: "700",
   fontSize: 13,
+  textAlign: "center",
 },
-errorMessageBox: {
-  backgroundColor: "#f8d7da",
-  borderWidth: 1,
-  borderColor: "#f5c2c7",
-  borderRadius: 14,
-  paddingVertical: 10,
-  paddingHorizontal: 12,
-  marginBottom: 12,
+toastError: {
+  backgroundColor: "#fdecea",
+  color: "#b71c1c",
 },
-errorMessageText: {
-  color: "#842029",
-  fontWeight: "800",
-  fontSize: 13,
-},  
 });
