@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Stack, useRouter } from "expo-router";
 import {
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { loginUser, saveAuthData } from "../src/services/authService";
@@ -14,6 +16,9 @@ const logo = require("../assets/cofigo-logo.png");
 
 export default function HomeScreen() {
   const router = useRouter();
+
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,25 +53,35 @@ export default function HomeScreen() {
 return (
   <>
     <Stack.Screen options={{ headerShown: false }} />
-    <View style={styles.container}>
-      <View style={styles.leftPanel}>
-        <Image source={logo} style={styles.logo} />
 
-        <Text style={styles.brand}>COFIGO</Text>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={[
+        styles.container,
+        isMobile && styles.containerMobile,
+      ]}
+    >
+      <View style={[styles.leftPanel, isMobile && styles.leftPanelMobile]}>
+        <Image source={logo} style={[styles.logo, isMobile && styles.logoMobile]} />
+
+        <Text style={[styles.brand, isMobile && styles.brandMobile]}>
+          COFIGO
+        </Text>
+
         <Text style={styles.slogan}>Pide hoy, disfruta sin esperas</Text>
 
-        <Text style={styles.title}>
+        <Text style={[styles.title, isMobile && styles.titleMobile]}>
           Pide tu comida universitaria sin hacer cola
         </Text>
 
-        <Text style={styles.description}>
+        <Text style={[styles.description, isMobile && styles.descriptionMobile]}>
           Consulta el menú, realiza tu pedido anticipado y recógelo en el
           horario que elijas.
         </Text>
       </View>
 
-      <View style={styles.rightPanel}>
-        <View style={styles.card}>
+      <View style={[styles.rightPanel, isMobile && styles.rightPanelMobile]}>
+        <View style={[styles.card, isMobile && styles.cardMobile]}>
           <Text style={styles.cardTitle}>Bienvenido</Text>
           <Text style={styles.cardSubtitle}>Ingresa para continuar</Text>
 
@@ -111,29 +126,11 @@ return (
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </ScrollView>
   </>
 );}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "row",
-    backgroundColor: "#fff8f1",
-  },
-
-  leftPanel: {
-    flex: 1.1,
-    justifyContent: "center",
-    padding: 48,
-  },
-
-  rightPanel: {
-    flex: 0.9,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 48,
-  },
 
   logo: {
     width: 130,
@@ -248,4 +245,79 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "800",
   },
+screen: {
+  flex: 1,
+  backgroundColor: "#fff8f1",
+},
+
+container: {
+  flexGrow: 1,
+  flexDirection: "row",
+  backgroundColor: "#fff8f1",
+},
+
+containerMobile: {
+  flexDirection: "column",
+},
+
+leftPanel: {
+  flex: 1.1,
+  justifyContent: "center",
+  padding: 48,
+},
+
+leftPanelMobile: {
+  flex: 0,
+  paddingHorizontal: 24,
+  paddingTop: 36,
+  paddingBottom: 20,
+  alignItems: "center",
+},
+
+rightPanel: {
+  flex: 0.9,
+  justifyContent: "center",
+  alignItems: "center",
+  padding: 48,
+},
+
+rightPanelMobile: {
+  flex: 0,
+  width: "100%",
+  paddingHorizontal: 20,
+  paddingTop: 8,
+  paddingBottom: 32,
+},
+
+logoMobile: {
+  width: 96,
+  height: 96,
+  marginBottom: 10,
+},
+
+brandMobile: {
+  fontSize: 42,
+  textAlign: "center",
+},
+
+titleMobile: {
+  maxWidth: "100%",
+  fontSize: 30,
+  lineHeight: 36,
+  textAlign: "center",
+  marginBottom: 14,
+},
+
+descriptionMobile: {
+  maxWidth: "100%",
+  fontSize: 16,
+  lineHeight: 24,
+  textAlign: "center",
+},
+
+cardMobile: {
+  maxWidth: "100%",
+  padding: 24,
+  borderRadius: 24,
+},  
 });
