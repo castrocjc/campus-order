@@ -18,7 +18,6 @@ import {
   createProduct,
   updateProduct,
   toggleProductActive,
-  deleteProduct,
 } from "../src/services/productService";
 
 import { getCategories } from "../src/services/categoryService";
@@ -106,7 +105,7 @@ export default function AdminProducts() {
     setEditingProductId(null);
   };
 
-const showMessage = (
+  const showMessage = (
   text: string,
   type: "success" | "error" = "success"
 ) => {
@@ -118,7 +117,7 @@ const showMessage = (
   }, 1200);
 };
 
-const handleSubmit = async () => {
+  const handleSubmit = async () => {
 
   if (!form.name || !form.price || !form.stock || !form.categoryId) {
     showMessage("Completa los campos obligatorios.", "error");
@@ -181,19 +180,6 @@ const handleSubmit = async () => {
     } catch (error) {
       console.error("Error cambiando estado:", error);
       showMessage("No se pudo cambiar el estado del producto.", "error");
-    }
-  };
-
-  const handleDelete = async (productId: number) => {
-    const confirmDelete = confirm("¿Seguro que deseas eliminar este producto?");
-    if (!confirmDelete) return;
-
-    try {
-      await deleteProduct(productId);
-      loadProducts();
-    } catch (error) {
-      console.error("Error eliminando producto:", error);
-      alert("No se pudo eliminar el producto.");
     }
   };
 
@@ -441,19 +427,17 @@ const handleSubmit = async () => {
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                          style={styles.toggleButton}
+                          style={[
+                            styles.toggleButton,
+                            item.active
+                              ? styles.deactivateButton
+                              : styles.activateButton,
+                          ]}
                           onPress={() => handleToggleActive(item)}
                         >
                           <Text style={styles.actionButtonText}>
                             {item.active ? "Desactivar" : "Activar"}
                           </Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                          style={styles.deleteButton}
-                          onPress={() => handleDelete(item.id)}
-                        >
-                          <Text style={styles.actionButtonText}>Eliminar</Text>
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -971,18 +955,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   toggleButton: {
-    backgroundColor: "#f59f00",
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 8,
     alignItems: "center",
   },
-  deleteButton: {
-    backgroundColor: "#dc3545",
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    alignItems: "center",
+  deactivateButton: {
+    backgroundColor: "#f59f00",
+  },
+  activateButton: {
+    backgroundColor: "#198754",
   },
   actionButtonText: {
     color: "#ffffff",
