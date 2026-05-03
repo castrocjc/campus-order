@@ -59,6 +59,8 @@ export default function AdminProducts() {
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>("ALL");
   const [searchText, setSearchText] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");  
 
   const [form, setForm] = useState<ProductForm>({
     name: "",
@@ -104,35 +106,44 @@ export default function AdminProducts() {
     setEditingProductId(null);
   };
 
-  const handleSubmit = async () => {
-    if (!form.name || !form.price || !form.stock || !form.categoryId) {
-      alert("Completa los campos obligatorios.");
-      return;
-    }
+const handleSubmit = async () => {
+  setSuccessMessage("");
+  setErrorMessage("");
 
-    const payload = {
-      name: form.name,
-      description: form.description,
-      price: Number(form.price),
-      stock: Number(form.stock),
-      imageUrl: form.imageUrl,
-      categoryId: Number(form.categoryId),
-    };
+  if (!form.name || !form.price || !form.stock || !form.categoryId) {
+    setErrorMessage("Completa los campos obligatorios.");
+    return;
+  }
 
-    try {
-      if (editingProductId) {
-        await updateProduct(editingProductId, payload);
-      } else {
-        await createProduct(payload);
-      }
-
-      resetForm();
-      loadProducts();
-    } catch (error) {
-      console.error("Error guardando producto:", error);
-      alert("No se pudo guardar el producto.");
-    }
+  const payload = {
+    name: form.name,
+    description: form.description,
+    price: Number(form.price),
+    stock: Number(form.stock),
+    imageUrl: form.imageUrl,
+    categoryId: Number(form.categoryId),
   };
+
+  try {
+    if (editingProductId) {
+      await updateProduct(editingProductId, payload);
+      setSuccessMessage("Producto actualizado correctamente.");
+    } else {
+      await createProduct(payload);
+      setSuccessMessage("Producto creado correctamente.");
+    }
+
+    resetForm();
+    loadProducts();
+
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 3000);
+  } catch (error) {
+    console.error("Error guardando producto:", error);
+    setErrorMessage("No se pudo guardar el producto.");
+  }
+};
 
   const handleEdit = (product: Product) => {
     setEditingProductId(product.id);
@@ -424,6 +435,19 @@ export default function AdminProducts() {
 
           <View style={styles.productFormColumn}>
             <View style={styles.formCard}>
+
+              {successMessage ? (
+                <View style={styles.successMessageBox}>
+                  <Text style={styles.successMessageText}>{successMessage}</Text>
+                </View>
+              ) : null}
+
+              {errorMessage ? (
+                <View style={styles.errorMessageBox}>
+                  <Text style={styles.errorMessageText}>{errorMessage}</Text>
+                </View>
+              ) : null}
+
               <View style={styles.formHeaderRow}>
                 <View>
                   <Text style={styles.sectionTitle}>{formTitle}</Text>
@@ -953,4 +977,32 @@ const styles = StyleSheet.create({
     fontSize: 15,
     paddingVertical: 12,
   },
+successMessageBox: {
+  backgroundColor: "#d1e7dd",
+  borderWidth: 1,
+  borderColor: "#badbcc",
+  borderRadius: 14,
+  paddingVertical: 10,
+  paddingHorizontal: 12,
+  marginBottom: 12,
+},
+successMessageText: {
+  color: "#0f5132",
+  fontWeight: "800",
+  fontSize: 13,
+},
+errorMessageBox: {
+  backgroundColor: "#f8d7da",
+  borderWidth: 1,
+  borderColor: "#f5c2c7",
+  borderRadius: 14,
+  paddingVertical: 10,
+  paddingHorizontal: 12,
+  marginBottom: 12,
+},
+errorMessageText: {
+  color: "#842029",
+  fontWeight: "800",
+  fontSize: 13,
+},  
 });
