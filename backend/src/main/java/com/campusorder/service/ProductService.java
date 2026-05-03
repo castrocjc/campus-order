@@ -67,54 +67,54 @@ public class ProductService {
         );
         }
 
-    public void deleteProduct(Long productId) {
+        public void deleteProduct(Long productId) {
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                Product product = productRepository.findById(productId)
+                        .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        product.setActive(false);
-        productRepository.save(product);
-    }    
+                product.setActive(false);
+                productRepository.save(product);
+        }    
 
-    public Page<ProductResponseDTO> getProductsPaged(int page, int size) {
+        public Page<ProductResponseDTO> getProductsPaged(int page, int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
+                Pageable pageable = PageRequest.of(page, size);
 
-        return productRepository.findAll(pageable)
-                .map(this::mapToDTO);
-    }    
+                return productRepository.findAll(pageable)
+                        .map(this::mapToDTO);
+        }    
 
-    public Page<ProductResponseDTO> searchProducts(String name, int page, int size) {
+        public Page<ProductResponseDTO> searchProducts(String name, int page, int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
+                Pageable pageable = PageRequest.of(page, size);
 
-        return productRepository.findByNameContainingIgnoreCase(name, pageable)
-                .map(this::mapToDTO);
-    }    
+                return productRepository.findByNameContainingIgnoreCase(name, pageable)
+                        .map(this::mapToDTO);
+        }    
 
-    public ProductResponseDTO updateProduct(Long productId, ProductRequestDTO dto) {
+        public ProductResponseDTO updateProduct(Long productId, ProductRequestDTO dto) {
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                Product product = productRepository.findById(productId)
+                        .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+                Category category = categoryRepository.findById(dto.getCategoryId())
+                        .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
-        product.setName(dto.getName());
-        product.setDescription(dto.getDescription());
-        product.setPrice(dto.getPrice());
-        product.setStock(dto.getStock());
-        product.setImageUrl(dto.getImageUrl());
-        product.setCategory(category);
+                product.setName(dto.getName());
+                product.setDescription(dto.getDescription());
+                product.setPrice(dto.getPrice());
+                product.setStock(dto.getStock());
+                product.setImageUrl(dto.getImageUrl());
+                product.setCategory(category);
 
-        Product updated = productRepository.save(product);
+                Product updated = productRepository.save(product);
 
-        return mapToDTO(updated);
-    }    
+                return mapToDTO(updated);
+        }    
 
-    public List<MenuResponseDTO> getMenu() {
+        public List<MenuResponseDTO> getMenu() {
 
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productRepository.findByActiveTrue();
 
         return products.stream()
                 .collect(java.util.stream.Collectors.groupingBy(p -> p.getCategory().getName()))
@@ -125,7 +125,7 @@ public class ProductService {
                         entry.getValue().stream().map(this::mapToDTO).toList()
                 ))
                 .toList();
-    }
+        }
 
         public ProductResponseDTO toggleProductActive(Long productId) {
 
