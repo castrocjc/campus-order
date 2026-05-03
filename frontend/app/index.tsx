@@ -36,11 +36,7 @@ export default function HomeScreen() {
       setLoading(true);
       setErrorMessage("");
 
-      const data = await loginUser({
-        email,
-        password,
-      });
-
+      const data = await loginUser({ email, password });
       saveAuthData(data);
       router.replace("/home");
     } catch (error: any) {
@@ -60,12 +56,12 @@ export default function HomeScreen() {
       >
         <ScrollView
           style={styles.screen}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
           contentContainerStyle={[
             styles.container,
-            isMobile && styles.containerMobile,
+            isMobile ? styles.containerMobile : styles.containerDesktop,
           ]}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
           <View style={[styles.leftPanel, isMobile && styles.leftPanelMobile]}>
             <Image
@@ -85,9 +81,7 @@ export default function HomeScreen() {
               Pide tu comida universitaria sin hacer cola
             </Text>
 
-            <Text
-              style={[styles.description, isMobile && styles.descriptionMobile]}
-            >
+            <Text style={[styles.description, isMobile && styles.descriptionMobile]}>
               Consulta el menú, realiza tu pedido anticipado y recógelo en el
               horario que elijas.
             </Text>
@@ -98,11 +92,7 @@ export default function HomeScreen() {
               <Text style={[styles.cardTitle, isMobile && styles.cardTitleMobile]}>
                 Bienvenido
               </Text>
-              <Text
-                style={[styles.cardSubtitle, isMobile && styles.cardSubtitleMobile]}
-              >
-                Ingresa para continuar
-              </Text>
+              <Text style={styles.cardSubtitle}>Ingresa para continuar</Text>
 
               {errorMessage ? (
                 <Text style={styles.errorMessage}>{errorMessage}</Text>
@@ -159,44 +149,51 @@ const styles = StyleSheet.create({
 
   container: {
     flexGrow: 1,
-    flexDirection: "row",
     backgroundColor: "#fff8f1",
   },
 
+  containerDesktop: {
+    minHeight: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 64,
+    paddingVertical: 48,
+    gap: 80,
+  },
+
   containerMobile: {
+    minHeight: "100%",
     flexDirection: "column",
     justifyContent: "flex-start",
-    paddingTop: 18,
-    paddingBottom: 24,
+    paddingHorizontal: 20,
+    paddingTop: 28,
+    paddingBottom: 28,
   },
 
   leftPanel: {
-    flex: 1.1,
+    flex: 1,
     justifyContent: "center",
-    padding: 48,
   },
 
   leftPanelMobile: {
     flex: 0,
-    paddingHorizontal: 22,
-    paddingTop: 18,
-    paddingBottom: 14,
+    width: "100%",
     alignItems: "center",
+    marginBottom: 20,
   },
 
   rightPanel: {
-    flex: 0.9,
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 48,
   },
 
   rightPanelMobile: {
     flex: 0,
     width: "100%",
-    paddingHorizontal: 20,
-    paddingTop: 4,
-    paddingBottom: 24,
+    alignItems: "center",
+    justifyContent: "flex-start",
   },
 
   logo: {
@@ -207,9 +204,9 @@ const styles = StyleSheet.create({
   },
 
   logoMobile: {
-    width: 82,
-    height: 82,
-    marginBottom: 6,
+    width: 92,
+    height: 92,
+    marginBottom: 8,
   },
 
   brand: {
@@ -220,8 +217,7 @@ const styles = StyleSheet.create({
   },
 
   brandMobile: {
-    fontSize: 34,
-    lineHeight: 38,
+    fontSize: 40,
     textAlign: "center",
   },
 
@@ -234,8 +230,8 @@ const styles = StyleSheet.create({
 
   sloganMobile: {
     fontSize: 15,
-    marginBottom: 16,
     textAlign: "center",
+    marginBottom: 18,
   },
 
   title: {
@@ -248,11 +244,11 @@ const styles = StyleSheet.create({
   },
 
   titleMobile: {
-    maxWidth: 340,
+    maxWidth: 360,
     fontSize: 28,
     lineHeight: 34,
     textAlign: "center",
-    marginBottom: 10,
+    marginBottom: 12,
   },
 
   description: {
@@ -278,16 +274,13 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 20,
-    shadowOffset: { width: 0, height: 10 },
     elevation: 5,
   },
 
   cardMobile: {
-    width: "100%",
-    maxWidth: 460,
-    padding: 24,
+    maxWidth: 440,
+    padding: 22,
     borderRadius: 24,
-    alignSelf: "center",
   },
 
   cardTitle: {
@@ -299,18 +292,12 @@ const styles = StyleSheet.create({
 
   cardTitleMobile: {
     fontSize: 26,
-    textAlign: "center",
   },
 
   cardSubtitle: {
     fontSize: 15,
     color: "#7a6a61",
     marginBottom: 20,
-  },
-
-  cardSubtitleMobile: {
-    textAlign: "center",
-    marginBottom: 18,
   },
 
   errorMessage: {
