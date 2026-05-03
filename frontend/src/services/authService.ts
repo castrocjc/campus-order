@@ -1,4 +1,6 @@
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+const API_URL =
+  process.env.EXPO_PUBLIC_API_URL ||
+  "https://campus-order-production-44b8.up.railway.app";
 
 export async function loginUser({
   email,
@@ -7,7 +9,7 @@ export async function loginUser({
   email: string;
   password: string;
 }) {
-  const response = await fetch(`${API_URL}/auth/login`, {
+  const response = await fetch(`${API_URL}/api/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
