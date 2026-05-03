@@ -176,12 +176,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  leftPanelMobile: {
-    flex: 0,
-    width: "100%",
-    alignItems: "center",
-    marginBottom: 20,
-  },
+leftPanelMobile: {
+  flex: 0,
+  paddingHorizontal: 24,
+  paddingTop: 24,
+  paddingBottom: 8,
+  alignItems: "center",
+},
 
   rightPanel: {
     flex: 1,
@@ -189,12 +190,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  rightPanelMobile: {
-    flex: 0,
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "flex-start",
-  },
+rightPanelMobile: {
+  flex: 0,
+  width: "100%",
+  paddingHorizontal: 20,
+  paddingTop: 0,
+  paddingBottom: 28,
+  justifyContent: "flex-start",
+},
 
   logo: {
     width: 130,
@@ -203,11 +206,11 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
 
-  logoMobile: {
-    width: 92,
-    height: 92,
-    marginBottom: 8,
-  },
+logoMobile: {
+  width: 72,
+  height: 72,
+  marginBottom: 6,
+},
 
   brand: {
     fontSize: 52,
@@ -216,17 +219,19 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
   },
 
-  brandMobile: {
-    fontSize: 40,
-    textAlign: "center",
-  },
+brandMobile: {
+  fontSize: 34,
+  lineHeight: 38,
+  textAlign: "center",
+},
 
-  slogan: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#f57c00",
-    marginBottom: 32,
-  },
+slogan: {
+  fontSize: 15,
+  fontWeight: "700",
+  color: "#f57c00",
+  marginBottom: 14,
+  textAlign: "center",
+},
 
   sloganMobile: {
     fontSize: 15,
@@ -243,13 +248,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
-  titleMobile: {
-    maxWidth: 360,
-    fontSize: 28,
-    lineHeight: 34,
-    textAlign: "center",
-    marginBottom: 12,
-  },
+titleMobile: {
+  maxWidth: "100%",
+  fontSize: 26,
+  lineHeight: 31,
+  textAlign: "center",
+  marginBottom: 10,
+},
 
   description: {
     maxWidth: 500,
@@ -258,12 +263,13 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
 
-  descriptionMobile: {
-    maxWidth: 340,
-    fontSize: 15,
-    lineHeight: 22,
-    textAlign: "center",
-  },
+descriptionMobile: {
+  maxWidth: "100%",
+  fontSize: 15,
+  lineHeight: 21,
+  textAlign: "center",
+  marginBottom: 8,
+},
 
   card: {
     width: "100%",
@@ -277,11 +283,11 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 
-  cardMobile: {
-    maxWidth: 440,
-    padding: 22,
-    borderRadius: 24,
-  },
+cardMobile: {
+  maxWidth: "100%",
+  padding: 22,
+  borderRadius: 24,
+},
 
   cardTitle: {
     fontSize: 32,
