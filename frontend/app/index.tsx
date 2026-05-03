@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Stack, useRouter } from "expo-router";
 import {
   Image,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -16,7 +18,6 @@ const logo = require("../assets/cofigo-logo.png");
 
 export default function HomeScreen() {
   const router = useRouter();
-
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
 
@@ -41,7 +42,6 @@ export default function HomeScreen() {
       });
 
       saveAuthData(data);
-
       router.replace("/home");
     } catch (error: any) {
       setErrorMessage(error.message || "No se pudo iniciar sesión.");
@@ -50,93 +50,166 @@ export default function HomeScreen() {
     }
   };
 
-return (
-  <>
-    <Stack.Screen options={{ headerShown: false }} />
+  return (
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
 
-    <ScrollView
-      style={styles.screen}
-      contentContainerStyle={[
-        styles.container,
-        isMobile && styles.containerMobile,
-      ]}
-    >
-      <View style={[styles.leftPanel, isMobile && styles.leftPanelMobile]}>
-        <Image source={logo} style={[styles.logo, isMobile && styles.logoMobile]} />
+      <KeyboardAvoidingView
+        style={styles.screen}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          style={styles.screen}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={[
+            styles.container,
+            isMobile && styles.containerMobile,
+          ]}
+        >
+          <View style={[styles.leftPanel, isMobile && styles.leftPanelMobile]}>
+            <Image
+              source={logo}
+              style={[styles.logo, isMobile && styles.logoMobile]}
+            />
 
-        <Text style={[styles.brand, isMobile && styles.brandMobile]}>
-          COFIGO
-        </Text>
-
-        <Text style={styles.slogan}>Pide hoy, disfruta sin esperas</Text>
-
-        <Text style={[styles.title, isMobile && styles.titleMobile]}>
-          Pide tu comida universitaria sin hacer cola
-        </Text>
-
-        <Text style={[styles.description, isMobile && styles.descriptionMobile]}>
-          Consulta el menú, realiza tu pedido anticipado y recógelo en el
-          horario que elijas.
-        </Text>
-      </View>
-
-      <View style={[styles.rightPanel, isMobile && styles.rightPanelMobile]}>
-        <View style={[styles.card, isMobile && styles.cardMobile]}>
-          <Text style={styles.cardTitle}>Bienvenido</Text>
-          <Text style={styles.cardSubtitle}>Ingresa para continuar</Text>
-
-          {errorMessage ? (
-            <Text style={styles.errorMessage}>{errorMessage}</Text>
-          ) : null}
-
-          <TextInput
-            style={styles.input}
-            placeholder="Correo electrónico"
-            placeholderTextColor="#9b8b82"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Contraseña"
-            placeholderTextColor="#9b8b82"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-
-          <TouchableOpacity
-            style={[styles.primaryButton, loading && styles.disabledButton]}
-            onPress={handleLogin}
-            disabled={loading}
-          >
-            <Text style={styles.primaryButtonText}>
-              {loading ? "Ingresando..." : "Iniciar sesión"}
+            <Text style={[styles.brand, isMobile && styles.brandMobile]}>
+              COFIGO
             </Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.secondaryButton}
-            onPress={() => router.push("/register")}
-          >
-            <Text style={styles.secondaryButtonText}>Crear cuenta</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ScrollView>
-  </>
-);}
+            <Text style={[styles.slogan, isMobile && styles.sloganMobile]}>
+              Pide hoy, disfruta sin esperas
+            </Text>
+
+            <Text style={[styles.title, isMobile && styles.titleMobile]}>
+              Pide tu comida universitaria sin hacer cola
+            </Text>
+
+            <Text
+              style={[styles.description, isMobile && styles.descriptionMobile]}
+            >
+              Consulta el menú, realiza tu pedido anticipado y recógelo en el
+              horario que elijas.
+            </Text>
+          </View>
+
+          <View style={[styles.rightPanel, isMobile && styles.rightPanelMobile]}>
+            <View style={[styles.card, isMobile && styles.cardMobile]}>
+              <Text style={[styles.cardTitle, isMobile && styles.cardTitleMobile]}>
+                Bienvenido
+              </Text>
+              <Text
+                style={[styles.cardSubtitle, isMobile && styles.cardSubtitleMobile]}
+              >
+                Ingresa para continuar
+              </Text>
+
+              {errorMessage ? (
+                <Text style={styles.errorMessage}>{errorMessage}</Text>
+              ) : null}
+
+              <TextInput
+                style={styles.input}
+                placeholder="Correo electrónico"
+                placeholderTextColor="#9b8b82"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+              />
+
+              <TextInput
+                style={styles.input}
+                placeholder="Contraseña"
+                placeholderTextColor="#9b8b82"
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+              />
+
+              <TouchableOpacity
+                style={[styles.primaryButton, loading && styles.disabledButton]}
+                onPress={handleLogin}
+                disabled={loading}
+              >
+                <Text style={styles.primaryButtonText}>
+                  {loading ? "Ingresando..." : "Iniciar sesión"}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.secondaryButton}
+                onPress={() => router.push("/register")}
+              >
+                <Text style={styles.secondaryButtonText}>Crear cuenta</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </>
+  );
+}
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: "#fff8f1",
+  },
+
+  container: {
+    flexGrow: 1,
+    flexDirection: "row",
+    backgroundColor: "#fff8f1",
+  },
+
+  containerMobile: {
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    paddingTop: 18,
+    paddingBottom: 24,
+  },
+
+  leftPanel: {
+    flex: 1.1,
+    justifyContent: "center",
+    padding: 48,
+  },
+
+  leftPanelMobile: {
+    flex: 0,
+    paddingHorizontal: 22,
+    paddingTop: 18,
+    paddingBottom: 14,
+    alignItems: "center",
+  },
+
+  rightPanel: {
+    flex: 0.9,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 48,
+  },
+
+  rightPanelMobile: {
+    flex: 0,
+    width: "100%",
+    paddingHorizontal: 20,
+    paddingTop: 4,
+    paddingBottom: 24,
+  },
 
   logo: {
     width: 130,
     height: 130,
     resizeMode: "contain",
     marginBottom: 14,
+  },
+
+  logoMobile: {
+    width: 82,
+    height: 82,
+    marginBottom: 6,
   },
 
   brand: {
@@ -146,11 +219,23 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
   },
 
+  brandMobile: {
+    fontSize: 34,
+    lineHeight: 38,
+    textAlign: "center",
+  },
+
   slogan: {
     fontSize: 16,
     fontWeight: "700",
     color: "#f57c00",
     marginBottom: 32,
+  },
+
+  sloganMobile: {
+    fontSize: 15,
+    marginBottom: 16,
+    textAlign: "center",
   },
 
   title: {
@@ -162,11 +247,26 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
+  titleMobile: {
+    maxWidth: 340,
+    fontSize: 28,
+    lineHeight: 34,
+    textAlign: "center",
+    marginBottom: 10,
+  },
+
   description: {
     maxWidth: 500,
     fontSize: 18,
     color: "#6b5b52",
     lineHeight: 28,
+  },
+
+  descriptionMobile: {
+    maxWidth: 340,
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: "center",
   },
 
   card: {
@@ -178,7 +278,16 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 20,
+    shadowOffset: { width: 0, height: 10 },
     elevation: 5,
+  },
+
+  cardMobile: {
+    width: "100%",
+    maxWidth: 460,
+    padding: 24,
+    borderRadius: 24,
+    alignSelf: "center",
   },
 
   cardTitle: {
@@ -188,10 +297,20 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
 
+  cardTitleMobile: {
+    fontSize: 26,
+    textAlign: "center",
+  },
+
   cardSubtitle: {
     fontSize: 15,
     color: "#7a6a61",
     marginBottom: 20,
+  },
+
+  cardSubtitleMobile: {
+    textAlign: "center",
+    marginBottom: 18,
   },
 
   errorMessage: {
@@ -245,79 +364,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "800",
   },
-screen: {
-  flex: 1,
-  backgroundColor: "#fff8f1",
-},
-
-container: {
-  flexGrow: 1,
-  flexDirection: "row",
-  backgroundColor: "#fff8f1",
-},
-
-containerMobile: {
-  flexDirection: "column",
-},
-
-leftPanel: {
-  flex: 1.1,
-  justifyContent: "center",
-  padding: 48,
-},
-
-leftPanelMobile: {
-  flex: 0,
-  paddingHorizontal: 24,
-  paddingTop: 36,
-  paddingBottom: 20,
-  alignItems: "center",
-},
-
-rightPanel: {
-  flex: 0.9,
-  justifyContent: "center",
-  alignItems: "center",
-  padding: 48,
-},
-
-rightPanelMobile: {
-  flex: 0,
-  width: "100%",
-  paddingHorizontal: 20,
-  paddingTop: 8,
-  paddingBottom: 32,
-},
-
-logoMobile: {
-  width: 96,
-  height: 96,
-  marginBottom: 10,
-},
-
-brandMobile: {
-  fontSize: 42,
-  textAlign: "center",
-},
-
-titleMobile: {
-  maxWidth: "100%",
-  fontSize: 30,
-  lineHeight: 36,
-  textAlign: "center",
-  marginBottom: 14,
-},
-
-descriptionMobile: {
-  maxWidth: "100%",
-  fontSize: 16,
-  lineHeight: 24,
-  textAlign: "center",
-},
-
-cardMobile: {
-  maxWidth: "100%",
-  padding: 24,
-  borderRadius: 24,
-},  
 });
