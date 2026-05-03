@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(origins = "http://localhost:8082")
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
