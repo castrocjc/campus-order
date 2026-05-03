@@ -83,10 +83,13 @@ export default function HomeScreen() {
     try {
       const response = await getMenu();
 
-      // agrupar por categoría
+      const productList = Array.isArray(response)
+        ? response
+        : response?.data ?? [];
+
       const grouped: any = {};
 
-      response.forEach((p: any) => {
+      productList.forEach((p: any) => {
         const category = p.categoryName || "Otros";
 
         if (!grouped[category]) {
