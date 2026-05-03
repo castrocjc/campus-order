@@ -167,13 +167,31 @@ const handleSubmit = async () => {
     });
   };
 
-  const handleToggleActive = async (productId: number) => {
+  const handleToggleActive = async (product: Product) => {
+    setSuccessMessage("");
+    setErrorMessage("");
+
     try {
-      await toggleProductActive(productId);
-      loadProducts();
+      await toggleProductActive(product.id);
+      await loadProducts();
+
+      setSuccessMessage(
+        product.active
+          ? "Producto desactivado correctamente."
+          : "Producto activado correctamente."
+      );
+
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 3000);
     } catch (error) {
       console.error("Error cambiando estado:", error);
-      alert("No se pudo cambiar el estado del producto.");
+
+      setErrorMessage("No se pudo cambiar el estado del producto.");
+
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 3000);
     }
   };
 
@@ -421,7 +439,7 @@ const handleSubmit = async () => {
 
                         <TouchableOpacity
                           style={styles.toggleButton}
-                          onPress={() => handleToggleActive(item.id)}
+                          onPress={() => handleToggleActive(item)}
                         >
                           <Text style={styles.actionButtonText}>
                             {item.active ? "Desactivar" : "Activar"}
