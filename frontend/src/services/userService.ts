@@ -1,4 +1,4 @@
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+import { apiRequest } from "./apiClient";
 
 export async function registerUser({
   name,
@@ -9,11 +9,8 @@ export async function registerUser({
   email: string;
   password: string;
 }) {
-  const response = await fetch(`${API_URL}/users`, {
+  const result = await apiRequest("/api/users", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify({
       name,
       email,
@@ -21,12 +18,6 @@ export async function registerUser({
       role: "USER",
     }),
   });
-
-  const result = await response.json();
-
-  if (!response.ok || result.success === false) {
-    throw new Error(result.message || "Error al registrar usuario");
-  }
 
   return result.data;
 }
