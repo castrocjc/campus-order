@@ -1,6 +1,8 @@
-const API_URL =
-  process.env.EXPO_PUBLIC_API_URL ||
-  "https://campus-order-production-44b8.up.railway.app";
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
+if (!API_URL) {
+  throw new Error("Falta configurar EXPO_PUBLIC_API_URL");
+}
 
 export async function apiRequest(endpoint: string, options: RequestInit = {}) {
   const token = localStorage.getItem("token");
