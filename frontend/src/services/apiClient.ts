@@ -7,21 +7,39 @@ if (!API_URL) {
 export async function apiRequest(endpoint: string, options: RequestInit = {}) {
   const token = localStorage.getItem("token");
 
+  const isPublicEndpoint =
+  endpoint === "/api/users" || endpoint === "/api/auth/login";
+
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(!isPublicEndpoint && token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options.headers || {}),
     },
   });
 
   const text = await response.text();
-  const result = text ? JSON.parse(text) : null;
+
+  let result = null;
+
+  try {
+    result = text ? JSON.parse(text) : null;
+  } catch (e) {
+    result = { error: text || "Error desconocido" };
+  }
 
   if (!response.ok) {
+
+    console.log("API ERROR:", result);
+
     throw new Error(
-      result?.message || result?.error || `Error en request: ${response.status}`
+      result?.message ||
+      result?.error ||
+      result?.details ||
+      result?.reason ||
+      text ||
+      `Error en request: ${response.status}`
     );
   }
 

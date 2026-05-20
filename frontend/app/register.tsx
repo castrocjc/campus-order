@@ -28,10 +28,18 @@ export default function RegisterScreen() {
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex =
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
+
+    const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{2,50}$/;
+
+    if (!nameRegex.test(name.trim())) {
+      setErrorMessage("Ingresa un nombre válido.");
+      return;
+    }    
 
     if (!emailRegex.test(email.trim())) {
-      setErrorMessage("Ingresa un correo válido.");
+      setErrorMessage("Ingresa un correo electrónico válido.");
       return;
     }
 
@@ -93,8 +101,11 @@ return (
           placeholder="Nombre completo"
           placeholderTextColor="#9b8b82"
           value={name}
+          maxLength={50}
           onChangeText={(text) => {
-            setName(text);
+            const cleanedText = text.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+
+            setName(cleanedText);
             setErrorMessage("");
           }}
         />
@@ -104,12 +115,14 @@ return (
           placeholder="Correo electrónico"
           placeholderTextColor="#9b8b82"
           value={email}
+          maxLength={100}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
           onChangeText={(text) => {
-            setEmail(text);
+            setEmail(text.trim());
             setErrorMessage("");
           }}
-          autoCapitalize="none"
-          keyboardType="email-address"
         />
 
         <TextInput
