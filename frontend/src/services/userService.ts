@@ -9,15 +9,25 @@ export async function registerUser({
   email: string;
   password: string;
 }) {
-  const result = await apiRequest("/api/users", {
-    method: "POST",
-    body: JSON.stringify({
-      name,
-      email,
-      password,
-      role: "USER",
-    }),
-  });
+  try {
+    const result = await apiRequest("/api/users", {
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+        role: "USER",
+      }),
+    });
 
-  return result.data;
+    return result.data;
+
+  } catch (error: any) {
+
+    throw new Error(
+      error?.response?.data?.message ||
+      error?.message ||
+      "No se pudo crear la cuenta."
+    );
+  }
 }

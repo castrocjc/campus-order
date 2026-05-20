@@ -6,6 +6,8 @@ import com.campusorder.entity.User;
 import com.campusorder.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
@@ -21,6 +23,13 @@ public class UserService {
 
     public UserResponseDTO createUser(UserRequestDTO dto) {
 
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "El correo ya se encuentra registrado."
+            );
+        }
+                
         User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
