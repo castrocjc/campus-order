@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "app.institution.email-domain",
+      "type": "java.lang.String",
+      "description": "Dominio institucional permitido para registrar usuarios."
+    }
+  ]
+}

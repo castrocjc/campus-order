@@ -8,7 +8,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { registerUser } from "../src/services/userService";
+import {
+  registerUser,
+  verifyEmail,
+  resendVerificationCode,
+} from "../src/services/userService";
 
 const logo = require("../assets/cofigo-logo.png");
 
@@ -18,6 +22,8 @@ export default function RegisterScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [pendingVerification, setPendingVerification] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -28,15 +34,14 @@ export default function RegisterScreen() {
       return;
     }
 
-    const emailRegex =
-      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
 
     const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{2,50}$/;
 
     if (!nameRegex.test(name.trim())) {
       setErrorMessage("Ingresa un nombre válido.");
       return;
-    }    
+    }
 
     if (!emailRegex.test(email.trim())) {
       setErrorMessage("Ingresa un correo electrónico válido.");
@@ -60,103 +65,187 @@ export default function RegisterScreen() {
         password,
       });
 
-      setSuccessMessage("Cuenta creada correctamente. Redirigiendo al login...");
+      setPendingVerification(true);
 
-      setTimeout(() => {
-        router.replace("/");
-      }, 1500);
-        } catch (error: any) {
-          setErrorMessage(error.message || "No se pudo crear la cuenta.");
-        } finally {
+      setSuccessMessage(
+        "Cuenta creada correctamente. Ingresa el código enviado a tu correo.",
+      );
+    } catch (error: any) {
+      setErrorMessage(error.message || "No se pudo crear la cuenta.");
+    } finally {
       setLoading(false);
     }
   };
 
-return (
-  <>
-    <Stack.Screen options={{ headerShown: false }} />
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Image source={logo} style={styles.logo} />
+  const handleVerifyEmail = async () => {
+    if (!verificationCode.trim()) {
+      setErrorMessage("Ingresa el código de verificación.");
+      return;
+    }
 
-        <Text style={styles.title}>Crear cuenta</Text>
-        <Text style={styles.subtitle}>
-          Regístrate para pedir sin hacer cola
-        </Text>
+    try {
+      setLoading(true);
 
-        {successMessage ? (
-          <Text style={styles.successMessage}>
-            {successMessage}
+      setErrorMessage("");
+      setSuccessMessage("");
+
+      await verifyEmail({
+        email: email.trim(),
+        code: verificationCode.trim(),
+      });
+
+      setSuccessMessage(
+        "Correo verificado correctamente. Redirigiendo al login...",
+      );
+
+      setTimeout(() => {
+        router.replace("/");
+      }, 1500);
+    } catch (error: any) {
+      setErrorMessage(error.message || "No se pudo verificar el correo.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    try {
+      setLoading(true);
+
+      setErrorMessage("");
+      setSuccessMessage("");
+
+      await resendVerificationCode(email.trim());
+
+      setSuccessMessage("Se envió un nuevo código de verificación.");
+    } catch (error: any) {
+      setErrorMessage(error.message || "No se pudo reenviar el código.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
+      <View style={styles.container}>
+        <View style={styles.card}>
+          <Image source={logo} style={styles.logo} />
+
+          <Text style={styles.title}>Crear cuenta</Text>
+          <Text style={styles.subtitle}>
+            Regístrate para pedir sin hacer cola
           </Text>
-        ) : null}
 
-        {errorMessage ? (
-          <Text style={styles.errorMessage}>
-            {errorMessage}
-          </Text>
-        ) : null}
+          {successMessage ? (
+            <Text style={styles.successMessage}>{successMessage}</Text>
+          ) : null}
 
-        <TextInput
-          style={styles.input}
-          placeholder="Nombre completo"
-          placeholderTextColor="#9b8b82"
-          value={name}
-          maxLength={50}
-          onChangeText={(text) => {
-            const cleanedText = text.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+          {errorMessage ? (
+            <Text style={styles.errorMessage}>{errorMessage}</Text>
+          ) : null}
 
-            setName(cleanedText);
-            setErrorMessage("");
-          }}
-        />
+          {!pendingVerification ? (
+            <>
+              <TextInput
+                style={styles.input}
+                placeholder="Nombre completo"
+                placeholderTextColor="#9b8b82"
+                value={name}
+                onChangeText={(text) => {
+                  setName(text);
+                  setErrorMessage("");
+                }}
+              />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Correo electrónico"
-          placeholderTextColor="#9b8b82"
-          value={email}
-          maxLength={100}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoCorrect={false}
-          onChangeText={(text) => {
-            setEmail(text.trim());
-            setErrorMessage("");
-          }}
-        />
+              <TextInput
+                style={styles.input}
+                placeholder="Correo institucional"
+                placeholderTextColor="#9b8b82"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={(text) => {
+                  setEmail(text);
+                  setErrorMessage("");
+                }}
+              />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Contraseña"
-          placeholderTextColor="#9b8b82"
-          secureTextEntry
-          value={password}
-          onChangeText={(text) => {
-            setPassword(text);
-            setErrorMessage("");
-          }}
-        />
+              <TextInput
+                style={styles.input}
+                placeholder="Contraseña"
+                placeholderTextColor="#9b8b82"
+                secureTextEntry
+                value={password}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  setErrorMessage("");
+                }}
+              />
 
-        <TouchableOpacity
-          style={[styles.primaryButton, loading && styles.disabledButton]}
-          onPress={handleRegister}
-          disabled={loading}
-        >
-          <Text style={styles.primaryButtonText}>
-            {loading ? "Creando..." : "Crear cuenta"}
-          </Text>
-        </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.primaryButton, loading && styles.disabledButton]}
+                onPress={handleRegister}
+                disabled={loading}
+              >
+                <Text style={styles.primaryButtonText}>
+                  {loading ? "Creando..." : "Crear cuenta"}
+                </Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <TextInput
+                style={styles.input}
+                placeholder="Código de verificación"
+                placeholderTextColor="#9b8b82"
+                value={verificationCode}
+                maxLength={6}
+                keyboardType="number-pad"
+                onChangeText={(text) => {
+                  setVerificationCode(text.replace(/[^0-9]/g, ""));
+                  setErrorMessage("");
+                }}
+              />
 
-        <TouchableOpacity
-          style={styles.secondaryButton}
-          onPress={() => router.replace("/")}
-        >
-          <Text style={styles.secondaryButtonText}>Ya tengo cuenta</Text>
-        </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.primaryButton, loading && styles.disabledButton]}
+                onPress={handleVerifyEmail}
+                disabled={loading}
+              >
+                <Text style={styles.primaryButtonText}>
+                  {loading ? "Verificando..." : "Verificar correo"}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleResendCode}
+                disabled={loading}
+                style={{ marginTop: 12 }}
+              >
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: "#f57c00",
+                    fontWeight: "700",
+                  }}
+                >
+                  ¿No recibiste el código? Reenviar código
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
+
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={() => router.replace("/")}
+          >
+            <Text style={styles.secondaryButtonText}>Ya tengo cuenta</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  </>
-);
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -208,13 +297,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   successMessage: {
-  backgroundColor: "#e7f7ed",
-  color: "#1f7a3f",
-  padding: 12,
-  borderRadius: 12,
-  textAlign: "center",
-  fontWeight: "700",
-  marginBottom: 16,
+    backgroundColor: "#e7f7ed",
+    color: "#1f7a3f",
+    padding: 12,
+    borderRadius: 12,
+    textAlign: "center",
+    fontWeight: "700",
+    marginBottom: 16,
   },
   errorMessage: {
     backgroundColor: "#fdecea",

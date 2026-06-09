@@ -2,6 +2,7 @@ package com.campusorder.controller;
 
 import com.campusorder.dto.UserRequestDTO;
 import com.campusorder.dto.UserResponseDTO;
+import com.campusorder.dto.VerifyEmailRequestDTO;
 import com.campusorder.dto.response.ApiResponse;
 import com.campusorder.service.UserService;
 import jakarta.validation.Valid;
@@ -23,6 +24,24 @@ public class UserController {
     public ApiResponse<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO dto) {
         UserResponseDTO user = userService.createUser(dto);
         return new ApiResponse<>(true, "Usuario creado correctamente", user);
+    }
+
+    @PostMapping("/verify-email")
+    public ApiResponse<UserResponseDTO> verifyEmail(@Valid @RequestBody VerifyEmailRequestDTO dto) {
+        UserResponseDTO user = userService.verifyEmail(dto);
+        return new ApiResponse<>(true, "Correo verificado correctamente", user);
+    }
+
+    @PostMapping("/resend-code")
+    public ApiResponse<Void> resendCode(@RequestParam String email) {
+
+        userService.resendVerificationCode(email);
+
+        return new ApiResponse<>(
+                true,
+                "Código de verificación reenviado correctamente",
+                null
+        );
     }
 
     @GetMapping
