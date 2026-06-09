@@ -7,8 +7,11 @@ if (!API_URL) {
 export async function apiRequest(endpoint: string, options: RequestInit = {}) {
   const token = localStorage.getItem("token");
 
-  const isPublicEndpoint =
-  endpoint === "/api/users" || endpoint === "/api/auth/login";
+const isPublicEndpoint =
+  endpoint === "/api/users" ||
+  endpoint === "/api/auth/login" ||
+  endpoint === "/api/users/verify-email" ||
+  endpoint.startsWith("/api/users/resend-code");
 
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,

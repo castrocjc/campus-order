@@ -4,6 +4,7 @@ import com.campusorder.dto.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,4 +30,16 @@ public class GlobalExceptionHandler {
     public ApiResponse<String> handleBusinessException(BusinessException ex) {
         return new ApiResponse<>(false, ex.getMessage(), null);
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ResponseStatusException.class)
+    public ApiResponse<String> handleResponseStatusException(
+            ResponseStatusException ex) {
+
+        return new ApiResponse<>(
+                false,
+                ex.getReason(),
+                null
+        );
+    }    
 }
