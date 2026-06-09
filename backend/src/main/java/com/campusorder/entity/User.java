@@ -1,5 +1,6 @@
 package com.campusorder.entity;
 
+import java.time.LocalDateTime;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,4 +25,10 @@ public class User {
     private String role;
 
     private Boolean active = true;
+
+    private Boolean emailVerified = false;
+
+    private String verificationCode;
+
+    private LocalDateTime verificationCodeExpiresAt;    
 }

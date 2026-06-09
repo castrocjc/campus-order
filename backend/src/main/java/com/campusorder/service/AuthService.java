@@ -35,6 +35,18 @@ public class AuthService {
             throw new BusinessException("Credenciales inválidas");
         }
 
+        if (!Boolean.TRUE.equals(user.getEmailVerified())) {
+            throw new BusinessException(
+                    "Debes verificar tu correo institucional antes de iniciar sesión."
+            );
+        }
+
+        if (!Boolean.TRUE.equals(user.getActive())) {
+            throw new BusinessException(
+                    "Tu cuenta se encuentra inactiva."
+            );
+        }
+
         return new LoginResponseDTO(
                 jwtService.generateToken(user),
                 user.getId(),

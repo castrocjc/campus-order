@@ -35,6 +35,8 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/verify-email").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/resend-code").permitAll()
                         .requestMatchers("/api/products/menu").permitAll()
                         .requestMatchers("/api/products").permitAll()
                         .requestMatchers("/api/products/**").authenticated()
