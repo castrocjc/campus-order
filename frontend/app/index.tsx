@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { loginUser, saveAuthData } from "../src/services/authService";
+import { resendVerificationCode, verifyEmail } from "../src/services/userService";
 
 const logo = require("../assets/cofigo-logo.png");
 
@@ -24,6 +25,17 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [successMessage, setSuccessMessage] = useState("");
+  const [resendingCode, setResendingCode] = useState(false);
+
+  const [verificationCode, setVerificationCode] = useState("");
+  const [verifyingCode, setVerifyingCode] = useState(false);
+  const [showVerificationBox, setShowVerificationBox] = useState(false);  
+
+  const showResendCode =
+    errorMessage.toLowerCase().includes("verificar") ||
+    errorMessage.toLowerCase().includes("verificado");
+    
   const handleLogin = async () => {
     if (!email || !password) {
       setErrorMessage("Completa correo y contraseña.");
@@ -32,16 +44,75 @@ export default function HomeScreen() {
 
     try {
       setLoading(true);
+
       setErrorMessage("");
+      setSuccessMessage("");      
 
       const data = await loginUser({ email, password });
       saveAuthData(data);
 
       router.replace("/home");
     } catch (error: any) {
-      setErrorMessage(error.message || "No se pudo iniciar sesión.");
+        const message = error.message || "No se pudo iniciar sesión.";
+        setErrorMessage(message);
+
+        if (
+          message.toLowerCase().includes("verificar") ||
+          message.toLowerCase().includes("verificado")
+        ) {
+          setShowVerificationBox(true);
+        }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    if (!email) {
+      setErrorMessage("Ingresa tu correo para reenviar el código.");
+      return;
+    }
+
+    try {
+      setResendingCode(true);
+      setErrorMessage("");
+      setSuccessMessage("");
+
+      await resendVerificationCode(email.trim());
+
+      setShowVerificationBox(true);
+      setSuccessMessage("Código reenviado correctamente. Revisa tu correo.");
+
+    } catch (error: any) {
+      setErrorMessage(error.message || "No se pudo reenviar el código.");
+    } finally {
+      setResendingCode(false);
+    }
+  };
+
+  const handleVerifyEmail = async () => {
+    if (!email || !verificationCode) {
+      setErrorMessage("Ingresa tu correo y el código de verificación.");
+      return;
+    }
+
+    try {
+      setVerifyingCode(true);
+      setErrorMessage("");
+      setSuccessMessage("");
+
+      await verifyEmail({
+        email: email.trim(),
+        code: verificationCode.trim(),
+      });
+
+      setSuccessMessage("Correo verificado correctamente. Ahora puedes iniciar sesión.");
+      setShowVerificationBox(false);
+      setVerificationCode("");
+    } catch (error: any) {
+      setErrorMessage(error.message || "No se pudo verificar el correo.");
+    } finally {
+      setVerifyingCode(false);
     }
   };
 
@@ -95,6 +166,10 @@ export default function HomeScreen() {
                 <Text style={styles.errorMessage}>{errorMessage}</Text>
               ) : null}
 
+              {successMessage ? (
+                <Text style={styles.successMessage}>{successMessage}</Text>
+              ) : null}
+
               <TextInput
                 style={styles.input}
                 placeholder="Correo electrónico"
@@ -123,6 +198,40 @@ export default function HomeScreen() {
                   {loading ? "Ingresando..." : "Iniciar sesión"}
                 </Text>
               </TouchableOpacity>
+
+              {showVerificationBox || showResendCode ? (
+                <View style={styles.verificationBox}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Código de verificación"
+                    placeholderTextColor="#9b8b82"
+                    value={verificationCode}
+                    onChangeText={setVerificationCode}
+                    keyboardType="numeric"
+                    maxLength={6}
+                  />
+
+                  <TouchableOpacity
+                    style={[styles.primaryButton, verifyingCode && styles.disabledButton]}
+                    onPress={handleVerifyEmail}
+                    disabled={verifyingCode}
+                  >
+                    <Text style={styles.primaryButtonText}>
+                      {verifyingCode ? "Verificando..." : "Verificar correo"}
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.resendButton}
+                    onPress={handleResendCode}
+                    disabled={resendingCode}
+                  >
+                    <Text style={styles.resendButtonText}>
+                      {resendingCode ? "Reenviando código..." : "¿No recibiste el código? Reenviar código"}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              ) : null}
 
               <TouchableOpacity
                 style={styles.secondaryButton}
@@ -312,6 +421,16 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
+  successMessage: {
+    backgroundColor: "#e7f7ed",
+    color: "#157347",
+    padding: 12,
+    borderRadius: 12,
+    textAlign: "center",
+    fontWeight: "700",
+    marginBottom: 16,
+  },
+
   input: {
     borderWidth: 1,
     borderColor: "#ead8c8",
@@ -339,6 +458,23 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "800",
+  },
+
+  verificationBox: {
+    marginTop: 14,
+  },
+
+  resendButton: {
+    alignItems: "center",
+    marginTop: 12,
+    marginBottom: 2,
+  },
+
+  resendButtonText: {
+    color: "#f57c00",
+    fontSize: 14,
+    fontWeight: "800",
+    textAlign: "center",
   },
 
   secondaryButton: {
