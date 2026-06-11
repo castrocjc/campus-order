@@ -1,0 +1,93 @@
+===== FRONTEND FILES =====
+./.expo/devices.json
+./.expo/types/router.d.ts
+./.vscode/extensions.json
+./.vscode/settings.json
+./app.json
+./app/_layout.tsx
+./app/admin-orders.tsx
+./app/admin-products.tsx
+./app/home.tsx
+./app/index.tsx
+./app/modal.tsx
+./app/my-orders.tsx
+./app/register.tsx
+./components/external-link.tsx
+./components/haptic-tab.tsx
+./components/hello-wave.tsx
+./components/parallax-scroll-view.tsx
+./components/themed-text.tsx
+./components/themed-view.tsx
+./components/ui/collapsible.tsx
+./components/ui/icon-symbol.ios.tsx
+./components/ui/icon-symbol.tsx
+./constants/theme.ts
+./dist/_expo/.routes.json
+./expo-env.d.ts
+./hooks/use-color-scheme.ts
+./hooks/use-color-scheme.web.ts
+./hooks/use-theme-color.ts
+./package-lock.json
+./package.json
+./src/services/apiClient.ts
+./src/services/authService.ts
+./src/services/categoryService.ts
+./src/services/orderService.ts
+./src/services/productService.ts
+./src/services/userService.ts
+./tsconfig.json
+./vercel.json
+
+===== FRONTEND TREE =====
+.
+├── app
+│   ├── _layout.tsx
+│   ├── admin-orders.tsx
+│   ├── admin-products.tsx
+│   ├── home.tsx
+│   ├── index.tsx
+│   ├── modal.tsx
+│   ├── my-orders.tsx
+│   └── register.tsx
+├── app.json
+├── assets
+│   ├── cofigo-logo.png
+│   └── product-placeholder.png
+├── components
+│   ├── external-link.tsx
+│   ├── haptic-tab.tsx
+│   ├── hello-wave.tsx
+│   ├── parallax-scroll-view.tsx
+│   ├── themed-text.tsx
+│   ├── themed-view.tsx
+│   └── ui
+│       ├── collapsible.tsx
+│       ├── icon-symbol.ios.tsx
+│       └── icon-symbol.tsx
+├── constants
+│   └── theme.ts
+├── eslint.config.js
+├── expo-env.d.ts
+├── hooks
+│   ├── use-color-scheme.ts
+│   ├── use-color-scheme.web.ts
+│   └── use-theme-color.ts
+├── package-lock.json
+├── package.json
+├── project-docs
+│   └── frontend-inventory.txt
+├── README.md
+├── scripts
+│   └── reset-project.js
+├── src
+│   └── services
+│       ├── apiClient.ts
+│       ├── authService.ts
+│       ├── categoryService.ts
+│       ├── orderService.ts
+│       ├── productService.ts
+│       └── userService.ts
+├── tsconfig.json
+└── vercel.json
+
+11 directories, 39 files

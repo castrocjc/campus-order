@@ -10,8 +10,6 @@ export async function apiRequest(endpoint: string, options: RequestInit = {}) {
 const isPublicEndpoint =
   endpoint === "/api/users" ||
   endpoint === "/api/auth/login" ||
-  endpoint === "/api/auth/forgot-password" ||
-  endpoint === "/api/auth/reset-password" ||
   endpoint === "/api/users/verify-email" ||
   endpoint.startsWith("/api/users/resend-code");
 

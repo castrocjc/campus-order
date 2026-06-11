@@ -1,0 +1,117 @@
+===== JAVA FILES =====
+src/main/java/com/campusorder/BackendApplication.java
+src/main/java/com/campusorder/config/CorsConfig.java
+src/main/java/com/campusorder/config/SecurityConfig.java
+src/main/java/com/campusorder/controller/AuthController.java
+src/main/java/com/campusorder/controller/CategoryController.java
+src/main/java/com/campusorder/controller/OrderController.java
+src/main/java/com/campusorder/controller/ProductController.java
+src/main/java/com/campusorder/controller/UserController.java
+src/main/java/com/campusorder/dto/LoginRequestDTO.java
+src/main/java/com/campusorder/dto/LoginResponseDTO.java
+src/main/java/com/campusorder/dto/MenuResponseDTO.java
+src/main/java/com/campusorder/dto/OrderItemRequestDTO.java
+src/main/java/com/campusorder/dto/OrderItemResponseDTO.java
+src/main/java/com/campusorder/dto/OrderRequestDTO.java
+src/main/java/com/campusorder/dto/OrderResponseDTO.java
+src/main/java/com/campusorder/dto/ProductRequestDTO.java
+src/main/java/com/campusorder/dto/ProductResponseDTO.java
+src/main/java/com/campusorder/dto/response/ApiResponse.java
+src/main/java/com/campusorder/dto/UserRequestDTO.java
+src/main/java/com/campusorder/dto/UserResponseDTO.java
+src/main/java/com/campusorder/dto/VerifyEmailRequestDTO.java
+src/main/java/com/campusorder/entity/Category.java
+src/main/java/com/campusorder/entity/Order.java
+src/main/java/com/campusorder/entity/OrderItem.java
+src/main/java/com/campusorder/entity/Product.java
+src/main/java/com/campusorder/entity/User.java
+src/main/java/com/campusorder/enums/OrderStatus.java
+src/main/java/com/campusorder/exception/BusinessException.java
+src/main/java/com/campusorder/exception/GlobalExceptionHandler.java
+src/main/java/com/campusorder/repository/CategoryRepository.java
+src/main/java/com/campusorder/repository/OrderRepository.java
+src/main/java/com/campusorder/repository/ProductRepository.java
+src/main/java/com/campusorder/repository/UserRepository.java
+src/main/java/com/campusorder/security/JwtAuthenticationFilter.java
+src/main/java/com/campusorder/security/JwtService.java
+src/main/java/com/campusorder/service/AuthService.java
+src/main/java/com/campusorder/service/EmailService.java
+src/main/java/com/campusorder/service/OrderService.java
+src/main/java/com/campusorder/service/ProductService.java
+src/main/java/com/campusorder/service/UserService.java
+
+===== RESOURCES =====
+src/main/resources/.DS_Store
+src/main/resources/application-local.properties
+src/main/resources/application-prod.properties
+src/main/resources/application.properties
+src/main/resources/META-INF/additional-spring-configuration-metadata.json
+
+===== JAVA TREE =====
+src/main/java
+└── com
+    └── campusorder
+        ├── BackendApplication.java
+        ├── config
+        │   ├── CorsConfig.java
+        │   └── SecurityConfig.java
+        ├── controller
+        │   ├── AuthController.java
+        │   ├── CategoryController.java
+        │   ├── OrderController.java
+        │   ├── ProductController.java
+        │   └── UserController.java
+        ├── dto
+        │   ├── LoginRequestDTO.java
+        │   ├── LoginResponseDTO.java
+        │   ├── MenuResponseDTO.java
+        │   ├── OrderItemRequestDTO.java
+        │   ├── OrderItemResponseDTO.java
+        │   ├── OrderRequestDTO.java
+        │   ├── OrderResponseDTO.java
+        │   ├── ProductRequestDTO.java
+        │   ├── ProductResponseDTO.java
+        │   ├── response
+        │   │   └── ApiResponse.java
+        │   ├── UserRequestDTO.java
+        │   ├── UserResponseDTO.java
+        │   └── VerifyEmailRequestDTO.java
+        ├── entity
+        │   ├── Category.java
+        │   ├── Order.java
+        │   ├── OrderItem.java
+        │   ├── Product.java
+        │   └── User.java
+        ├── enums
+        │   └── OrderStatus.java
+        ├── exception
+        │   ├── BusinessException.java
+        │   └── GlobalExceptionHandler.java
+        ├── repository
+        │   ├── CategoryRepository.java
+        │   ├── OrderRepository.java
+        │   ├── ProductRepository.java
+        │   └── UserRepository.java
+        ├── security
+        │   ├── JwtAuthenticationFilter.java
+        │   └── JwtService.java
+        └── service
+            ├── AuthService.java
+            ├── EmailService.java
+            ├── OrderService.java
+            ├── ProductService.java
+            └── UserService.java
+
+13 directories, 40 files
+
+===== RESOURCES TREE =====
+src/main/resources
+├── application-local.properties
+├── application-prod.properties
+├── application.properties
+├── META-INF
+│   └── additional-spring-configuration-metadata.json
+├── static
+└── templates
+
+4 directories, 4 files

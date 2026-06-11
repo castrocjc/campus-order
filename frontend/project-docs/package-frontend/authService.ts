@@ -28,50 +28,6 @@ export async function loginUser({
   return result.data;
 }
 
-export async function forgotPassword(email: string) {
-  const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email }),
-  });
-
-  const result = await response.json();
-
-  if (!response.ok || result.success === false) {
-    throw new Error(result.message || "Error solicitando recuperación");
-  }
-
-  return result;
-}
-
-export async function resetPassword(
-  email: string,
-  code: string,
-  newPassword: string
-) {
-  const response = await fetch(`${API_URL}/api/auth/reset-password`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email,
-      code,
-      newPassword,
-    }),
-  });
-
-  const result = await response.json();
-
-  if (!response.ok || result.success === false) {
-    throw new Error(result.message || "Error actualizando contraseña");
-  }
-
-  return result;
-}
-
 export function saveAuthData(data: any) {
   localStorage.setItem("token", data.token);
 

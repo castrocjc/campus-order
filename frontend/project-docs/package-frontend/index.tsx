@@ -199,12 +199,6 @@ export default function HomeScreen() {
                 </Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => router.push("/forgot-password")}>
-                <Text style={styles.forgotPasswordText}>
-                  ¿Olvidaste tu contraseña?
-                </Text>
-              </TouchableOpacity>
-
               {showVerificationBox || showResendCode ? (
                 <View style={styles.verificationBox}>
                   <TextInput
@@ -464,15 +458,6 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "800",
-  },
-
-  forgotPasswordText: {
-    marginTop: 12,
-    marginBottom: 4,
-    color: "#f57c00",
-    fontSize: 14,
-    fontWeight: "800",
-    textAlign: "center",
   },
 
   verificationBox: {

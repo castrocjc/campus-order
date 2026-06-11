@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Stack, useRouter } from "expo-router";
+import { Stack, router } from "expo-router";
 import {
   Image,
   ScrollView,
@@ -10,109 +10,47 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { loginUser, saveAuthData } from "../src/services/authService";
-import { resendVerificationCode, verifyEmail } from "../src/services/userService";
+import { forgotPassword } from "../src/services/authService";
 
 const logo = require("../assets/cofigo-logo.png");
 
-export default function HomeScreen() {
-  const router = useRouter();
+export default function ForgotPasswordScreen() {
   const { width } = useWindowDimensions();
   const isMobile = width < 760;
 
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
   const [successMessage, setSuccessMessage] = useState("");
-  const [resendingCode, setResendingCode] = useState(false);
 
-  const [verificationCode, setVerificationCode] = useState("");
-  const [verifyingCode, setVerifyingCode] = useState(false);
-  const [showVerificationBox, setShowVerificationBox] = useState(false);  
-
-  const showResendCode =
-    errorMessage.toLowerCase().includes("verificar") ||
-    errorMessage.toLowerCase().includes("verificado");
-    
-  const handleLogin = async () => {
-    if (!email || !password) {
-      setErrorMessage("Completa correo y contraseña.");
+  const handleSendCode = async () => {
+    if (!email.trim()) {
+      setErrorMessage("Ingresa tu correo institucional.");
+      setSuccessMessage("");
       return;
     }
 
     try {
       setLoading(true);
-
       setErrorMessage("");
-      setSuccessMessage("");      
+      setSuccessMessage("");
 
-      const data = await loginUser({ email, password });
-      saveAuthData(data);
+      await forgotPassword(email.trim());
 
-      router.replace("/home");
+      setSuccessMessage(
+        "Si el correo existe, se ha enviado un código de recuperación."
+      );
+
+      setTimeout(() => {
+        router.push({
+        pathname: "/reset-password",
+        params: { email: email.trim() },
+        } as any);
+      }, 1200);
     } catch (error: any) {
-        const message = error.message || "No se pudo iniciar sesión.";
-        setErrorMessage(message);
-
-        if (
-          message.toLowerCase().includes("verificar") ||
-          message.toLowerCase().includes("verificado")
-        ) {
-          setShowVerificationBox(true);
-        }
+      setErrorMessage(error.message || "No fue posible enviar el código.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleResendCode = async () => {
-    if (!email) {
-      setErrorMessage("Ingresa tu correo para reenviar el código.");
-      return;
-    }
-
-    try {
-      setResendingCode(true);
-      setErrorMessage("");
-      setSuccessMessage("");
-
-      await resendVerificationCode(email.trim());
-
-      setShowVerificationBox(true);
-      setSuccessMessage("Código reenviado correctamente. Revisa tu correo.");
-
-    } catch (error: any) {
-      setErrorMessage(error.message || "No se pudo reenviar el código.");
-    } finally {
-      setResendingCode(false);
-    }
-  };
-
-  const handleVerifyEmail = async () => {
-    if (!email || !verificationCode) {
-      setErrorMessage("Ingresa tu correo y el código de verificación.");
-      return;
-    }
-
-    try {
-      setVerifyingCode(true);
-      setErrorMessage("");
-      setSuccessMessage("");
-
-      await verifyEmail({
-        email: email.trim(),
-        code: verificationCode.trim(),
-      });
-
-      setSuccessMessage("Correo verificado correctamente. Ahora puedes iniciar sesión.");
-      setShowVerificationBox(false);
-      setVerificationCode("");
-    } catch (error: any) {
-      setErrorMessage(error.message || "No se pudo verificar el correo.");
-    } finally {
-      setVerifyingCode(false);
     }
   };
 
@@ -144,12 +82,12 @@ export default function HomeScreen() {
             {!isMobile && (
               <>
                 <Text style={styles.title}>
-                  Pide tu comida universitaria sin hacer cola
+                  Recupera el acceso a tu cuenta
                 </Text>
 
                 <Text style={styles.description}>
-                  Consulta el menú, realiza tu pedido anticipado y recógelo en el
-                  horario que elijas.
+                  Te enviaremos un código de seguridad a tu correo institucional
+                  para que puedas crear una nueva contraseña.
                 </Text>
               </>
             )}
@@ -158,9 +96,11 @@ export default function HomeScreen() {
           <View style={[styles.loginArea, isMobile && styles.loginAreaMobile]}>
             <View style={[styles.card, isMobile && styles.cardMobile]}>
               <Text style={[styles.cardTitle, isMobile && styles.cardTitleMobile]}>
-                Bienvenido
+                Recuperar contraseña
               </Text>
-              <Text style={styles.cardSubtitle}>Ingresa para continuar</Text>
+              <Text style={styles.cardSubtitle}>
+                Ingresa tu correo institucional para recibir el código.
+              </Text>
 
               {errorMessage ? (
                 <Text style={styles.errorMessage}>{errorMessage}</Text>
@@ -172,7 +112,7 @@ export default function HomeScreen() {
 
               <TextInput
                 style={styles.input}
-                placeholder="Correo electrónico"
+                placeholder="Correo institucional"
                 placeholderTextColor="#9b8b82"
                 value={email}
                 onChangeText={setEmail}
@@ -180,70 +120,21 @@ export default function HomeScreen() {
                 keyboardType="email-address"
               />
 
-              <TextInput
-                style={styles.input}
-                placeholder="Contraseña"
-                placeholderTextColor="#9b8b82"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-              />
-
               <TouchableOpacity
                 style={[styles.primaryButton, loading && styles.disabledButton]}
-                onPress={handleLogin}
+                onPress={handleSendCode}
                 disabled={loading}
               >
                 <Text style={styles.primaryButtonText}>
-                  {loading ? "Ingresando..." : "Iniciar sesión"}
+                  {loading ? "Enviando..." : "Enviar código"}
                 </Text>
               </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => router.push("/forgot-password")}>
-                <Text style={styles.forgotPasswordText}>
-                  ¿Olvidaste tu contraseña?
-                </Text>
-              </TouchableOpacity>
-
-              {showVerificationBox || showResendCode ? (
-                <View style={styles.verificationBox}>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Código de verificación"
-                    placeholderTextColor="#9b8b82"
-                    value={verificationCode}
-                    onChangeText={setVerificationCode}
-                    keyboardType="numeric"
-                    maxLength={6}
-                  />
-
-                  <TouchableOpacity
-                    style={[styles.primaryButton, verifyingCode && styles.disabledButton]}
-                    onPress={handleVerifyEmail}
-                    disabled={verifyingCode}
-                  >
-                    <Text style={styles.primaryButtonText}>
-                      {verifyingCode ? "Verificando..." : "Verificar correo"}
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={styles.resendButton}
-                    onPress={handleResendCode}
-                    disabled={resendingCode}
-                  >
-                    <Text style={styles.resendButtonText}>
-                      {resendingCode ? "Reenviando código..." : "¿No recibiste el código? Reenviar código"}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              ) : null}
 
               <TouchableOpacity
                 style={styles.secondaryButton}
-                onPress={() => router.push("/register")}
+                onPress={() => router.replace("/")}
               >
-                <Text style={styles.secondaryButtonText}>Crear cuenta</Text>
+                <Text style={styles.secondaryButtonText}>Volver al login</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -464,32 +355,6 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "800",
-  },
-
-  forgotPasswordText: {
-    marginTop: 12,
-    marginBottom: 4,
-    color: "#f57c00",
-    fontSize: 14,
-    fontWeight: "800",
-    textAlign: "center",
-  },
-
-  verificationBox: {
-    marginTop: 14,
-  },
-
-  resendButton: {
-    alignItems: "center",
-    marginTop: 12,
-    marginBottom: 2,
-  },
-
-  resendButtonText: {
-    color: "#f57c00",
-    fontSize: 14,
-    fontWeight: "800",
-    textAlign: "center",
   },
 
   secondaryButton: {
