@@ -177,14 +177,23 @@ return (
 
             <View style={styles.itemsBox}>
               {item.items.map((prod: any) => (
-                <View key={prod.productId}>
-                  <Text style={styles.itemText}>
-                    {prod.productName} x{prod.quantity}
+              <View
+                key={`${prod.productId}-${prod.customizationNotes || ""}`}
+              >
+                <Text style={styles.itemText}>
+                  {prod.productName} x{prod.quantity}
+                </Text>
+
+                {prod.customizationNotes ? (
+                  <Text style={styles.customizationText}>
+                    Personalización: {prod.customizationNotes}
                   </Text>
-                  <Text style={styles.itemSub}>
-                    S/ {prod.subtotal}
-                  </Text>
-                </View>
+                ) : null}
+
+                <Text style={styles.itemSub}>
+                  S/ {prod.subtotal}
+                </Text>
+              </View>
               ))}
             </View>
 
@@ -352,5 +361,11 @@ const styles = StyleSheet.create({
   toastError: {
     backgroundColor: "#fdecea",
     color: "#b71c1c",
+  },
+  customizationText: {
+    fontSize: 12,
+    color: "#666",
+    fontStyle: "italic",
+    marginBottom: 4,
   },  
 });

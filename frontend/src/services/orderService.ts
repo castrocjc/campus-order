@@ -15,10 +15,11 @@ export async function createOrder(cart: any[], pickupTime: string) {
 
   const payload = {
     pickupTime: `${year}-${month}-${day}T${pickupTime}:00`,
-    items: cart.map((item) => ({
-      productId: item.id,
-      quantity: item.quantity,
-    })),
+      items: cart.map((item) => ({
+        productId: item.id,
+        quantity: item.quantity,
+        customizationNotes: item.customizationNotes || "",
+      })),
   };
 
   return await apiRequest("/api/orders", {

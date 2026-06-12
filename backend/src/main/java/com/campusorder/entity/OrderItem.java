@@ -11,20 +11,15 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderItem {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Long productId;
-
     private String productName;
-
     private Integer quantity;
-
     private BigDecimal unitPrice;
-
     private BigDecimal subtotal;
+    private String customizationNotes;
 
     @ManyToOne
     @JoinColumn(name = "order_id")

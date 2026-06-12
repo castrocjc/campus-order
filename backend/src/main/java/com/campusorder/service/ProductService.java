@@ -63,7 +63,8 @@ public class ProductService {
                 product.getImageUrl(),
                 product.getCategory().getId(),
                 product.getCategory().getName(),
-                product.getActive()
+                product.getActive(),
+                product.getCustomizable()
         );
         }
 

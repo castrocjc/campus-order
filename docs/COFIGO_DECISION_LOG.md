@@ -432,4 +432,74 @@ Esta mejora será considerada en una siguiente iteración y servirá como base p
 
 ---
 
+Fecha: 2026-06
+
+Título:
+Personalización simple de productos
+
+Estado:
+Aprobada
+
+Contexto:
+
+Se requiere permitir que determinados productos puedan ser personalizados por el usuario al momento de agregarlos al carrito.
+
+Ejemplos:
+
+* Sándwiches
+* Hamburguesas
+* Productos con salsas o extras
+
+Decisión:
+
+Implementar una personalización simple basada en texto libre almacenado en OrderItem.
+
+Se agregan los campos:
+
+Product:
+* customizable
+
+OrderItem:
+* customizationNotes
+
+La personalización se selecciona en frontend y se almacena como un snapshot histórico dentro del pedido.
+
+Ejemplo:
+
+Mayonesa
+Ketchup
+Mostaza
+
+Justificación:
+
+* Baja complejidad.
+* Compatible con la arquitectura MVP.
+* No requiere nuevas tablas.
+* Preserva el histórico de ventas.
+* Compatible con reportes futuros.
+
+Consecuencias:
+
+Positivas:
+
+* Implementación rápida.
+* Bajo impacto arquitectónico.
+* Compatible con pedidos históricos.
+
+Negativas:
+
+* Las opciones de personalización están definidas en código.
+* No existe administración dinámica.
+
+Evolución futura:
+
+Crear entidades:
+
+* ProductCustomizationGroup
+* ProductCustomizationOption
+
+para administración dinámica desde pantalla.
+
+---
+
 Fin del documento.

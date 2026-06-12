@@ -224,9 +224,19 @@ return (
 
             <View style={styles.itemsBox}>
               {item.items?.map((prod: any) => (
-                <Text key={prod.productId} style={styles.itemText}>
-                  {prod.productName} x{prod.quantity} - S/ {prod.subtotal}
-                </Text>
+                <View
+                  key={`${prod.productId}-${prod.customizationNotes || ""}`}
+                >
+                  <Text style={styles.itemText}>
+                    {prod.productName} x{prod.quantity} - S/ {prod.subtotal}
+                  </Text>
+
+                  {prod.customizationNotes ? (
+                    <Text style={styles.customizationText}>
+                      Personalización: {prod.customizationNotes}
+                    </Text>
+                  ) : null}
+                </View>
               ))}
             </View>
 
@@ -508,6 +518,13 @@ summaryChip: {
 
   filterTextActive: {
     color: "#fff",
+  },
+  
+  customizationText: {
+    fontSize: 12,
+    color: "#666",
+    fontStyle: "italic",
+    marginBottom: 6,
   },
 
 });

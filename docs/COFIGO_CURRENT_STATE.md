@@ -63,6 +63,24 @@ Funcionalidades:
 * Gestión de stock
 * Gestión de imágenes
 * Asociación a categoría
+* Productos personalizables
+
+---
+
+## Personalización de Productos
+
+Estado:
+
+🟢 Completo
+
+Funcionalidades:
+
+* Productos configurables mediante flag customizable
+* Selección de salsas
+* Persistencia histórica en OrderItem
+* Visualización en carrito
+* Visualización en Mis Pedidos
+* Visualización en Administración de Pedidos
 
 ---
 

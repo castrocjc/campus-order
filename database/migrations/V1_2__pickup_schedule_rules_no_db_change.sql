@@ -1,0 +1,3 @@
+-- V1.2 - Pickup schedule rules
+-- No requiere cambios de base de datos.
+-- Las reglas fueron implementadas en frontend y backend.

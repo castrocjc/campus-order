@@ -8,6 +8,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Modal,
 } from "react-native";
 import { getToken, logout } from "../src/services/authService";
 import { getMenu } from "../src/services/productService";
@@ -41,6 +42,10 @@ export default function HomeScreen() {
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<"success" | "error">("success");
+
+  const [showCustomizationModal, setShowCustomizationModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedSauces, setSelectedSauces] = useState<string[]>([]);  
 
   const [cart, setCart] = useState<any[]>(() => {
     const savedCart = localStorage.getItem("cart");
@@ -137,9 +142,39 @@ export default function HomeScreen() {
     }, 1200);
   };
 
-  const addToCart = (product: any) => {
+  const openCustomizationModal = (product: any) => {
+    setSelectedProduct(product);
+    setSelectedSauces([]);
+    setShowCustomizationModal(true);
+  };
+
+  const confirmCustomization = () => {
+    if (!selectedProduct) {
+      return;
+    }
+
+    const customizationNotes = selectedSauces.join(", ");
+
+    addToCartDirect(
+      selectedProduct,
+      customizationNotes
+    );
+
+    setShowCustomizationModal(false);
+    setSelectedProduct(null);
+    setSelectedSauces([]);
+  };
+
+  const addToCartDirect = (
+    product: any,
+    customizationNotes: string = ""
+  ) => {    
     setCart((currentCart) => {
-      const existing = currentCart.find((i) => i.id === product.id);
+      const existing = currentCart.find(
+        (i) =>
+          i.id === product.id &&
+          (i.customizationNotes || "") === customizationNotes
+      );
 
       if (existing && existing.quantity >= product.stock) {
         showMessage("No hay más stock disponible", "error");
@@ -157,12 +192,40 @@ export default function HomeScreen() {
 
       if (existing) {
         return currentCart.map((i) =>
-          i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.id === product.id &&
+          (i.customizationNotes || "") === customizationNotes ? { ...i, quantity: i.quantity + 1 } : i
         );
       }
 
-      return [...currentCart, { ...product, quantity: 1 }];
+      return [
+        ...currentCart,
+        {
+          ...product,
+          quantity: 1,
+          customizationNotes,
+        },
+      ];
     });
+  };
+
+const addToCart = (product: any) => {
+  console.log("PRODUCTO SELECCIONADO:", product);
+  console.log("CUSTOMIZABLE:", product.customizable);
+
+  if (product.customizable) {
+    openCustomizationModal(product);
+    return;
+  }
+
+  addToCartDirect(product);
+};
+
+  const toggleSauce = (sauce: string) => {
+    setSelectedSauces((current) =>
+      current.includes(sauce)
+        ? current.filter((s) => s !== sauce)
+        : [...current, sauce]
+    );
   };
 
   const decreaseQuantity = (productId: number) => {
@@ -177,8 +240,19 @@ export default function HomeScreen() {
     );
   };
 
-  const removeFromCart = (productId: number) => {
-    setCart((currentCart) => currentCart.filter((item) => item.id !== productId));
+  const removeFromCart = (
+    productId: number,
+    customizationNotes: string = ""
+  ) => {
+    setCart((currentCart) =>
+      currentCart.filter(
+        (item) =>
+          !(
+            item.id === productId &&
+            (item.customizationNotes || "") === customizationNotes
+          )
+      )
+    );
   };
 
   const handleCreateOrder = async () => {
@@ -410,9 +484,21 @@ export default function HomeScreen() {
                   showsVerticalScrollIndicator={false}
                 >
                   {cart.map((item) => (
-                    <View key={item.id} style={styles.cartItem}>
+                    <View
+                      key={`${item.id}-${item.customizationNotes || ""}`}
+                      style={styles.cartItem}
+                    >
                       <View style={styles.cartItemInfo}>
-                        <Text style={styles.cartItemName}>{item.name}</Text>
+                        <Text style={styles.cartItemName}>
+                          {item.name}
+                        </Text>
+
+                        {item.customizationNotes ? (
+                          <Text style={styles.customizationText}>
+                            Personalización: {item.customizationNotes}
+                          </Text>
+                        ) : null}
+
                         <Text style={styles.cartItemPrice}>
                           S/ {(item.price * item.quantity).toFixed(2)}
                         </Text>
@@ -441,7 +527,12 @@ export default function HomeScreen() {
 
                         <TouchableOpacity
                           style={styles.removeButton}
-                          onPress={() => removeFromCart(item.id)}
+                            onPress={() =>
+                              removeFromCart(
+                                item.id,
+                                item.customizationNotes || ""
+                              )
+                            }
                         >
                           <Text style={styles.removeButtonText}>x</Text>
                         </TouchableOpacity>
@@ -486,6 +577,65 @@ export default function HomeScreen() {
           </View>
         </View>
       </View>
+
+      <Modal
+        visible={showCustomizationModal}
+        transparent
+        animationType="fade"
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>
+              Personaliza tu producto
+            </Text>
+
+            <Text style={styles.modalSubtitle}>
+              Selecciona las salsas
+            </Text>
+
+            {["Mayonesa", "Ketchup", "Mostaza"].map((sauce) => (
+              <TouchableOpacity
+                key={sauce}
+                style={styles.sauceOption}
+                onPress={() => toggleSauce(sauce)}
+              >
+                <Text style={styles.sauceCheckbox}>
+                  {selectedSauces.includes(sauce)
+                    ? "☑"
+                    : "☐"}
+                </Text>
+
+                <Text style={styles.sauceText}>
+                  {sauce}
+                </Text>
+              </TouchableOpacity>
+            ))}
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() =>
+                  setShowCustomizationModal(false)
+                }
+              >
+                <Text style={styles.buttonText}>
+                  Cancelar
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={confirmCustomization}
+              >
+                <Text style={styles.buttonText}>
+                  Agregar
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
     </>
   );
 }
@@ -861,4 +1011,76 @@ const styles = StyleSheet.create({
     backgroundColor: "#fdecea",
     color: "#b71c1c",
   },
+
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+
+  modalContainer: {
+    width: "85%",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+  },
+
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+
+  modalSubtitle: {
+    fontSize: 16,
+    marginBottom: 15,
+  },
+
+  sauceOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+
+  sauceCheckbox: {
+    fontSize: 22,
+    marginRight: 10,
+  },
+
+  sauceText: {
+    fontSize: 16,
+  },
+
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+  },
+
+  cancelButton: {
+    backgroundColor: "#888",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+
+  confirmButton: {
+    backgroundColor: "#2E7D32",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+
+  customizationText: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 4,
+    fontStyle: "italic",
+  },  
 });

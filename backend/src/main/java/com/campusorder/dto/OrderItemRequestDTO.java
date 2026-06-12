@@ -6,11 +6,10 @@ import lombok.Data;
 
 @Data
 public class OrderItemRequestDTO {
-
     @NotNull
     private Long productId;
-
     @NotNull
     @Min(1)
     private Integer quantity;
+    private String customizationNotes;
 }

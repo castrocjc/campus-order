@@ -138,17 +138,19 @@ JwtService
 
 ## User
 
-| Campo                     | Tipo          |
-| ------------------------- | ------------- |
-| id                        | Long          |
-| name                      | String        |
-| email                     | String        |
-| password                  | String        |
-| role                      | String        |
-| active                    | Boolean       |
-| emailVerified             | Boolean       |
-| verificationCode          | String        |
-| verificationCodeExpiresAt | LocalDateTime |
+| Campo                      | Tipo          |
+| -------------------------  | ------------- |
+| id                         | Long          |
+| name                       | String        |
+| email                      | String        |
+| password                   | String        |
+| role                       | String        |
+| active                     | Boolean       |
+| emailVerified              | Boolean       |
+| verificationCode           | String        |
+| verificationCodeExpiresAt  | LocalDateTime |
+| passwordResetCode          | String        |
+| passwordResetCodeExpiresAt | LocalDateTime |
 
 ---
 
@@ -165,16 +167,17 @@ JwtService
 
 ## Product
 
-| Campo       | Tipo       |
-| ----------- | ---------- |
-| id          | Long       |
-| name        | String     |
-| description | String     |
-| price       | BigDecimal |
-| stock       | Integer    |
-| imageUrl    | String     |
-| active      | Boolean    |
-| categoryId  | Long       |
+| Campo        | Tipo       |
+| -----------  | ---------- |
+| id           | Long       |
+| name         | String     |
+| description  | String     |
+| price        | BigDecimal |
+| stock        | Integer    |
+| imageUrl     | String     |
+| active       | Boolean    |
+| categoryId   | Long       |
+| customizable | Boolean    |
 
 ### Relación
 
@@ -206,15 +209,16 @@ Order 1 : N OrderItem
 
 ## OrderItem
 
-| Campo       | Tipo       |
-| ----------- | ---------- |
-| id          | Long       |
-| productId   | Long       |
-| productName | String     |
-| quantity    | Integer    |
-| unitPrice   | BigDecimal |
-| subtotal    | BigDecimal |
-| orderId     | Long       |
+| Campo              | Tipo       |
+| -----------        | ---------- |
+| id                 | Long       |
+| productId          | Long       |
+| productName        | String     |
+| quantity           | Integer    |
+| unitPrice          | BigDecimal |
+| subtotal           | BigDecimal |
+| orderId            | Long       |
+| customizationNotes | String     |
 
 ---
 
@@ -258,6 +262,8 @@ Funcionalidades:
 
 * Verificación de correo
 * Reenvío de código
+* Recuperación de contraseña
+* Reenvío de código de recuperación
 
 ---
 
@@ -267,6 +273,10 @@ Funcionalidades:
 
 ```http
 POST /api/auth/login
+
+POST /api/auth/forgot-password
+
+POST /api/auth/reset-password
 ```
 
 ---
@@ -352,6 +362,7 @@ GET /api/orders/reports/sales-by-day
 | Pedidos                | Completo |
 | Gestión Pedidos        | Completo |
 | Reporte Ventas por Día | Parcial  |
+| Recuperar Contraseña   | Completo |
 
 ---
 
@@ -362,7 +373,6 @@ GET /api/orders/reports/sales-by-day
 * Dashboard Administrativo
 * Gestión de Categorías
 * Reportes Frontend
-* Recuperar Contraseña
 
 ## Prioridad Media
 
@@ -452,6 +462,28 @@ Actualmente no existe relación JPA directa con User.
 El carrito se almacena únicamente en frontend.
 
 No persiste entre sesiones.
+
+# Reglas Operativas de Pedidos
+
+Horario de atención:
+
+07:00 - 21:00
+
+Tiempo mínimo de preparación:
+
+20 minutos
+
+Intervalo de recojo:
+
+30 minutos
+
+Validaciones implementadas:
+
+* No se permiten horarios pasados.
+* No se permiten horarios fuera del horario de atención.
+* Debe existir al menos 20 minutos de preparación.
+* El frontend genera dinámicamente los horarios válidos.
+* El backend valida nuevamente la hora seleccionada.
 
 ---
 

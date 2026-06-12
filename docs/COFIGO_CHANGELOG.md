@@ -443,4 +443,123 @@ Nuevas columnas:
 
 ---
 
+# v1.2 - Validación de Horarios de Pedido
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Restricciones de horario de recojo
+
+Se implementó validación integral para la selección de horarios de recojo.
+
+Incluye:
+
+* Horario de atención configurable en código.
+* Tiempo mínimo de preparación.
+* Generación dinámica de horarios disponibles.
+* Bloqueo de horarios vencidos.
+* Validación frontend.
+* Validación backend.
+
+Parámetros actuales:
+
+* Apertura: 07:00
+* Cierre: 21:00
+* Preparación mínima: 20 minutos
+* Intervalo de recojo: 30 minutos
+
+## Backend
+
+Archivos modificados:
+
+* OrderService.java
+
+## Frontend
+
+Archivos modificados:
+
+* home.tsx
+* orderService.ts
+
+## Validaciones realizadas
+
+* Pedido dentro del horario permitido.
+* Pedido fuera de horario.
+* Pedido con tiempo insuficiente de preparación.
+* Validación mediante cambio manual de hora del equipo.
+* Validación en frontend y backend.
+
+Impacto:
+
+Se evita la creación de pedidos inválidos y se mejora la experiencia operativa de la cafetería.
+
+---
+
+# v1.3 - Product Customization
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Personalización de Productos
+
+Se implementó personalización básica de productos mediante selección de salsas.
+
+Incluye:
+
+* Modal de personalización.
+* Soporte para productos configurables.
+* Persistencia de personalización en pedidos.
+* Visualización en carrito.
+* Visualización en Mis Pedidos.
+* Visualización en Administración de Pedidos.
+
+Backend:
+
+Archivos modificados:
+
+* Product.java
+* OrderItem.java
+* OrderItemRequestDTO.java
+* OrderItemResponseDTO.java
+* OrderService.java
+* ProductResponseDTO.java
+* ProductService.java
+
+Frontend:
+
+Archivos modificados:
+
+* home.tsx
+* orderService.ts
+* my-orders.tsx
+* admin-orders.tsx
+
+Base de datos:
+
+Migración:
+
+* V1_3__product_customization.sql
+
+Nuevas columnas:
+
+products:
+* customizable
+
+order_items:
+* customization_notes
+
+Validaciones realizadas:
+
+* Producto personalizable.
+* Producto no personalizable.
+* Dos personalizaciones distintas.
+* Eliminación independiente en carrito.
+* Persistencia en base de datos.
+* Visualización en pedidos.
+* Visualización administrativa.
+
+---
+
 Fin del documento.

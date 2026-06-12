@@ -18,4 +18,5 @@ public class ProductResponseDTO {
     private Long categoryId;
     private String categoryName;
     private Boolean active;
+    private Boolean customizable;
 }

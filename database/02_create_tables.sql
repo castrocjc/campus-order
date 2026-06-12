@@ -13,7 +13,9 @@ CREATE TABLE users (
     active BOOLEAN NOT NULL DEFAULT TRUE,
     email_verified BOOLEAN NOT NULL DEFAULT FALSE,
     verification_code VARCHAR(100),
-    verification_code_expires_at DATETIME
+    verification_code_expires_at DATETIME,
+    password_reset_code VARCHAR(100),
+    password_reset_code_expires_at DATETIME
 );
 
 -- ==========================
@@ -40,6 +42,8 @@ CREATE TABLE products (
     stock INT NOT NULL DEFAULT 0,
     image_url VARCHAR(1000),
     active BOOLEAN NOT NULL DEFAULT TRUE,
+    customizable BOOLEAN NOT NULL DEFAULT FALSE,
+    category_id BIGINT,
     category_id BIGINT,
     CONSTRAINT FK_PRODUCT_CATEGORY
         FOREIGN KEY (category_id)
@@ -72,6 +76,7 @@ CREATE TABLE order_items (
     quantity INT NOT NULL,
     unit_price DECIMAL(10,2),
     subtotal DECIMAL(10,2),
+    customization_notes VARCHAR(500),
     order_id BIGINT NOT NULL,
     CONSTRAINT FK_ORDERITEM_ORDER
         FOREIGN KEY (order_id)
