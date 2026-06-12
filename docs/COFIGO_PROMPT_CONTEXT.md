@@ -126,6 +126,16 @@ Funcionalidades:
 * Consultar pedidos
 * Cancelar pedido
 * Gestión de estados
+* Selección dinámica de hora de recojo
+* Validación de horario de atención
+* Validación de tiempo mínimo de preparación
+
+Reglas actuales de horario:
+
+* Horario de atención: 07:00 a 21:00
+* Tiempo mínimo de preparación: 20 minutos
+* Intervalo de recojo: 30 minutos
+* Configuración centralizada en código para el MVP
 
 Estados:
 
@@ -173,6 +183,7 @@ Prioridad Alta:
 
 Prioridad Media:
 
+* Gestión de Configuración de Cafetería
 * Perfil de Usuario
 * Auditoría
 * Notificaciones

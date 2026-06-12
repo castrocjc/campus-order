@@ -112,6 +112,17 @@ Funcionalidades:
 * Consultar pedidos propios
 * Cancelar pedido
 * Actualización automática
+* Selección dinámica de hora de recojo
+* Bloqueo de horarios vencidos
+* Validación de horario de atención de cafetería
+* Validación de tiempo mínimo de preparación
+
+Reglas actuales de horario:
+
+* Horario de atención: 07:00 a 21:00
+* Tiempo mínimo de preparación: 20 minutos
+* Intervalo de recojo: 30 minutos
+* Los parámetros se encuentran centralizados en código como solución MVP
 
 Estados soportados:
 
@@ -254,6 +265,22 @@ Estado:
 
 ---
 
+## Configuración de Cafetería
+
+Estado:
+
+🔴 Pendiente
+
+Descripción:
+
+Funcionalidad futura para administrar desde pantalla los parámetros operativos de la cafetería, como hora de apertura, hora de cierre, tiempo mínimo de preparación e intervalo de recojo.
+
+Objetivo:
+
+Evitar modificar código cuando cambien los horarios de atención o reglas operativas.
+
+---
+
 # Problemas Conocidos
 
 ## JWT Secret
@@ -310,6 +337,10 @@ Prioridad Alta:
 2. Gestión de Categorías
 3. Reportes Frontend
 
+Prioridad Media Alta:
+
+1. Gestión de Configuración de Cafetería
+
 ---
 
 # Última Validación Funcional
@@ -325,6 +356,8 @@ Validaciones realizadas:
 * Login
 * Gestión de productos
 * Gestión de pedidos
+* Validación de horarios de recojo
+* Bloqueo de pedidos fuera de horario
 * Despliegue en Railway
 * Despliegue en Vercel
 

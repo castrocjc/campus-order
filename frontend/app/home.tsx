@@ -15,6 +15,12 @@ import { createOrder } from "../src/services/orderService";
 
 const productPlaceholder = require("../assets/product-placeholder.png");
 
+const CAFETERIA_OPEN_HOUR = 7;
+const CAFETERIA_CLOSE_HOUR = 21;
+
+const PICKUP_INTERVAL_MINUTES = 30;
+const MIN_PREPARATION_MINUTES = 20;
+
 const getProductImageSource = (product: any) => {
   const imageUrl = product?.imageUrl || product?.image_url;
 
@@ -48,16 +54,40 @@ export default function HomeScreen() {
       ? products
       : products.filter((item) => item.category === selectedCategory);
 
-  const pickupOptions = [
-    "11:30",
-    "12:00",
-    "12:30",
-    "13:00",
-    "13:30",
-    "14:00",
-    "14:30",
-    "15:00",
-  ];
+  const generatePickupOptions = () => {
+    const options: string[] = [];
+
+    const now = new Date();
+
+    const minimumTime = new Date(
+      now.getTime() + MIN_PREPARATION_MINUTES * 60000
+    );
+
+    for (
+      let hour = CAFETERIA_OPEN_HOUR;
+      hour <= CAFETERIA_CLOSE_HOUR;
+      hour++
+    ) {
+      for (const minute of [0, 30]) {
+        const slot = new Date();
+
+        slot.setHours(hour);
+        slot.setMinutes(minute);
+        slot.setSeconds(0);
+        slot.setMilliseconds(0);
+
+        if (slot >= minimumTime) {
+          options.push(
+            `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
+          );
+        }
+      }
+    }
+
+    return options;
+  };
+
+  const pickupOptions = generatePickupOptions();
 
   useEffect(() => {
     const token = getToken();
@@ -157,8 +187,21 @@ export default function HomeScreen() {
       return;
     }
 
+  if (pickupOptions.length === 0) {
+    showMessage("No hay horarios disponibles para hoy", "error");
+    return;
+  }
+
     if (!pickupTime) {
       showMessage("Selecciona una hora de recojo", "error");
+      return;
+    }
+
+    if (!pickupOptions.includes(pickupTime)) {
+      showMessage(
+        "La hora seleccionada ya no está disponible",
+        "error"
+      );
       return;
     }
 
@@ -299,13 +342,18 @@ export default function HomeScreen() {
                           <TouchableOpacity
                             style={[
                               styles.addButton,
-                              product.stock === 0 && styles.disabledButton,
+                              (product.stock === 0 || pickupOptions.length === 0) &&
+                                styles.disabledButton,
                             ]}
                             onPress={() => addToCart(product)}
-                            disabled={product.stock === 0}
+                            disabled={product.stock === 0 || pickupOptions.length === 0}
                           >
                             <Text style={styles.addButtonText}>
-                              {product.stock === 0 ? "Sin stock" : "+ Agregar"}
+                              {product.stock === 0
+                                ? "Sin stock"
+                                : pickupOptions.length === 0
+                                ? "Fuera de horario"
+                                : "+ Agregar"}
                             </Text>
                           </TouchableOpacity>
                         </View>
@@ -326,26 +374,32 @@ export default function HomeScreen() {
                 <Text style={styles.pickupTitle}>Hora de recojo</Text>
 
                 <View style={styles.pickupOptions}>
-                  {pickupOptions.map((time) => (
-                    <TouchableOpacity
-                      key={time}
-                      style={[
-                        styles.pickupButton,
-                        pickupTime === time && styles.pickupButtonActive,
-                      ]}
-                      onPress={() => setPickupTime(time)}
-                    >
-                      <Text
+                  {pickupOptions.length === 0 ? (
+                    <Text style={styles.noPickupOptions}>
+                      No hay horarios disponibles para hoy
+                    </Text>
+                  ) : (
+                    pickupOptions.map((time) => (
+                      <TouchableOpacity
+                        key={time}
                         style={[
-                          styles.pickupButtonText,
-                          pickupTime === time && styles.pickupButtonTextActive,
+                          styles.pickupButton,
+                          pickupTime === time && styles.pickupButtonActive,
                         ]}
+                        onPress={() => setPickupTime(time)}
                       >
-                        {time}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+                        <Text
+                          style={[
+                            styles.pickupButtonText,
+                            pickupTime === time && styles.pickupButtonTextActive,
+                          ]}
+                        >
+                          {time}
+                        </Text>
+                      </TouchableOpacity>
+                    ))
+                  )}
+                </View>                
               </View>
 
               {cart.length === 0 ? (
@@ -375,8 +429,12 @@ export default function HomeScreen() {
                         <Text style={styles.quantityText}>{item.quantity}</Text>
 
                         <TouchableOpacity
-                          style={styles.quantityButton}
+                          style={[
+                            styles.quantityButton,
+                            pickupOptions.length === 0 && styles.disabledButton,
+                          ]}
                           onPress={() => addToCart(item)}
+                          disabled={pickupOptions.length === 0}
                         >
                           <Text style={styles.quantityButtonText}>+</Text>
                         </TouchableOpacity>
@@ -406,7 +464,15 @@ export default function HomeScreen() {
             </View>
 
             <View style={styles.sideActions}>
-              <TouchableOpacity style={styles.mainButton} onPress={handleCreateOrder}>
+              <TouchableOpacity
+                style={[
+                  styles.mainButton,
+                  (cart.length === 0 || pickupOptions.length === 0) &&
+                    styles.mainButtonDisabled,
+                ]}
+                onPress={handleCreateOrder}
+                disabled={cart.length === 0 || pickupOptions.length === 0}
+              >
                 <Text style={styles.mainButtonText}>Realizar pedido</Text>
               </TouchableOpacity>
 
@@ -663,6 +729,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginTop: 8,
   },
+  noPickupOptions: {
+    color: "#b42318",
+    fontWeight: "800",
+    marginTop: 4,
+  },  
   cartItemsScroll: {
     maxHeight: 250,
     marginTop: 6,
@@ -759,6 +830,9 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
   },
+  mainButtonDisabled: {
+    opacity: 0.5,
+  },  
   mainButtonText: {
     color: "#fff",
     textAlign: "center",

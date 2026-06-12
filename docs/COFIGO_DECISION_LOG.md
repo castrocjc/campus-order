@@ -360,4 +360,76 @@ El código expira en 10 minutos. Después de cambiar la contraseña, el código 
 
 ---
 
+# DEC-010
+
+Fecha: 2026-06
+
+Título:
+Parámetros de horario de atención y preparación para pedidos
+
+Estado:
+Aprobada
+
+Contexto:
+
+La funcionalidad de registro de pedidos permitía seleccionar horarios de recojo sin considerar la hora actual, el horario de atención de la cafetería ni el tiempo mínimo requerido para preparar un pedido.
+
+Decisión:
+
+Implementar reglas de horario para la creación de pedidos.
+
+Parámetros actuales:
+
+* Horario de atención: 07:00 a 21:00
+* Tiempo mínimo de preparación: 20 minutos
+* Intervalo de recojo: 30 minutos
+
+Para el MVP, estos parámetros quedan centralizados en código en frontend y backend.
+
+El frontend genera dinámicamente los horarios disponibles y bloquea la selección cuando no existen horarios válidos para el día.
+
+El backend valida nuevamente la hora de recojo antes de crear el pedido, actuando como fuente de verdad de la regla de negocio.
+
+Justificación:
+
+* Evitar pedidos con horarios anteriores a la hora actual.
+* Evitar pedidos fuera del horario de atención.
+* Considerar el tiempo mínimo de preparación.
+* Mejorar la experiencia de usuario.
+* Proteger el endpoint ante llamadas directas desde herramientas externas como Postman.
+* Mantener baja complejidad para el MVP.
+
+Consecuencias:
+
+Positivas:
+
+* Mayor consistencia funcional.
+* Mejor control operativo.
+* Validación en doble capa: frontend y backend.
+* Sin cambios de base de datos en esta iteración.
+
+Negativas:
+
+* Cambios de horario requieren modificación de código y despliegue.
+* La configuración aún no puede ser administrada desde una pantalla.
+
+Evolución futura:
+
+Crear una entidad o tabla de configuración de cafetería, por ejemplo `CafeteriaSettings`, para administrar desde una pantalla los parámetros de operación.
+
+Campos sugeridos:
+
+* id
+* openTime
+* closeTime
+* pickupIntervalMinutes
+* minPreparationMinutes
+* active
+* createdAt
+* updatedAt
+
+Esta mejora será considerada en una siguiente iteración y servirá como base para Multi Cafetería, horarios especiales y administración operativa sin despliegues.
+
+---
+
 Fin del documento.

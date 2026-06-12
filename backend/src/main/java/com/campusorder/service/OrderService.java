@@ -17,9 +17,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Service
 public class OrderService {
+
+    private static final LocalTime CAFETERIA_OPEN_TIME =
+            LocalTime.of(7, 0);
+
+    private static final LocalTime CAFETERIA_CLOSE_TIME =
+            LocalTime.of(21, 0);
+
+    private static final int MIN_PREPARATION_MINUTES = 20;
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
@@ -31,6 +41,8 @@ public class OrderService {
     }
 
     public OrderResponseDTO createOrder(OrderRequestDTO dto) {
+
+        validatePickupTime(dto.getPickupTime());
 
         Order order = new Order();
 
@@ -155,5 +167,28 @@ public class OrderService {
                         "total", row[1]
                 ))
                 .toList();
+    }
+
+    private void validatePickupTime(LocalDateTime pickupTime) {
+
+        LocalDateTime minimumAllowed =
+                LocalDateTime.now()
+                        .plusMinutes(MIN_PREPARATION_MINUTES);
+
+        if (pickupTime.isBefore(minimumAllowed)) {
+            throw new BusinessException(
+                    "La hora de recojo debe ser al menos "
+                            + MIN_PREPARATION_MINUTES
+                            + " minutos posterior a la hora actual");
+        }
+
+        LocalTime requestedTime = pickupTime.toLocalTime();
+
+        if (requestedTime.isBefore(CAFETERIA_OPEN_TIME)
+                || requestedTime.isAfter(CAFETERIA_CLOSE_TIME)) {
+
+            throw new BusinessException(
+                    "La hora de recojo está fuera del horario de atención");
+        }
     }    
 }
