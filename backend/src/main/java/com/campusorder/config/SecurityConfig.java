@@ -39,6 +39,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/verify-email").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/resend-code").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .requestMatchers("/api/products/menu").permitAll()
                         .requestMatchers("/api/products").permitAll()
                         .requestMatchers("/api/products/**").authenticated()

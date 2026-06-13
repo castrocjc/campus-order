@@ -21,15 +21,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
 
     public JwtAuthenticationFilter(JwtService jwtService,
-                                   UserRepository userRepository) {
+            UserRepository userRepository) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+            HttpServletResponse response,
+            FilterChain filterChain)
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
@@ -45,16 +45,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             userRepository.findByEmail(email).ifPresent(user -> {
                 if (jwtService.isTokenValid(token)) {
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    user,
-                                    null,
-                                    List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
-                            );
+
+                    System.out.println("=================================");
+                    System.out.println("EMAIL: " + user.getEmail());
+                    System.out.println("ROLE BD: " + user.getRole());
+                    System.out.println("AUTHORITY: ROLE_" + user.getRole());
+                    System.out.println("=================================");
+
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            user,
+                            null,
+                            List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole())));
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             });
+        }
+
+        System.out.println("REQUEST URI: " + request.getRequestURI());
+
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            System.out.println(
+                "AUTH USER: " +
+                SecurityContextHolder.getContext().getAuthentication().getName()
+            );
+
+            System.out.println(
+                "AUTHORITIES: " +
+                SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+            );
         }
 
         filterChain.doFilter(request, response);

@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.4
+v1.5
 
 Estado:
 
@@ -45,6 +45,30 @@ Funcionalidades:
 * Verificación de correo electrónico
 * Reenvío de código de verificación
 * Logout
+
+---
+
+
+## Gestión de Usuarios
+
+Estado:
+
+🟢 Completo
+
+Funcionalidades:
+
+* Consulta de usuarios.
+* Creación de usuarios administrativos.
+* Edición de usuarios.
+* Activación y desactivación.
+* Reseteo de contraseña.
+* Gestión de roles.
+
+Roles soportados:
+
+* ADMIN
+* WORKER
+* USER
 
 ---
 
@@ -353,9 +377,10 @@ Las siguientes funcionalidades se consideran estables y no deben modificarse sin
 
 Prioridad Alta:
 
-1. Dashboard Administrativo
-2. Gestión de Categorías
+1. Gestión de Categorías
+2. Dashboard Administrativo
 3. Reportes Frontend
+4. Gestión de Configuración de Cafetería
 
 Prioridad Media Alta:
 

@@ -566,3 +566,38 @@ Esto permitirá manejar configuraciones diferentes por producto, por ejemplo sal
 ---
 
 Fin del documento.
+
+
+---
+
+# DEC-013
+
+Fecha: 2026-06
+
+Título:
+Gestión administrativa de usuarios y nuevo rol WORKER
+
+Estado:
+Aprobada
+
+Decisión:
+
+Implementar un módulo de gestión de usuarios y crear el rol WORKER.
+
+Roles oficiales:
+
+* ADMIN
+* WORKER
+* USER
+
+Capacidades:
+
+* Crear usuarios.
+* Editar usuarios.
+* Activar y desactivar usuarios.
+* Resetear contraseñas.
+
+Evolución futura:
+
+* Evitar que un administrador se desactive a sí mismo.
+* Evitar eliminar el último administrador activo.

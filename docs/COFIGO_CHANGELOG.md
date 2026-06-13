@@ -630,3 +630,77 @@ La administración de productos personalizables queda completa y el usuario fina
 ---
 
 Fin del documento.
+
+
+---
+
+# v1.5 - Gestión de Usuarios y Roles
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Administración de Usuarios
+
+Se implementó el módulo completo de gestión administrativa de usuarios.
+
+Incluye:
+
+* Listado de usuarios.
+* Búsqueda por nombre, correo o rol.
+* Filtro por rol.
+* Creación de usuarios administrativos.
+* Edición de usuarios.
+* Activación y desactivación de usuarios.
+* Reseteo administrativo de contraseña.
+* Visualización de códigos de verificación y recuperación.
+* Dashboard con indicadores de usuarios.
+
+### Nuevo Rol WORKER
+
+Roles soportados:
+
+* ADMIN
+* WORKER
+* USER
+
+## Backend
+
+Archivos modificados:
+
+* UserController.java
+* UserService.java
+* UserResponseDTO.java
+* SecurityConfig.java
+
+Archivos creados:
+
+* UserUpdateRequestDTO.java
+
+## Frontend
+
+Archivos modificados:
+
+* home.tsx
+* userService.ts
+* apiClient.ts
+
+Archivos creados:
+
+* admin-users.tsx
+
+## Validaciones realizadas
+
+* Crear usuario USER.
+* Crear usuario WORKER.
+* Crear usuario ADMIN.
+* Editar usuario.
+* Activar usuario.
+* Desactivar usuario.
+* Resetear contraseña.
+* Login con contraseña temporal.
+* Validación de permisos ADMIN.
+
+Impacto:
+
+CofiGO cuenta con gestión administrativa completa de usuarios y soporte para múltiples perfiles operativos.
