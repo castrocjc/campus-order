@@ -63,6 +63,8 @@ export default function HomeScreen() {
     const options: string[] = [];
 
     const now = new Date();
+    now.setHours(20);
+    now.setMinutes(20);    
 
     const minimumTime = new Date(
       now.getTime() + MIN_PREPARATION_MINUTES * 60000
@@ -585,31 +587,53 @@ const addToCart = (product: any) => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
+
             <Text style={styles.modalTitle}>
-              Personaliza tu producto
+              Personaliza tu pedido
+            </Text>
+
+            <Text style={styles.modalProductName}>
+              {selectedProduct?.name}
             </Text>
 
             <Text style={styles.modalSubtitle}>
-              Selecciona las salsas
+              Selecciona las salsas que deseas agregar
             </Text>
 
-            {["Mayonesa", "Ketchup", "Mostaza"].map((sauce) => (
-              <TouchableOpacity
-                key={sauce}
-                style={styles.sauceOption}
-                onPress={() => toggleSauce(sauce)}
-              >
-                <Text style={styles.sauceCheckbox}>
-                  {selectedSauces.includes(sauce)
-                    ? "☑"
-                    : "☐"}
-                </Text>
+            <View style={styles.saucesContainer}>
+              {[
+                { name: "Mayonesa", icon: "🥪" },
+                { name: "Ketchup", icon: "🍅" },
+                { name: "Mostaza", icon: "🌭" },
+              ].map((sauce) => {
+                const selected = selectedSauces.includes(
+                  sauce.name
+                );
 
-                <Text style={styles.sauceText}>
-                  {sauce}
-                </Text>
-              </TouchableOpacity>
-            ))}
+                return (
+                  <TouchableOpacity
+                    key={sauce.name}
+                    style={[
+                      styles.sauceChip,
+                      selected &&
+                        styles.sauceChipSelected,
+                    ]}
+                    onPress={() =>
+                      toggleSauce(sauce.name)
+                    }
+                  >
+                    <Text style={styles.sauceChipText}>
+                      {selected ? "✓ " : ""}
+                      {sauce.icon} {sauce.name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            <Text style={styles.selectedCount}>
+              {selectedSauces.length} opción(es) seleccionada(s)
+            </Text>
 
             <View style={styles.modalButtons}>
               <TouchableOpacity
@@ -628,7 +652,7 @@ const addToCart = (product: any) => {
                 onPress={confirmCustomization}
               >
                 <Text style={styles.buttonText}>
-                  Agregar
+                  Agregar al carrito
                 </Text>
               </TouchableOpacity>
             </View>
@@ -1020,21 +1044,36 @@ const styles = StyleSheet.create({
   },
 
   modalContainer: {
-    width: "85%",
+    width: 420,
+    maxWidth: "92%",
     backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 20,
+    borderRadius: 20,
+    padding: 24,
+
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 15,
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+
+    elevation: 8,
   },
 
   modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
+    fontSize: 26,
+    fontWeight: "900",
+    color: "#f57c00",
+    textAlign: "center",
+    marginBottom: 6,
   },
 
   modalSubtitle: {
-    fontSize: 16,
-    marginBottom: 15,
+    fontSize: 14,
+    color: "#7a6a61",
+    textAlign: "center",
+    marginBottom: 14,
   },
 
   sauceOption: {
@@ -1075,6 +1114,50 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+
+  modalProductName: {
+    fontSize: 22,
+    fontWeight: "900",
+    color: "#3b1f12",
+    marginBottom: 8,
+    textAlign: "center",
+  },
+
+  saucesContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    justifyContent: "center",
+    marginTop: 10,
+  },
+
+  sauceChip: {
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: "#ead8c8",
+    backgroundColor: "#fff8f1",
+  },
+
+  sauceChipSelected: {
+    backgroundColor: "#fff0e0",
+    borderColor: "#f57c00",
+  },
+
+  sauceChipText: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#3b1f12",
+  },
+
+  selectedCount: {
+    textAlign: "center",
+    marginTop: 18,
+    marginBottom: 6,
+    color: "#7a6a61",
+    fontWeight: "700",
   },
 
   customizationText: {

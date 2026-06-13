@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.0
+v1.4
 
 Estado:
 
@@ -64,6 +64,7 @@ Funcionalidades:
 * Gestión de imágenes
 * Asociación a categoría
 * Productos personalizables
+* Administración completa del atributo customizable en creación y edición de productos
 
 ---
 
@@ -81,6 +82,7 @@ Funcionalidades:
 * Visualización en carrito
 * Visualización en Mis Pedidos
 * Visualización en Administración de Pedidos
+* Modal visual mejorado para selección de personalización
 
 ---
 
@@ -373,6 +375,7 @@ Validaciones realizadas:
 * Verificación por correo
 * Login
 * Gestión de productos
+* Gestión de productos personalizables desde administración
 * Gestión de pedidos
 * Validación de horarios de recojo
 * Bloqueo de pedidos fuera de horario

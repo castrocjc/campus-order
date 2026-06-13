@@ -75,6 +75,7 @@ Funcionalidades:
 * Roles
 * Verificación por correo
 * Reenvío de código
+* Recuperación de contraseña
 
 ---
 
@@ -90,6 +91,27 @@ Funcionalidades:
 * Desactivar producto
 * Gestión de stock
 * Gestión de imágenes
+* Productos personalizables
+* Administración del atributo customizable
+
+---
+
+## Personalización de Productos
+
+Estado: Completo
+
+Funcionalidades:
+
+* Productos configurables mediante flag customizable
+* Selección de salsas desde modal visual
+* Persistencia histórica en OrderItem
+* Visualización en carrito
+* Visualización en Mis Pedidos
+* Visualización en Administración de Pedidos
+
+Observación:
+
+Las opciones de personalización se encuentran definidas en frontend como solución MVP.
 
 ---
 
@@ -179,7 +201,6 @@ Prioridad Alta:
 * Dashboard Administrativo
 * Gestión de Categorías
 * Reportes Frontend
-* Recuperar Contraseña
 
 Prioridad Media:
 

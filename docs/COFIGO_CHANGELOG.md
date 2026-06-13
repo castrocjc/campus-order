@@ -562,4 +562,71 @@ Validaciones realizadas:
 
 ---
 
+# v1.4 - Administración de Productos Personalizables y Mejora Visual del Modal
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Administración del atributo personalizable
+
+Se completó la gestión del atributo `customizable` desde la administración de productos.
+
+Incluye:
+
+* Creación de productos personalizables.
+* Edición de productos personalizables.
+* Persistencia del atributo en base de datos.
+* Exposición del atributo en las respuestas del API.
+* Visualización y edición desde la pantalla administrativa.
+
+### Mejora visual del modal de personalización
+
+Se mejoró la experiencia visual del modal que aparece al seleccionar un producto personalizable.
+
+Incluye:
+
+* Encabezado con nombre del producto.
+* Opciones de salsas presentadas como chips seleccionables.
+* Contador de opciones seleccionadas.
+* Botón principal más claro: Agregar al carrito.
+* Modal visualmente más cercano a una aplicación comercial.
+
+## Backend
+
+Archivos modificados:
+
+* ProductRequestDTO.java
+* ProductService.java
+
+## Frontend
+
+Archivos modificados:
+
+* admin-products.tsx
+* home.tsx
+
+## Base de datos
+
+No se requirieron cambios adicionales de estructura.
+
+La columna `products.customizable` ya existía desde la versión v1.3.
+
+## Validaciones realizadas
+
+* Crear producto personalizable.
+* Crear producto no personalizable.
+* Editar producto de no personalizable a personalizable.
+* Editar producto de personalizable a no personalizable.
+* Validar persistencia en base de datos.
+* Validar respuesta del API.
+* Validar visualización y edición desde administración.
+* Validar modal visual de personalización en menú.
+
+Impacto:
+
+La administración de productos personalizables queda completa y el usuario final cuenta con una experiencia visual más clara al personalizar productos.
+
+---
+
 Fin del documento.

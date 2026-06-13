@@ -39,6 +39,9 @@ public class ProductService {
         product.setPrice(dto.getPrice());
         product.setStock(dto.getStock());
         product.setImageUrl(dto.getImageUrl());
+        product.setCustomizable(
+                Boolean.TRUE.equals(dto.getCustomizable())
+        );
         product.setCategory(category);
 
         Product saved = productRepository.save(product);
@@ -106,6 +109,9 @@ public class ProductService {
                 product.setPrice(dto.getPrice());
                 product.setStock(dto.getStock());
                 product.setImageUrl(dto.getImageUrl());
+                product.setCustomizable(
+                        Boolean.TRUE.equals(dto.getCustomizable())
+                );
                 product.setCategory(category);
 
                 Product updated = productRepository.save(product);

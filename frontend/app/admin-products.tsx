@@ -32,6 +32,7 @@ type Product = {
   categoryId: number;
   categoryName: string;
   active: boolean;
+  customizable: boolean;
 };
 
 type Category = {
@@ -46,6 +47,7 @@ type ProductForm = {
   stock: string;
   imageUrl: string;
   categoryId: string;
+  customizable: boolean;
 };
 
 export default function AdminProducts() {
@@ -68,6 +70,7 @@ export default function AdminProducts() {
     stock: "",
     imageUrl: "",
     categoryId: "",
+    customizable: false,
   });
 
   const loadProducts = async () => {
@@ -101,6 +104,7 @@ export default function AdminProducts() {
       stock: "",
       imageUrl: "",
       categoryId: "",
+      customizable: false,
     });
     setEditingProductId(null);
   };
@@ -132,6 +136,7 @@ export default function AdminProducts() {
     stock: Number(form.stock),
     imageUrl: form.imageUrl,
     categoryId: Number(form.categoryId),
+    customizable: form.customizable,
   };
 
   try {
@@ -162,6 +167,7 @@ export default function AdminProducts() {
       stock: String(product.stock),
       imageUrl: product.imageUrl || "",
       categoryId: String(product.categoryId),
+      customizable: product.customizable,
     });
   };
 
@@ -526,6 +532,38 @@ export default function AdminProducts() {
                     </TouchableOpacity>
                   ))}
                 </View>
+
+                <View style={{ marginTop: 16 }}>
+                  <Text style={styles.categoryLabel}>
+                    Personalizable
+                  </Text>
+
+                  <TouchableOpacity
+                    style={[
+                      styles.categoryOption,
+                      form.customizable &&
+                      styles.categoryOptionSelected,
+                    ]}
+                    onPress={() =>
+                      setForm({
+                        ...form,
+                        customizable: !form.customizable,
+                      })
+                    }
+                  >
+                    <Text
+                      style={[
+                        styles.categoryOptionText,
+                        form.customizable &&
+                        styles.categoryOptionTextSelected,
+                      ]}
+                    >
+                      {form.customizable
+                        ? "Sí, requiere personalización"
+                        : "No personalizable"}
+                    </Text>
+                  </TouchableOpacity>
+                </View>                
               </View>
 
               {form.imageUrl ? (

@@ -357,6 +357,7 @@ GET /api/orders/reports/sales-by-day
 | JWT                    | Completo |
 | Roles                  | Completo |
 | Productos              | Completo |
+| Personalización Productos | Completo |
 | Menú Digital           | Completo |
 | Carrito                | Completo |
 | Pedidos                | Completo |
@@ -487,12 +488,58 @@ Validaciones implementadas:
 
 ---
 
+# Personalización de Productos
+
+Implementación actual:
+
+Modelo MVP basado en texto.
+
+Product:
+
+* customizable
+
+OrderItem:
+
+* customizationNotes
+
+Opciones actuales:
+
+* Mayonesa
+* Ketchup
+* Mostaza
+
+Administración actual:
+
+* El atributo `customizable` puede gestionarse desde la pantalla de productos.
+* El administrador puede crear y editar productos personalizables.
+* La columna `products.customizable` define si un producto abre el modal de personalización.
+
+Experiencia actual:
+
+* Modal visual mejorado en menú.
+* Opciones mostradas como chips seleccionables.
+* Contador de opciones seleccionadas.
+* Botón de confirmación Agregar al carrito.
+
+Observaciones:
+
+* Las opciones se encuentran definidas en frontend.
+* La personalización se almacena como snapshot histórico.
+* No existe administración dinámica de opciones.
+
+Evolución futura:
+
+* ProductCustomizationGroup
+* ProductCustomizationOption
+
+---
+
 # 11. Próxima Evolución Recomendada
 
 1. Dashboard Administrativo
 2. Gestión de Categorías
 3. Reportes Frontend
-4. Recuperar Contraseña
+4. Gestión de Configuración de Cafetería
 5. Perfil de Usuario
 
 ---

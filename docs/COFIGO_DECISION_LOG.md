@@ -502,4 +502,67 @@ para administración dinámica desde pantalla.
 
 ---
 
+# DEC-012
+
+Fecha: 2026-06
+
+Título:
+Administración del atributo personalizable y mejora visual del modal de personalización
+
+Estado:
+Aprobada
+
+Contexto:
+
+La funcionalidad de personalización simple ya existía para productos configurables mediante el flag `customizable`, pero el atributo no estaba completamente administrado desde la pantalla de gestión de productos. Además, el modal de selección de personalización en el menú funcionaba correctamente, pero tenía una presentación visual básica.
+
+Decisión:
+
+Incorporar la gestión completa del atributo `customizable` en la administración de productos y mejorar visualmente el modal de personalización mediante una experiencia basada en chips seleccionables.
+
+Alcance implementado:
+
+* Crear productos personalizables desde administración.
+* Editar el atributo personalizable de productos existentes.
+* Persistir el valor `customizable` desde backend.
+* Exponer el valor actualizado en las respuestas de producto.
+* Mejorar el modal de personalización en el menú digital.
+* Mostrar opciones de personalización como chips visuales.
+* Mostrar contador de opciones seleccionadas.
+* Mejorar textos, espaciado, bordes y presentación general del modal.
+
+Justificación:
+
+* Permitir al administrador controlar qué productos requieren personalización.
+* Evitar cambios manuales en base de datos.
+* Mejorar la experiencia del usuario final.
+* Mantener la solución alineada al alcance MVP sin crear nuevas tablas.
+* Preservar compatibilidad con la persistencia histórica en `OrderItem.customizationNotes`.
+
+Consecuencias:
+
+Positivas:
+
+* Mayor autonomía administrativa.
+* Mejor usabilidad en el flujo de compra.
+* Menor riesgo de error al configurar productos personalizables.
+* Bajo impacto arquitectónico.
+* Sin afectación a pedidos históricos.
+
+Negativas:
+
+* Las opciones de personalización continúan definidas en código.
+* Aún no existe administración dinámica de grupos y opciones de personalización.
+
+Evolución futura:
+
+Crear entidades dedicadas para administrar opciones de personalización desde pantalla:
+
+* ProductCustomizationGroup
+* ProductCustomizationOption
+
+Esto permitirá manejar configuraciones diferentes por producto, por ejemplo salsas para sándwiches, nivel de azúcar para bebidas o extras para platos preparados.
+
+---
+
 Fin del documento.
