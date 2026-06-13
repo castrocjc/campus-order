@@ -177,6 +177,7 @@ Pantallas:
 
 * admin-products
 * admin-orders
+* admin-users
 
 ---
 
@@ -248,6 +249,7 @@ JWT
 Roles:
 
 * ADMIN
+* WORKER
 * USER
 
 Correo:

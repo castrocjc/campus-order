@@ -8,7 +8,7 @@ export async function apiRequest(endpoint: string, options: RequestInit = {}) {
   const token = localStorage.getItem("token");
 
 const isPublicEndpoint =
-  endpoint === "/api/users" ||
+  (endpoint === "/api/users" && options.method === "POST") ||
   endpoint === "/api/auth/login" ||
   endpoint === "/api/auth/forgot-password" ||
   endpoint === "/api/auth/reset-password" ||

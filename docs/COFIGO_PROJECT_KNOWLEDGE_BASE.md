@@ -232,6 +232,13 @@ JWT (JSON Web Token)
 
 ## Roles
 
+### WORKER
+
+Permisos:
+
+* Gestionar pedidos
+* Cambiar estados de pedidos
+
 ### USER
 
 Permisos:
@@ -349,21 +356,22 @@ GET /api/orders/reports/sales-by-day
 
 # 6. Módulos Implementados
 
-| Módulo                 | Estado   |
-| ---------------------- | -------- |
-| Login                  | Completo |
-| Registro               | Completo |
-| Verificación Correo    | Completo |
-| JWT                    | Completo |
-| Roles                  | Completo |
-| Productos              | Completo |
+| Módulo                    | Estado   |
+| ----------------------    | -------- |
+| Login                     | Completo |
+| Registro                  | Completo |
+| Verificación Correo       | Completo |
+| JWT                       | Completo |
+| Roles                     | Completo |
+| Productos                 | Completo |
 | Personalización Productos | Completo |
-| Menú Digital           | Completo |
-| Carrito                | Completo |
-| Pedidos                | Completo |
-| Gestión Pedidos        | Completo |
-| Reporte Ventas por Día | Parcial  |
-| Recuperar Contraseña   | Completo |
+| Menú Digital              | Completo |
+| Carrito                   | Completo |
+| Pedidos                   | Completo |
+| Gestión Pedidos           | Completo |
+| Reporte Ventas por Día    | Parcial  |
+| Recuperar Contraseña      | Completo |
+| Gestión de Usuarios       | Completo |
 
 ---
 

@@ -32,6 +32,10 @@ const getProductImageSource = (product: any) => {
   return productPlaceholder;
 };
 
+const cleanRole = (role?: string | null) => {
+  return role?.replaceAll("'", "").replaceAll('"', "").trim().toUpperCase();
+};
+
 export default function HomeScreen() {
   const router = useRouter();
 
@@ -63,9 +67,11 @@ export default function HomeScreen() {
     const options: string[] = [];
 
     const now = new Date();
+/*
+    Líneas para simular diferentes horas y probar la lógica de horarios de recojo:
     now.setHours(20);
-    now.setMinutes(20);    
-
+    now.setMinutes(20);
+*/
     const minimumTime = new Date(
       now.getTime() + MIN_PREPARATION_MINUTES * 60000
     );
@@ -105,8 +111,19 @@ export default function HomeScreen() {
     }
 
     const storedUser = localStorage.getItem("user");
+
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+
+      const normalizedUser = {
+        ...parsedUser,
+        role: cleanRole(parsedUser.role),
+      };
+
+      localStorage.setItem("user", JSON.stringify(normalizedUser));
+      localStorage.setItem("role", normalizedUser.role);
+
+      setUser(normalizedUser);
     }
 
     loadProducts();
@@ -332,6 +349,13 @@ const addToCart = (product: any) => {
                 >
                   <Text style={styles.backBtnText}>Productos</Text>
                 </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.backBtn}
+                  onPress={() => router.push("/admin-users")}
+                >
+                  <Text style={styles.backBtnText}>Usuarios</Text>
+                </TouchableOpacity>                
               </>
             )}
 
