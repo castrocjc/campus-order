@@ -646,4 +646,75 @@ Consecuencias negativas:
 
 ---
 
+# DEC-015
+
+Fecha: 2026-06
+
+Título:
+Soporte oficial para pruebas móviles mediante iPhone Simulator
+
+Estado:
+Aprobada
+
+Contexto:
+
+El proyecto evolucionó inicialmente con foco en navegadores desktop, generando diferencias visuales y de experiencia en dispositivos móviles.
+
+Decisión:
+
+Incorporar iPhone Simulator como ambiente oficial de validación funcional para frontend.
+
+Alcance:
+
+* Safari Desktop
+* Chrome Desktop
+* iPhone Simulator
+* iPhone físico (validación final)
+
+Justificación:
+
+* Detectar problemas responsive antes de producción.
+* Reducir incidencias en dispositivos móviles.
+* Mejorar experiencia de usuario.
+* Facilitar evolución futura hacia aplicaciones móviles.
+
+Consecuencias positivas:
+
+* Mayor calidad visual.
+* Mejor cobertura de pruebas.
+* Menor riesgo de regresiones responsive.
+
+Consecuencias negativas:
+
+* Incrementa tiempo de validación previo a despliegue.
+
+Observación:
+
+La Adaptación Móvil Fase 1 se implementó inicialmente sobre home.tsx.
+
+---
+
+# DEC-016
+
+Fecha: 2026-06
+
+Título:
+Nomenclatura oficial de estados de pedido
+
+Persistencia:
+RECEIVED
+IN_PREPARATION
+READY_FOR_PICKUP
+DELIVERED
+CANCELLED
+
+Presentación UI:
+Recibido
+En Preparación
+Listo para recoger
+Entregado
+Cancelado
+
+---
+
 Fin del documento.

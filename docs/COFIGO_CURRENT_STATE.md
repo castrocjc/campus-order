@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.5.3
+v1.5.4
 
 Estado:
 
@@ -129,6 +129,7 @@ Funcionalidades:
 * Consulta de productos disponibles
 * Visualización de imágenes
 * Filtrado por disponibilidad
+* Experiencia responsive validada en iPhone Simulator.
 
 ---
 
@@ -179,8 +180,8 @@ Reglas actuales de horario:
 Estados soportados:
 
 * RECEIVED
-* PREPARING
-* READY
+* IN_PREPARATION
+* READY_FOR_PICKUP
 * DELIVERED
 * CANCELLED
 
@@ -200,6 +201,27 @@ Funcionalidades:
 * Consulta de pedidos
 * Cambio de estado
 * Refresco automático
+
+---
+
+## Experiencia Móvil
+
+Estado:
+
+🟢 Completo (Fase 1)
+
+Funcionalidades:
+
+* Layout responsive para Home.
+* Catálogo optimizado para iPhone.
+* Carrito adaptado para móvil.
+* Navegación administrativa visible en móvil.
+* Categorías con scroll horizontal.
+* Mensajes operativos visibles en móvil.
+
+Validado en:
+
+* iPhone Simulator (Xcode)
 
 ---
 
@@ -425,6 +447,8 @@ Validaciones realizadas:
 * Bloqueo de pedidos fuera de horario
 * Despliegue en Railway
 * Despliegue en Vercel
+* Validación completa de Home en iPhone Simulator.
+* Validación de flujo de compra móvil.
 
 ---
 

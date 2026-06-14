@@ -793,4 +793,73 @@ Fecha: 2026-06
 
 ---
 
+## v1.5.3
+
+Fecha: 2026-06
+
+### Mejoras
+
+- Incorporado botón Limpiar en registro de productos.
+- Incorporado botón Cancelar durante edición de productos.
+- Nuevo filtro por estado en administración de productos.
+- Filtros disponibles:
+  - Todos
+  - Activos
+  - Inactivos
+  - Sin stock
+
+### Impacto
+
+- Sin cambios de base de datos.
+- Sin cambios de API.
+- Sin cambios de backend.
+
+---
+
+# v1.5.4 - Adaptación Móvil Fase 1
+
+Fecha: 2026-06
+
+## Mejoras
+
+### Adaptación Responsive de Home
+
+Se implementó la primera fase de soporte móvil para la pantalla principal del sistema.
+
+Incluye:
+
+* Layout responsive para dispositivos móviles.
+* Reorganización vertical de catálogo y carrito.
+* Visualización optimizada de productos en iPhone.
+* Mejora de navegación administrativa en móvil.
+* Scroll horizontal para categorías.
+* Scroll horizontal para acciones administrativas.
+* Visualización correcta de mensajes de confirmación dentro del carrito móvil.
+* Validación funcional mediante iPhone Simulator.
+
+## Frontend
+
+Archivos modificados:
+
+* home.tsx
+
+## Validaciones realizadas
+
+* Login en iPhone Simulator.
+* Navegación en menú digital.
+* Scroll vertical de catálogo.
+* Scroll horizontal de categorías.
+* Productos personalizables.
+* Modal de personalización.
+* Carrito.
+* Selección de horario.
+* Registro de pedido.
+* Consulta de Mis Pedidos.
+
+## Impacto
+
+CofiGO incorpora soporte funcional para dispositivos iPhone manteniendo compatibilidad completa con la experiencia desktop.
+
+---
+
 Fin del documento.

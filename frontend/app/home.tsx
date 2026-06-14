@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
   Modal,
+  Dimensions,
 } from "react-native";
 import { getToken, logout } from "../src/services/authService";
 import { getMenu } from "../src/services/productService";
@@ -21,6 +22,8 @@ const CAFETERIA_CLOSE_HOUR = 21;
 
 const PICKUP_INTERVAL_MINUTES = 30;
 const MIN_PREPARATION_MINUTES = 20;
+
+const isMobile = Dimensions.get("window").width < 768;
 
 const getProductImageSource = (product: any) => {
   const imageUrl = product?.imageUrl || product?.image_url;
@@ -329,7 +332,7 @@ const addToCart = (product: any) => {
     <>
       <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.container}>
-        <View style={styles.header}>
+        <View style={[styles.header, isMobile && styles.headerMobile]}>
           <View>
             <Text style={styles.title}>Menú COFIGO</Text>
 
@@ -346,7 +349,15 @@ const addToCart = (product: any) => {
             </Text>
           </View>
 
-          <View style={styles.headerActions}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={isMobile && styles.headerActionsScrollMobile}
+            contentContainerStyle={[
+              styles.headerActions,
+              isMobile && styles.headerActionsMobile,
+            ]}
+          >
             {user?.role === "ADMIN" && (
               <>
                 <TouchableOpacity
@@ -375,7 +386,7 @@ const addToCart = (product: any) => {
             <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
               <Text style={styles.logoutBtnText}>Salir</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         </View>
 
         {message && (
@@ -391,15 +402,28 @@ const addToCart = (product: any) => {
           </View>
         )}
 
-        <View style={styles.mainLayout}>
-          <View style={styles.productsPanel}>
+          <View
+            style={[
+              styles.mainLayout,
+              isMobile && styles.mainLayoutMobile,
+            ]}
+          >
+          <View
+            style={[
+              styles.productsPanel,
+              isMobile && styles.productsPanelMobile,
+            ]}
+          >
             <View style={styles.categoryFilterBox}>
               <Text style={styles.filterTitle}>Categorías</Text>
 
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.categoryFilterContent}
+                contentContainerStyle={[
+                styles.categoryFilterContent,
+                isMobile && styles.categoryFilterContentMobile,
+                ]}
               >
                 {categories.map((category) => (
                   <TouchableOpacity
@@ -434,7 +458,13 @@ const addToCart = (product: any) => {
 
                   <View style={styles.productsGrid}>
                     {item.products.map((product: any) => (
-                      <View key={product.id} style={styles.productCard}>
+                      <View
+                        key={product.id}
+                        style={[
+                          styles.productCard,
+                          isMobile && styles.productCardMobile,
+                        ]}
+                      >
                         <Image
                           source={getProductImageSource(product)}
                           style={styles.productImage}
@@ -478,7 +508,12 @@ const addToCart = (product: any) => {
             />
           </View>
 
-          <View style={styles.sidePanel}>
+          <View
+            style={[
+              styles.sidePanel,
+              isMobile && styles.sidePanelMobile,
+            ]}
+          >
             <View style={styles.cartBox}>
               <Text style={styles.cartTitle}>Carrito</Text>
               <Text style={styles.cartSubtitle}>Resumen</Text>
@@ -594,6 +629,16 @@ const addToCart = (product: any) => {
             </View>
 
             <View style={styles.sideActions}>
+              {isMobile && message && (
+                <Text
+                  style={[
+                    styles.mobileCartMessage,
+                    messageType === "error" && styles.mobileCartMessageError,
+                  ]}
+                >
+                  {message}
+                </Text>
+              )}              
               <TouchableOpacity
                 style={[
                   styles.mainButton,
@@ -705,7 +750,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff8f1",
-    padding: 20,
+    padding: isMobile ? 14 : 20,
   },
   header: {
     flexDirection: "row",
@@ -1215,5 +1260,50 @@ const styles = StyleSheet.create({
     color: "#666",
     marginTop: 4,
     fontStyle: "italic",
+  },
+  mainLayoutMobile: {
+    flexDirection: "column",
+  },
+
+  productsPanelMobile: {
+    width: "100%",
+  },
+
+  sidePanelMobile: {
+    width: "100%",
+    marginTop: 16,
+  },
+  productCardMobile: {
+    width: "98%",
+  },
+  headerMobile: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+  },
+
+  headerActionsScrollMobile: {
+    width: "100%",
+  },
+
+  headerActionsMobile: {
+    paddingRight: 24,
+  },
+  categoryFilterContentMobile: {
+    paddingRight: 40,
+  },
+  mobileCartMessage: {
+    backgroundColor: "#e7f7ed",
+    color: "#1f7a3f",
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    fontWeight: "800",
+    fontSize: 14,
+    textAlign: "center",
+  },
+
+  mobileCartMessageError: {
+    backgroundColor: "#fdecea",
+    color: "#b71c1c",
   },  
 });

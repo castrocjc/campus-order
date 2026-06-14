@@ -19,6 +19,8 @@ Arquitectura estable.
 
 Los módulos principales se encuentran implementados y operativos.
 
+La pantalla principal Home cuenta con soporte responsive validado mediante iPhone Simulator como parte de la Adaptación Móvil Fase 1.
+
 ---
 
 # Tecnologías
@@ -160,8 +162,8 @@ Reglas actuales de horario:
 Estados:
 
 * RECEIVED
-* PREPARING
-* READY
+* IN_PREPARATION
+* READY_FOR_PICKUP
 * DELIVERED
 * CANCELLED
 
@@ -313,6 +315,14 @@ Al iniciar una nueva sesión:
 5. Realizar cambios.
 6. Actualizar ChangeLog.
 7. Actualizar Current State si corresponde.
+
+Validaciones recomendadas antes de despliegue:
+
+1. npm run lint
+2. Validación Desktop Chrome
+3. Validación Desktop Safari
+4. Validación iPhone Simulator
+5. Validación productiva en Vercel
 
 ---
 
