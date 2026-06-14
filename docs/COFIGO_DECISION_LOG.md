@@ -717,4 +717,59 @@ Cancelado
 
 ---
 
+# DEC-017
+
+Fecha: 2026-06
+
+Título:
+Zona horaria oficial del sistema
+
+Estado:
+Aprobada
+
+Contexto:
+
+CofiGO será operado por una cafetería ubicada en Perú. Durante las pruebas desde México y despliegue en Railway se detectaron inconsistencias entre la hora del usuario, la hora del servidor y la hora real de operación del negocio.
+
+Decisión:
+
+Adoptar America/Lima como zona horaria oficial para reglas operativas de pedidos.
+
+Alcance:
+
+* Generación de horarios de recojo en frontend.
+* Validación de tiempo mínimo de preparación en backend.
+* Validación de horario de atención de cafetería.
+* Construcción de fecha y hora de pickupTime.
+
+Justificación:
+
+* La cafetería operará en Perú.
+* La hora relevante para el negocio es la hora local de Perú.
+* Evita rechazos incorrectos de pedidos cuando el usuario prueba desde otro país.
+* Reduce dependencia de la zona horaria del servidor Railway.
+
+Consecuencias positivas:
+
+* Mayor consistencia funcional.
+* Validación horaria alineada al negocio.
+* Mejor experiencia para usuarios fuera de Perú.
+* Menor riesgo de errores por zona horaria.
+
+Consecuencias negativas:
+
+* En una futura funcionalidad Multi Cafetería se deberá parametrizar la zona horaria por cafetería.
+
+Evolución futura:
+
+Crear una configuración administrativa de cafetería que permita gestionar:
+
+* Zona horaria.
+* Hora de apertura.
+* Hora de cierre.
+* Tiempo mínimo de preparación.
+* Intervalo de recojo.
+
+---
+
 Fin del documento.

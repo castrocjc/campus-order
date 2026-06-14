@@ -311,10 +311,14 @@ const addToCart = (product: any) => {
 
     try {
       await createOrder(cart, pickupTime);
+
       showMessage("Pedido creado correctamente", "success");
+
       setCart([]);
       setPickupTime("");
       localStorage.removeItem("cart");
+
+      await loadProducts();
       } catch (error) {
         const errorMessage =
           error instanceof Error

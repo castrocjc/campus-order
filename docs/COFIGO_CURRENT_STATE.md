@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.5.4
+v1.5.5
 
 Estado:
 
@@ -129,7 +129,8 @@ Funcionalidades:
 * Consulta de productos disponibles
 * Visualización de imágenes
 * Filtrado por disponibilidad
-* Experiencia responsive validada en iPhone Simulator.
+* Experiencia responsive validada en iPhone Simulator
+* Actualización automática de stock después de registrar pedido
 
 ---
 
@@ -169,6 +170,7 @@ Funcionalidades:
 * Bloqueo de horarios vencidos
 * Validación de horario de atención de cafetería
 * Validación de tiempo mínimo de preparación
+* Validación horaria basada en zona oficial America/Lima.
 
 Reglas actuales de horario:
 
@@ -449,6 +451,8 @@ Validaciones realizadas:
 * Despliegue en Vercel
 * Validación completa de Home en iPhone Simulator.
 * Validación de flujo de compra móvil.
+* Validación de creación de pedidos con zona horaria America/Lima.
+* Validación de actualización inmediata de stock posterior al pedido.
 
 ---
 

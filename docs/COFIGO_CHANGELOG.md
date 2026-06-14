@@ -862,4 +862,65 @@ CofiGO incorpora soporte funcional para dispositivos iPhone manteniendo compatib
 
 ---
 
+# v1.5.5 - Corrección Horaria Perú y Stock Post Pedido
+
+Fecha: 2026-06
+
+## Correcciones
+
+### Zona horaria oficial de cafetería
+
+Se corrigió la validación de horarios de recojo para utilizar la zona horaria oficial de Perú.
+
+Zona horaria oficial:
+
+* America/Lima
+
+Impacto:
+
+* Evita inconsistencias entre la hora del usuario, la hora del servidor Railway y la hora real de operación de la cafetería.
+* Permite que usuarios fuera de Perú visualicen y registren pedidos usando la hora oficial del negocio.
+
+### Actualización de stock posterior al pedido
+
+Se corrigió el comportamiento del menú digital para refrescar automáticamente los productos después de registrar un pedido.
+
+Impacto:
+
+* El stock visible se actualiza inmediatamente después de crear el pedido.
+* Se evita mostrar stock desactualizado al usuario.
+* Se mejora la consistencia entre frontend y backend.
+
+### Mensajes de error
+
+Se validó la propagación de mensajes reales del backend hacia el frontend.
+
+Impacto:
+
+* El usuario visualiza mensajes de negocio más claros.
+* Se evita mostrar únicamente mensajes genéricos como "Error creando pedido".
+
+## Backend
+
+Archivos modificados:
+
+* OrderService.java
+
+## Frontend
+
+Archivos modificados:
+
+* home.tsx
+* orderService.ts
+
+## Validaciones realizadas
+
+* Generación de horarios usando America/Lima.
+* Validación backend usando America/Lima.
+* Creación de pedido en producción.
+* Actualización inmediata de stock en menú.
+* Visualización de mensaje de éxito/error en móvil.
+
+---
+
 Fin del documento.
