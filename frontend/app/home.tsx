@@ -67,34 +67,36 @@ export default function HomeScreen() {
     const options: string[] = [];
 
     const now = new Date();
-/*
-    Líneas para simular diferentes horas y probar la lógica de horarios de recojo:
-    now.setHours(20);
-    now.setMinutes(20);
-*/
+
+    /*
+      Líneas para simular diferentes horas y probar la lógica de horarios de recojo:
+      now.setHours(20);
+      now.setMinutes(20);
+    */
+
     const minimumTime = new Date(
       now.getTime() + MIN_PREPARATION_MINUTES * 60000
     );
 
-    for (
-      let hour = CAFETERIA_OPEN_HOUR;
-      hour <= CAFETERIA_CLOSE_HOUR;
-      hour++
-    ) {
-      for (const minute of [0, 30]) {
-        const slot = new Date();
+    const openingTime = new Date();
+    openingTime.setHours(CAFETERIA_OPEN_HOUR, 0, 0, 0);
 
-        slot.setHours(hour);
-        slot.setMinutes(minute);
-        slot.setSeconds(0);
-        slot.setMilliseconds(0);
+    const closingTime = new Date();
+    closingTime.setHours(CAFETERIA_CLOSE_HOUR, 0, 0, 0);
 
-        if (slot >= minimumTime) {
-          options.push(
-            `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
-          );
-        }
+    let slot = new Date(openingTime);
+
+    while (slot <= closingTime) {
+      if (slot >= minimumTime) {
+        const hour = slot.getHours();
+        const minute = slot.getMinutes();
+
+        options.push(
+          `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
+        );
       }
+
+      slot = new Date(slot.getTime() + PICKUP_INTERVAL_MINUTES * 60000);
     }
 
     return options;
@@ -127,7 +129,7 @@ export default function HomeScreen() {
     }
 
     loadProducts();
-  }, []);
+  }, [router]);  
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -304,7 +306,7 @@ const addToCart = (product: any) => {
       setCart([]);
       setPickupTime("");
       localStorage.removeItem("cart");
-    } catch (error: any) {
+    } catch {
       showMessage("Error creando pedido", "error");
     }
   };

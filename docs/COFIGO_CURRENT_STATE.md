@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.5.1
+v1.5.2
 
 Estado:
 
@@ -180,6 +180,9 @@ Estados soportados:
 * READY
 * DELIVERED
 * CANCELLED
+
+- Generación dinámica de horarios basada en PICKUP_INTERVAL_MINUTES.
+- Corrección de límite de horario de cierre.
 
 ---
 
