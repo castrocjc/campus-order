@@ -61,7 +61,9 @@ export default function AdminProducts() {
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>("ALL");
   const [searchText, setSearchText] = useState("");
   const [message, setMessage] = useState<string | null>(null);
-  const [messageType, setMessageType] = useState<"success" | "error">("success");
+  const [messageType, setMessageType] = useState<"success" | "error">(
+    "success",
+  );
 
   const [form, setForm] = useState<ProductForm>({
     name: "",
@@ -109,53 +111,98 @@ export default function AdminProducts() {
     setEditingProductId(null);
   };
 
-  const showMessage = (
-  text: string,
-  type: "success" | "error" = "success"
-) => {
-  setMessageType(type);
-  setMessage(text);
+  const showMessage = (text: string, type: "success" | "error" = "success") => {
+    setMessageType(type);
+    setMessage(text);
 
-  setTimeout(() => {
-    setMessage(null);
-  }, 1200);
-};
-
-  const handleSubmit = async () => {
-
-  if (!form.name || !form.price || !form.stock || !form.categoryId) {
-    showMessage("Completa los campos obligatorios.", "error");
-
-    return;
-  }
-
-  const payload = {
-    name: form.name,
-    description: form.description,
-    price: Number(form.price),
-    stock: Number(form.stock),
-    imageUrl: form.imageUrl,
-    categoryId: Number(form.categoryId),
-    customizable: form.customizable,
+    setTimeout(() => {
+      setMessage(null);
+    }, 1200);
   };
 
-  try {
-    if (editingProductId) {
-      await updateProduct(editingProductId, payload);
-      showMessage("Producto actualizado correctamente.", "success");
-    } else {
-      await createProduct(payload);
-      showMessage("Producto creado correctamente.", "success");
+  const handleSubmit = async () => {
+    const name = form.name.trim();
+    const description = form.description.trim();
+    const imageUrl = form.imageUrl.trim();
+    const price = Number(form.price);
+    const stock = Number(form.stock);
+
+    if (!name || !form.price || !form.stock || !form.categoryId) {
+      showMessage("Completa los campos obligatorios.", "error");
+      return;
     }
 
-    resetForm();
-    loadProducts();
+    if (name.length < 3) {
+      showMessage("El nombre debe tener al menos 3 caracteres.", "error");
+      return;
+    }
 
-  } catch (error) {
-    console.error("Error guardando producto:", error);
-    showMessage("No se pudo guardar el producto.", "error");
-  }
-};
+    if (name.length > 100) {
+      showMessage("El nombre no debe superar 100 caracteres.", "error");
+      return;
+    }
+
+    if (description.length > 500) {
+      showMessage("La descripción no debe superar 500 caracteres.", "error");
+      return;
+    }
+
+    if (Number.isNaN(price) || price <= 0) {
+      showMessage("El precio debe ser mayor a cero.", "error");
+      return;
+    }
+
+    if (!/^\d+(\.\d{1,2})?$/.test(form.price.trim())) {
+      showMessage("El precio debe tener máximo 2 decimales.", "error");
+      return;
+    }
+
+    if (!Number.isInteger(stock) || stock < 0) {
+      showMessage(
+        "El stock debe ser un número entero mayor o igual a cero.",
+        "error",
+      );
+      return;
+    }
+
+    if (
+      imageUrl &&
+      !imageUrl.startsWith("http://") &&
+      !imageUrl.startsWith("https://")
+    ) {
+      showMessage(
+        "La URL de imagen debe iniciar con http:// o https://",
+        "error",
+      );
+      return;
+    }
+
+    const payload = {
+      name,
+      description,
+      price,
+      stock,
+      imageUrl,
+      categoryId: Number(form.categoryId),
+      customizable: form.customizable,
+    };
+
+    try {
+      if (editingProductId) {
+        await updateProduct(editingProductId, payload);
+        showMessage("Producto actualizado correctamente.", "success");
+      } else {
+        await createProduct(payload);
+        showMessage("Producto creado correctamente.", "success");
+      }
+
+      resetForm();
+      loadProducts();
+    } catch (error) {
+      console.error("Error guardando producto:", error);
+      showMessage("No se pudo guardar el producto.", "error");
+    }
+  };
 
   const handleEdit = (product: Product) => {
     setEditingProductId(product.id);
@@ -172,7 +219,6 @@ export default function AdminProducts() {
   };
 
   const handleToggleActive = async (product: Product) => {
-
     try {
       await toggleProductActive(product.id);
       await loadProducts();
@@ -181,7 +227,7 @@ export default function AdminProducts() {
         product.active
           ? "Producto desactivado correctamente."
           : "Producto activado correctamente.",
-        "success"
+        "success",
       );
     } catch (error) {
       console.error("Error cambiando estado:", error);
@@ -199,6 +245,27 @@ export default function AdminProducts() {
   const activeProducts = products.filter((p) => p.active).length;
   const inactiveProducts = products.filter((p) => !p.active).length;
   const noStockProducts = products.filter((p) => p.stock === 0).length;
+
+  const getStockStatus = (stock: number) => {
+    if (stock === 0) {
+      return {
+        label: "Sin stock",
+        style: styles.stockBadgeEmpty,
+      };
+    }
+
+    if (stock <= 5) {
+      return {
+        label: "Stock bajo",
+        style: styles.stockBadgeLow,
+      };
+    }
+
+    return {
+      label: "Stock normal",
+      style: styles.stockBadgeOk,
+    };
+  };
 
   const filteredProducts = products
     .filter((product) => {
@@ -229,16 +296,17 @@ export default function AdminProducts() {
 
       return a.name.localeCompare(b.name);
     });
-    
+
   const formTitle = editingProductId ? "Editar producto" : "Nuevo producto";
-  const formButtonText = editingProductId ? "Actualizar producto" : "Crear producto";
+  const formButtonText = editingProductId
+    ? "Actualizar producto"
+    : "Crear producto";
 
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
 
       <View style={styles.screen}>
-
         {message && (
           <View style={styles.toastContainer}>
             <Text
@@ -313,7 +381,8 @@ export default function AdminProducts() {
                 <View>
                   <Text style={styles.sectionTitle}>Productos registrados</Text>
                   <Text style={styles.sectionSubtitle}>
-                    {filteredProducts.length} producto{filteredProducts.length === 1 ? "" : "s"} en vista
+                    {filteredProducts.length} producto
+                    {filteredProducts.length === 1 ? "" : "s"} en vista
                   </Text>
                 </View>
               </View>
@@ -341,7 +410,8 @@ export default function AdminProducts() {
                   <Text
                     style={[
                       styles.filterText,
-                      selectedCategoryFilter === "ALL" && styles.filterTextActive,
+                      selectedCategoryFilter === "ALL" &&
+                        styles.filterTextActive,
                     ]}
                   >
                     Todas
@@ -356,7 +426,9 @@ export default function AdminProducts() {
                       selectedCategoryFilter === String(category.id) &&
                         styles.filterChipActive,
                     ]}
-                    onPress={() => setSelectedCategoryFilter(String(category.id))}
+                    onPress={() =>
+                      setSelectedCategoryFilter(String(category.id))
+                    }
                   >
                     <Text
                       style={[
@@ -378,7 +450,9 @@ export default function AdminProducts() {
                 contentContainerStyle={styles.productsFlatListContent}
                 showsVerticalScrollIndicator={false}
                 ListEmptyComponent={
-                  <Text style={styles.emptyText}>No hay productos para el filtro seleccionado.</Text>
+                  <Text style={styles.emptyText}>
+                    No hay productos para el filtro seleccionado.
+                  </Text>
                 }
                 renderItem={({ item }) => (
                   <View style={styles.productCard}>
@@ -412,7 +486,9 @@ export default function AdminProducts() {
                         </View>
                       </View>
 
-                      <Text style={styles.productCategory}>{item.categoryName}</Text>
+                      <Text style={styles.productCategory}>
+                        {item.categoryName}
+                      </Text>
                       <Text style={styles.productDescription} numberOfLines={2}>
                         {item.description}
                       </Text>
@@ -421,7 +497,17 @@ export default function AdminProducts() {
                         <Text style={styles.productPrice}>
                           S/ {Number(item.price).toFixed(2)}
                         </Text>
-                        <Text style={styles.productStock}>Stock: {item.stock}</Text>
+
+                        <View
+                          style={[
+                            styles.stockBadge,
+                            getStockStatus(item.stock).style,
+                          ]}
+                        >
+                          <Text style={styles.stockBadgeText}>
+                            {getStockStatus(item.stock).label} · {item.stock}
+                          </Text>
+                        </View>
                       </View>
 
                       <View style={styles.productActions}>
@@ -466,44 +552,78 @@ export default function AdminProducts() {
                 </View>
               </View>
 
+              <Text style={styles.fieldLabel}>Nombre *</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Nombre"
+                placeholder="Ejemplo: Sandwich de pollo"
                 value={form.name}
                 onChangeText={(value) => setForm({ ...form, name: value })}
               />
 
+              <Text style={styles.fieldLabel}>Descripción</Text>
               <TextInput
                 style={[styles.input, styles.textArea]}
-                placeholder="Descripción"
+                placeholder="Describe brevemente el producto"
                 value={form.description}
-                onChangeText={(value) => setForm({ ...form, description: value })}
+                onChangeText={(value) =>
+                  setForm({ ...form, description: value })
+                }
                 multiline
               />
 
+              <Text style={styles.fieldLabel}>Precio *</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Precio"
+                placeholder="Ejemplo: 12.50"
                 value={form.price}
-                onChangeText={(value) => setForm({ ...form, price: value })}
+                onChangeText={(value) => {
+                  const cleanValue = value.replace(/[^0-9.]/g, "");
+
+                  const parts = cleanValue.split(".");
+
+                  if (parts.length > 2) {
+                    return;
+                  }
+
+                  setForm({
+                    ...form,
+                    price: cleanValue,
+                  });
+                }}
+                onBlur={() => {
+                  if (!form.price) {
+                    return;
+                  }
+
+                  const formatted = Number(form.price).toFixed(2);
+
+                  setForm({
+                    ...form,
+                    price: formatted,
+                  });
+                }}
                 keyboardType="numeric"
               />
 
+              <Text style={styles.fieldLabel}>Stock *</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Stock"
+                placeholder="Ejemplo: 20"
                 value={form.stock}
-                onChangeText={(value) => setForm({ ...form, stock: value })}
+                onChangeText={(value) => {
+                  const cleanValue = value.replace(/[^0-9]/g, "");
+                  setForm({ ...form, stock: cleanValue });
+                }}
                 keyboardType="numeric"
               />
 
+              <Text style={styles.fieldLabel}>URL de imagen</Text>
               <TextInput
                 style={styles.input}
-                placeholder="URL de imagen"
+                placeholder="https://..."
                 value={form.imageUrl}
                 onChangeText={(value) => setForm({ ...form, imageUrl: value })}
               />
-
               <View style={styles.categoryContainer}>
                 <Text style={styles.categoryLabel}>Categoría</Text>
 
@@ -533,17 +653,9 @@ export default function AdminProducts() {
                   ))}
                 </View>
 
-                <View style={{ marginTop: 16 }}>
-                  <Text style={styles.categoryLabel}>
-                    Personalizable
-                  </Text>
-
+                <View style={styles.checkboxContainer}>
                   <TouchableOpacity
-                    style={[
-                      styles.categoryOption,
-                      form.customizable &&
-                      styles.categoryOptionSelected,
-                    ]}
+                    style={styles.checkboxRow}
                     onPress={() =>
                       setForm({
                         ...form,
@@ -551,34 +663,50 @@ export default function AdminProducts() {
                       })
                     }
                   >
-                    <Text
+                    <View
                       style={[
-                        styles.categoryOptionText,
-                        form.customizable &&
-                        styles.categoryOptionTextSelected,
+                        styles.checkboxBox,
+                        form.customizable && styles.checkboxBoxChecked,
                       ]}
                     >
-                      {form.customizable
-                        ? "Sí, requiere personalización"
-                        : "No personalizable"}
-                    </Text>
+                      {form.customizable && (
+                        <Text style={styles.checkboxCheck}>✓</Text>
+                      )}
+                    </View>
+
+                    <View style={styles.checkboxTextContainer}>
+                      <Text style={styles.checkboxLabel}>
+                        Producto personalizable
+                      </Text>
+                      <Text style={styles.checkboxHelp}>
+                        Actívalo si el cliente podrá elegir salsas u opciones
+                        adicionales.
+                      </Text>
+                    </View>
                   </TouchableOpacity>
-                </View>                
+                </View>
               </View>
 
               {form.imageUrl ? (
-                <Image source={{ uri: form.imageUrl }} style={styles.previewImage} />
+                <Image
+                  source={{ uri: form.imageUrl }}
+                  style={styles.previewImage}
+                />
               ) : null}
 
               <View style={styles.formActions}>
-                <TouchableOpacity style={styles.saveButton} onPress={handleSubmit}>
-                  <Text style={styles.saveButtonText}>
-                    {formButtonText}
-                  </Text>
+                <TouchableOpacity
+                  style={styles.saveButton}
+                  onPress={handleSubmit}
+                >
+                  <Text style={styles.saveButtonText}>{formButtonText}</Text>
                 </TouchableOpacity>
 
                 {editingProductId && (
-                  <TouchableOpacity style={styles.cancelButton} onPress={resetForm}>
+                  <TouchableOpacity
+                    style={styles.cancelButton}
+                    onPress={resetForm}
+                  >
                     <Text style={styles.cancelButtonText}>Cancelar</Text>
                   </TouchableOpacity>
                 )}
@@ -788,6 +916,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: "#3b2416",
   },
+  fieldLabel: {
+    fontSize: 13,
+    fontWeight: "800",
+    color: "#3b2416",
+    marginBottom: 6,
+  },
   textArea: {
     minHeight: 80,
     textAlignVertical: "top",
@@ -817,6 +951,51 @@ const styles = StyleSheet.create({
   categoryOptionSelected: {
     backgroundColor: "#6f4e37",
     borderColor: "#6f4e37",
+  },
+  checkboxContainer: {
+    marginTop: 16,
+  },
+  checkboxRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 10,
+    backgroundColor: "#fffaf5",
+    borderWidth: 1,
+    borderColor: "#ead8c8",
+    borderRadius: 14,
+    padding: 12,
+  },
+  checkboxBox: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: "#6f4e37",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#ffffff",
+  },
+  checkboxBoxChecked: {
+    backgroundColor: "#6f4e37",
+  },
+  checkboxCheck: {
+    color: "#ffffff",
+    fontWeight: "900",
+    fontSize: 14,
+  },
+  checkboxTextContainer: {
+    flex: 1,
+  },
+  checkboxLabel: {
+    color: "#3b2416",
+    fontWeight: "800",
+    fontSize: 14,
+  },
+  checkboxHelp: {
+    marginTop: 3,
+    color: "#8a6a52",
+    fontSize: 12,
+    lineHeight: 16,
   },
   categoryOptionText: {
     color: "#6f4e37",
@@ -1014,27 +1193,47 @@ const styles = StyleSheet.create({
     fontSize: 15,
     paddingVertical: 12,
   },
-toastContainer: {
-  position: "absolute",
-  top: 70,
-  left: 0,
-  right: 0,
-  alignItems: "center",
-  zIndex: 100000,
-},
-toast: {
-  alignSelf: "center",
-  backgroundColor: "#e7f7ed",
-  color: "#1f7a3f",
-  paddingVertical: 6,
-  paddingHorizontal: 12,
-  borderRadius: 999,
-  fontWeight: "700",
-  fontSize: 13,
-  textAlign: "center",
-},
-toastError: {
-  backgroundColor: "#fdecea",
-  color: "#b71c1c",
-},
+  toastContainer: {
+    position: "absolute",
+    top: 70,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    zIndex: 100000,
+  },
+  toast: {
+    alignSelf: "center",
+    backgroundColor: "#e7f7ed",
+    color: "#1f7a3f",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    fontWeight: "700",
+    fontSize: 13,
+    textAlign: "center",
+  },
+  toastError: {
+    backgroundColor: "#fdecea",
+    color: "#b71c1c",
+  },
+  stockBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    alignSelf: "flex-start",
+  },
+  stockBadgeOk: {
+    backgroundColor: "#e7f7ed",
+  },
+  stockBadgeLow: {
+    backgroundColor: "#fff4d6",
+  },
+  stockBadgeEmpty: {
+    backgroundColor: "#fde2e2",
+  },
+  stockBadgeText: {
+    fontSize: 12,
+    fontWeight: "800",
+    color: "#3b2416",
+  },  
 });

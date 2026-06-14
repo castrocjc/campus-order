@@ -629,11 +629,6 @@ La administración de productos personalizables queda completa y el usuario fina
 
 ---
 
-Fin del documento.
-
-
----
-
 # v1.5 - Gestión de Usuarios y Roles
 
 Fecha: Junio 2026
@@ -704,3 +699,45 @@ Archivos creados:
 Impacto:
 
 CofiGO cuenta con gestión administrativa completa de usuarios y soporte para múltiples perfiles operativos.
+
+---
+
+# v1.5.1 - Fortalecimiento de Gestión de Productos
+
+Fecha: Junio 2026
+
+## Mejoras implementadas
+
+### Calidad de datos
+
+- Validación de nombre obligatorio.
+- Validación de longitud mínima y máxima.
+- Validación de descripción.
+- Validación de precio mayor a cero.
+- Formato automático de precio con dos decimales.
+- Restricción de caracteres inválidos en precio.
+- Restricción de caracteres inválidos en stock.
+- Validación de URL de imagen.
+- Limpieza automática de espacios mediante trim().
+
+### Experiencia de usuario
+
+- Incorporación de etiquetas visibles en formulario.
+- Sustitución del selector de personalización por checkbox.
+- Mensajes de validación mejorados.
+
+### Inventario
+
+- Indicadores visuales de stock:
+  - Stock normal
+  - Stock bajo
+  - Sin stock
+
+### Backend
+
+- Prevención de productos duplicados.
+- Validación de nombres únicos ignorando mayúsculas y minúsculas.
+
+---
+
+Fin del documento.

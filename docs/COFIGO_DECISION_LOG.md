@@ -432,6 +432,8 @@ Esta mejora será considerada en una siguiente iteración y servirá como base p
 
 ---
 
+# DEC-011
+
 Fecha: 2026-06
 
 Título:
@@ -565,11 +567,6 @@ Esto permitirá manejar configuraciones diferentes por producto, por ejemplo sal
 
 ---
 
-Fin del documento.
-
-
----
-
 # DEC-013
 
 Fecha: 2026-06
@@ -601,3 +598,52 @@ Evolución futura:
 
 * Evitar que un administrador se desactive a sí mismo.
 * Evitar eliminar el último administrador activo.
+
+---
+
+# DEC-014
+
+Fecha: 2026-06
+
+Título:
+Calidad de datos y prevención de duplicados en catálogo de productos
+
+Estado:
+Aprobada
+
+Contexto:
+
+La administración de productos permitía registrar información válida funcionalmente, pero existían riesgos asociados a duplicados, formatos inconsistentes y errores de captura.
+
+Decisión:
+
+Implementar validaciones adicionales en frontend y backend.
+
+Alcance:
+
+* Validación de nombres.
+* Validación de precios.
+* Validación de stock.
+* Validación de URL.
+* Limpieza mediante trim().
+* Prevención de productos duplicados.
+* Indicadores visuales de inventario.
+
+Justificación:
+
+Garantizar la calidad del catálogo de productos y reducir errores operativos.
+
+Consecuencias positivas:
+
+* Mayor calidad de datos.
+* Mejor experiencia administrativa.
+* Menor riesgo de inconsistencias.
+* Mejor control operativo del inventario.
+
+Consecuencias negativas:
+
+* Reglas más estrictas para captura de datos.
+
+---
+
+Fin del documento.
