@@ -330,7 +330,18 @@ const addToCart = (product: any) => {
         <View style={styles.header}>
           <View>
             <Text style={styles.title}>Menú COFIGO</Text>
-            <Text style={styles.subtitle}>Pide hoy, recoge sin esperas</Text>
+
+            <Text style={styles.welcomeText}>
+              Bienvenido {user?.name || "Usuario"}
+            </Text>
+
+            <Text style={styles.roleText}>
+              Rol: {user?.role || "USER"}
+            </Text>
+
+            <Text style={styles.subtitle}>
+              Pide hoy, recoge sin esperas
+            </Text>
           </View>
 
           <View style={styles.headerActions}>
@@ -711,6 +722,19 @@ const styles = StyleSheet.create({
     color: "#7a6a61",
     fontWeight: "700",
   },
+  welcomeText: {
+    marginTop: 4,
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#3b1f12",
+  },
+
+  roleText: {
+    marginTop: 2,
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#7a6a61",
+  },  
   headerActions: {
     flexDirection: "row",
     gap: 8,

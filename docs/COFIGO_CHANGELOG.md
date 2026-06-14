@@ -740,4 +740,36 @@ Fecha: Junio 2026
 
 ---
 
+## 2026-06-13 - Mejoras Home, Admin Pedidos y Notificación Visual
+
+Estado: Completado
+
+Cambios realizados:
+
+- Se agregó mensaje de bienvenida en Home con el nombre del usuario autenticado.
+- Se agregó visualización del rol del usuario en Home.
+- Se corrigió la obtención del nombre del usuario desde la información almacenada después del login.
+- Se ordenaron los pedidos administrativos por hora de atención / recojo.
+- Se corrigió la alineación de estados entre frontend y backend:
+  - RECEIVED
+  - IN_PREPARATION
+  - READY_FOR_PICKUP
+  - DELIVERED
+  - CANCELLED
+- Se implementó notificación visual en Mis Pedidos cuando un pedido está listo para recoger.
+- Se validó el flujo completo end-to-end.
+
+Archivos modificados:
+
+- home.tsx
+- admin-orders.tsx
+- my-orders.tsx
+- authService.ts
+
+Resultado:
+
+Sistema validado correctamente en local.
+
+---
+
 Fin del documento.

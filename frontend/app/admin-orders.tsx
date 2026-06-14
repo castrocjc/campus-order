@@ -31,7 +31,7 @@ export default function AdminOrdersScreen() {
 
       data.sort(
         (a: any, b: any) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(a.pickupTime).getTime() - new Date(b.pickupTime).getTime()
       );
 
       setOrders(data);
@@ -64,7 +64,7 @@ export default function AdminOrdersScreen() {
       case "RECEIVED":
         return "Recibido";
       case "IN_PREPARATION":
-        return "En preparación";
+        return "En Preparación";
       case "READY_FOR_PICKUP":
         return "Listo para recoger";
       case "DELIVERED":
@@ -94,13 +94,13 @@ export default function AdminOrdersScreen() {
   };
 
   const canChangeStatus = (currentStatus: string, nextStatus: string) => {
-    const allowedTransitions: Record<string, string[]> = {
-      RECEIVED: ["IN_PREPARATION", "CANCELLED"],
-      IN_PREPARATION: ["READY_FOR_PICKUP"],
-      READY_FOR_PICKUP: ["DELIVERED"],
-      DELIVERED: [],
-      CANCELLED: [],
-    };
+  const allowedTransitions: Record<string, string[]> = {
+    RECEIVED: ["IN_PREPARATION", "CANCELLED"],
+    IN_PREPARATION: ["READY_FOR_PICKUP"],
+    READY_FOR_PICKUP: ["DELIVERED"],
+    DELIVERED: [],
+    CANCELLED: [],
+  };
 
     return allowedTransitions[currentStatus]?.includes(nextStatus) ?? false;
   };
@@ -164,7 +164,7 @@ return (
 
         <View style={styles.summaryChip}>
           <Text style={styles.summaryNumber}>{countByStatus("IN_PREPARATION")}</Text>
-          <Text style={styles.summaryLabel}>Preparación</Text>
+          <Text style={styles.summaryLabel}>En Preparación</Text>
         </View>
 
         <View style={styles.summaryChip}>
@@ -249,7 +249,7 @@ return (
                 disabled={!canChangeStatus(item.status, "IN_PREPARATION")}
                 onPress={() => changeStatus(item.id, "IN_PREPARATION")}
               >
-                <Text style={styles.btnText}>Preparando</Text>
+                <Text style={styles.btnText}>En Preparación</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
