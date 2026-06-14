@@ -19,15 +19,16 @@ import java.util.List;
 import java.util.Map;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 
 @Service
 public class OrderService {
 
         private static final LocalTime CAFETERIA_OPEN_TIME = LocalTime.of(7, 0);
-
         private static final LocalTime CAFETERIA_CLOSE_TIME = LocalTime.of(21, 0);
-
         private static final int MIN_PREPARATION_MINUTES = 20;
+        private static final ZoneId CAFETERIA_ZONE_ID =
+                ZoneId.of("America/Lima");
 
         private final OrderRepository orderRepository;
         private final ProductRepository productRepository;
@@ -170,8 +171,9 @@ public class OrderService {
 
         private void validatePickupTime(LocalDateTime pickupTime) {
 
-                LocalDateTime minimumAllowed = LocalDateTime.now()
-                                .plusMinutes(MIN_PREPARATION_MINUTES);
+                LocalDateTime minimumAllowed = LocalDateTime
+                        .now(CAFETERIA_ZONE_ID)
+                        .plusMinutes(MIN_PREPARATION_MINUTES);
 
                 if (pickupTime.isBefore(minimumAllowed)) {
                         throw new BusinessException(
