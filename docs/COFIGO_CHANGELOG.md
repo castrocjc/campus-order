@@ -923,4 +923,25 @@ Archivos modificados:
 
 ---
 
+## v1.5.6 - Junio 2026
+
+### Corrección de inventario al cancelar pedidos
+
+Se corrigió la lógica de cancelación de pedidos para restaurar el stock de los productos asociados al pedido cancelado.
+
+Alcance:
+
+* Cancelación desde Mis Pedidos.
+* Cancelación desde Administración de Pedidos.
+* Reversa de stock centralizada en backend.
+* Prevención de doble reversa cuando el pedido ya está cancelado.
+
+Impacto:
+
+* Mejora la consistencia del inventario.
+* No requiere cambios en frontend.
+* No requiere cambios en base de datos.
+
+---
+
 Fin del documento.

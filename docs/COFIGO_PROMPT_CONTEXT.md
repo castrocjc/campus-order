@@ -152,6 +152,8 @@ Funcionalidades:
 * Selección dinámica de hora de recojo
 * Validación de horario de atención
 * Validación de tiempo mínimo de preparación
+* Reversa automática de stock al cancelar pedidos
+* Cancelación consistente desde Mis Pedidos y Administración de Pedidos
 
 Reglas actuales de horario:
 
