@@ -69,7 +69,13 @@ export default function HomeScreen() {
   const generatePickupOptions = () => {
     const options: string[] = [];
 
-    const now = new Date();
+    const peruNow = new Date(
+      new Date().toLocaleString("en-US", {
+        timeZone: "America/Lima",
+      })
+    );
+
+    const now = peruNow;
 
     /*
       Líneas para simular diferentes horas y probar la lógica de horarios de recojo:
@@ -309,9 +315,14 @@ const addToCart = (product: any) => {
       setCart([]);
       setPickupTime("");
       localStorage.removeItem("cart");
-    } catch {
-      showMessage("Error creando pedido", "error");
-    }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Error creando pedido";
+
+        showMessage(errorMessage, "error");
+      }
   };
 
   const handleLogout = () => {

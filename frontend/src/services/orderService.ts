@@ -1,7 +1,11 @@
 import { apiRequest } from "./apiClient";
 
 export async function createOrder(cart: any[], pickupTime: string) {
-  const today = new Date();
+  const today = new Date(
+    new Date().toLocaleString("en-US", {
+      timeZone: "America/Lima",
+    })
+  );
   const [hours, minutes] = pickupTime.split(":");
 
   today.setHours(Number(hours));
