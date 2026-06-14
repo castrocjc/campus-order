@@ -123,6 +123,7 @@ Funcionalidades:
 
 * Visualización de productos
 * Consulta de productos disponibles
+* Actualización automática de stock después de registrar pedido.
 
 ---
 
@@ -154,6 +155,7 @@ Funcionalidades:
 
 Reglas actuales de horario:
 
+* Zona horaria oficial: America/Lima
 * Horario de atención: 07:00 a 21:00
 * Tiempo mínimo de preparación: 20 minutos
 * Intervalo de recojo: 30 minutos

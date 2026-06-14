@@ -528,6 +528,14 @@ El carrito se almacena únicamente en frontend.
 
 No persiste entre sesiones.
 
+## Configuración fija de zona horaria
+
+Actualmente la zona horaria America/Lima está definida en código como parte del MVP.
+
+Evolución futura:
+
+Gestionarla desde Configuración de Cafetería.
+
 # Reglas Operativas de Pedidos
 
 Horario de atención:
@@ -549,6 +557,12 @@ Validaciones implementadas:
 * Debe existir al menos 20 minutos de preparación.
 * El frontend genera dinámicamente los horarios válidos.
 * El backend valida nuevamente la hora seleccionada.
+
+Zona horaria oficial:
+
+America/Lima
+
+Todas las reglas de horario se calculan usando la hora oficial de Perú, independientemente de la ubicación del usuario o del servidor.
 
 ---
 
@@ -610,7 +624,7 @@ Evolución futura:
 
 # Historial del Documento
 
-Versión: v1.5.4
+Versión: v1.5.5
 
 Fecha de creación: Junio 2026
 
