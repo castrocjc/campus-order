@@ -185,6 +185,32 @@ JwtService
 Product N : 1 Category
 ```
 
+### Capacidades actuales del módulo de productos
+
+La gestión de productos cuenta con controles adicionales de calidad de datos y experiencia administrativa.
+
+Incluye:
+
+* Validación avanzada de formularios.
+* Validación de nombre obligatorio.
+* Validación de longitud mínima y máxima de nombre.
+* Validación de precio mayor a cero.
+* Formato monetario automático con dos decimales.
+* Restricción de caracteres inválidos en precio y stock.
+* Validación de URL de imagen.
+* Limpieza automática de espacios mediante trim().
+* Prevención de productos duplicados.
+* Validación de duplicados ignorando mayúsculas y minúsculas.
+* Indicadores visuales de stock:
+  * Stock normal
+  * Stock bajo
+  * Sin stock
+* Administración del atributo personalizable mediante checkbox.
+
+Impacto:
+
+Mejora la calidad del catálogo, reduce errores operativos y facilita el control visual del inventario.
+
 ---
 
 ## Order
@@ -554,12 +580,14 @@ Evolución futura:
 
 # Historial del Documento
 
-Versión: 1.0
+Versión: v1.5.1
 
 Fecha de creación: Junio 2026
 
 Estado: Vigente
 
 Propietario: Proyecto CofiGO
+
+---
 
 Fin del documento.

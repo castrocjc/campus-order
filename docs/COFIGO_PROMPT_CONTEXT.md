@@ -83,16 +83,14 @@ Funcionalidades:
 
 Estado: Completo
 
-Funcionalidades:
+Incluye:
 
-* Crear producto
-* Editar producto
-* Activar producto
-* Desactivar producto
-* Gestión de stock
-* Gestión de imágenes
-* Productos personalizables
-* Administración del atributo customizable
+* Gestión de productos.
+* Productos personalizables.
+* Validaciones avanzadas.
+* Prevención de duplicados.
+* Indicadores visuales de stock.
+* Formato monetario automático.
 
 ---
 
@@ -315,5 +313,7 @@ Al iniciar una nueva sesión:
 5. Realizar cambios.
 6. Actualizar ChangeLog.
 7. Actualizar Current State si corresponde.
+
+---
 
 Fin del documento.

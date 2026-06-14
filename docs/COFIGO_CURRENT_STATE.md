@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.5
+v1.5.1
 
 Estado:
 
@@ -89,6 +89,11 @@ Funcionalidades:
 * Asociación a categoría
 * Productos personalizables
 * Administración completa del atributo customizable en creación y edición de productos
+* Validación de productos duplicados
+* Validación avanzada de formularios
+* Formato monetario automático
+* Indicadores visuales de stock
+* Limpieza automática de datos
 
 ---
 
@@ -412,5 +417,7 @@ Validaciones realizadas:
 # Responsable de Actualización
 
 Toda modificación funcional deberá actualizar este documento.
+
+---
 
 Fin del documento.
