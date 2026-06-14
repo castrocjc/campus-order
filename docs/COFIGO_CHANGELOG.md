@@ -963,6 +963,44 @@ Alcance:
 * Limpieza automática de datos corruptos.
 * Prevención de caída del Home después del login.
 
+### Estabilidad móvil Safari
+
+Se fortaleció la lectura de información almacenada en localStorage para evitar fallos en navegadores móviles.
+
+Incluye:
+
+* Lectura segura del carrito mediante try/catch.
+* Lectura segura del usuario autenticado mediante try/catch.
+* Limpieza automática de datos corruptos.
+* Prevención de errores de renderización en Home después del login.
+
+Archivos modificados:
+
+* home.tsx
+
+Impacto:
+
+* Mejora la estabilidad en Safari iPhone.
+* Sin cambios de backend.
+* Sin cambios de base de datos.
+
+### Corrección de indicador de ventas administrativas
+
+Se corrigió el cálculo del indicador de ventas mostrado en Administración de Pedidos.
+
+Incluye:
+
+* Exclusión de pedidos CANCELLED del cálculo de ventas.
+* Actualización consistente del total de ventas al cancelar pedidos.
+
+Archivos modificados:
+
+* admin-orders.tsx
+
+Impacto:
+
+* Indicadores financieros consistentes con el estado real de los pedidos.
+
 ## Frontend
 
 Archivos modificados:

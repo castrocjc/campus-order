@@ -205,6 +205,7 @@ Funcionalidades:
 * Consulta de pedidos
 * Cambio de estado
 * Refresco automático
+* Indicador de ventas excluye pedidos cancelados.
 
 ---
 
@@ -224,6 +225,8 @@ Funcionalidades:
 * Mensajes operativos visibles en móvil.
 * Protección ante datos locales corruptos en Safari iPhone.
 * Lectura segura de carrito y usuario desde localStorage.
+* Protección ante datos corruptos en localStorage.
+* Compatibilidad validada con Safari iPhone.
 
 Validado en:
 
@@ -462,6 +465,9 @@ Validaciones realizadas:
 * Validación de prevención de doble reversa de stock en pedidos ya cancelados.
 * Validación de login y carga de Home en Safari iPhone después de limpiar datos del sitio.
 * Validación de lectura segura de localStorage en Home.
+* Validación de Home después de login en Safari iPhone.
+* Validación de recuperación ante datos corruptos en localStorage.
+* Validación de actualización de ventas después de cancelar pedidos.
 
 ---
 

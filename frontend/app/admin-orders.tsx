@@ -112,10 +112,12 @@ export default function AdminOrdersScreen() {
     ? orders
     : orders.filter((o) => o.status === filter);
 
-  const totalRevenue = orders.reduce(
-    (sum, order) => sum + Number(order.totalAmount || 0),
-    0
-  );
+  const totalRevenue = orders
+    .filter((order) => order.status === "DELIVERED")
+    .reduce(
+      (sum, order) => sum + Number(order.totalAmount || 0),
+      0
+    );
 
   const countByStatus = (status: string) =>
     orders.filter((o) => o.status === status).length;

@@ -561,6 +561,11 @@ Validaciones implementadas:
 * La reversa de stock aplica tanto desde Mis Pedidos como desde Administración de Pedidos.
 * La reversa solo se ejecuta cuando el pedido cambia por primera vez a CANCELLED.
 
+Indicadores administrativos:
+
+* El indicador de ventas mostrado en Administración de Pedidos excluye pedidos en estado CANCELLED.
+* Los montos de ventas se recalculan automáticamente cuando un pedido es cancelado.
+
 Zona horaria oficial:
 
 America/Lima
@@ -627,7 +632,7 @@ Evolución futura:
 
 # Historial del Documento
 
-Versión: v1.5.6
+Versión: v1.5.7
 
 Fecha de creación: Junio 2026
 
