@@ -772,4 +772,48 @@ Crear una configuración administrativa de cafetería que permita gestionar:
 
 ---
 
+# DEC-018
+
+Fecha: 2026-06
+
+Título:
+Reversa de stock centralizada al cancelar pedidos
+
+Estado:
+Aprobada
+
+Contexto:
+
+El sistema descuenta stock correctamente al crear pedidos, pero al cancelar un pedido el inventario no se restauraba. La cancelación puede ejecutarse desde Mis Pedidos o desde Administración de Pedidos.
+
+Decisión:
+
+Centralizar la reversa de stock en backend dentro de OrderService.
+
+La reversa se ejecuta únicamente cuando el pedido cambia por primera vez a estado CANCELLED.
+
+Justificación:
+
+* Evitar lógica duplicada en frontend.
+* Garantizar consistencia desde cualquier punto de entrada.
+* Evitar doble devolución de stock.
+* Mantener el backend como fuente de verdad de las reglas de negocio.
+
+Consecuencias positivas:
+
+* Mayor consistencia de inventario.
+* Menor riesgo de errores operativos.
+* Flujo uniforme para usuario y administrador.
+* No requiere cambios en base de datos.
+
+Consecuencias negativas:
+
+* La lógica de inventario queda más acoplada al ciclo de vida del pedido.
+
+Evolución futura:
+
+Agregar manejo transaccional explícito con @Transactional en los métodos de creación, cancelación y actualización de estado de pedidos.
+
+---
+
 Fin del documento.

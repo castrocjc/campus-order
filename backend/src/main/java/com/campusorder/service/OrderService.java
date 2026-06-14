@@ -115,6 +115,13 @@ public class OrderService {
                 Order order = orderRepository.findById(orderId)
                                 .orElseThrow(() -> new BusinessException("Pedido no encontrado"));
 
+                if (
+                        status == OrderStatus.CANCELLED
+                        && order.getStatus() != OrderStatus.CANCELLED
+                ) {
+                        restoreStock(order);
+                }
+
                 order.setStatus(status);
 
                 return mapToDTO(orderRepository.save(order));
@@ -152,6 +159,8 @@ public class OrderService {
                 if (order.getStatus() != OrderStatus.RECEIVED) {
                         throw new BusinessException("Solo se puede cancelar un pedido en estado RECEIVED");
                 }
+
+                restoreStock(order);
 
                 order.setStatus(OrderStatus.CANCELLED);
 
@@ -191,4 +200,22 @@ public class OrderService {
                                         "La hora de recojo está fuera del horario de atención");
                 }
         }
+
+        private void restoreStock(Order order) {
+
+        for (OrderItem item : order.getItems()) {
+
+                Product product = productRepository.findById(item.getProductId())
+                        .orElseThrow(() ->
+                                new BusinessException(
+                                        "Producto no encontrado: "
+                                                + item.getProductName()));
+
+                product.setStock(
+                        product.getStock() + item.getQuantity()
+                );
+
+                productRepository.save(product);
+        }
+        }        
 }

@@ -557,6 +557,9 @@ Validaciones implementadas:
 * Debe existir al menos 20 minutos de preparación.
 * El frontend genera dinámicamente los horarios válidos.
 * El backend valida nuevamente la hora seleccionada.
+* Al cancelar un pedido, el stock de los productos asociados se restaura automáticamente.
+* La reversa de stock aplica tanto desde Mis Pedidos como desde Administración de Pedidos.
+* La reversa solo se ejecuta cuando el pedido cambia por primera vez a CANCELLED.
 
 Zona horaria oficial:
 
@@ -624,7 +627,7 @@ Evolución futura:
 
 # Historial del Documento
 
-Versión: v1.5.5
+Versión: v1.5.6
 
 Fecha de creación: Junio 2026
 

@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.5.5
+v1.5.6
 
 Estado:
 
@@ -171,6 +171,8 @@ Funcionalidades:
 * Validación de horario de atención de cafetería
 * Validación de tiempo mínimo de preparación
 * Validación horaria basada en zona oficial America/Lima.
+* Reversa automática de stock al cancelar pedidos.
+* Cancelación consistente desde Mis Pedidos y Administración de Pedidos.
 
 Reglas actuales de horario:
 
@@ -453,6 +455,9 @@ Validaciones realizadas:
 * Validación de flujo de compra móvil.
 * Validación de creación de pedidos con zona horaria America/Lima.
 * Validación de actualización inmediata de stock posterior al pedido.
+* Validación de reversa de stock al cancelar pedidos desde Mis Pedidos.
+* Validación de reversa de stock al cancelar pedidos desde Administración de Pedidos.
+* Validación de prevención de doble reversa de stock en pedidos ya cancelados.
 
 ---
 
