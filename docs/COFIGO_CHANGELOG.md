@@ -772,4 +772,25 @@ Sistema validado correctamente en local.
 
 ---
 
+## v1.5.2
+
+Fecha: 2026-06
+
+### Mejoras
+
+- Corrección de generación de horarios de recojo.
+- Eliminado horario inválido 21:30.
+- Refactorización de generatePickupOptions().
+- Uso efectivo de PICKUP_INTERVAL_MINUTES.
+- Corrección de warning ESLint por dependencia router en useEffect.
+- Limpieza de código TypeScript eliminando variable error no utilizada.
+
+### Impacto
+
+- Sin cambios de base de datos.
+- Sin cambios de API.
+- Sin cambios de despliegue.
+
+---
+
 Fin del documento.
