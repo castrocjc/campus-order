@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.5.2
+v1.5.3
 
 Estado:
 
@@ -94,6 +94,9 @@ Funcionalidades:
 * Formato monetario automático
 * Indicadores visuales de stock
 * Limpieza automática de datos
+* Filtros por estado (Activos, Inactivos, Sin stock)
+* Limpieza rápida de formulario
+* Cancelación de edición
 
 ---
 

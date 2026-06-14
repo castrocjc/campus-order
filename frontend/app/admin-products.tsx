@@ -59,6 +59,7 @@ export default function AdminProducts() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>("ALL");
+  const [statusFilter, setStatusFilter] = useState< "ALL" | "ACTIVE" | "INACTIVE" | "NO_STOCK" >("ALL");
   const [searchText, setSearchText] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<"success" | "error">(
@@ -280,7 +281,13 @@ export default function AdminProducts() {
         product.description?.toLowerCase().includes(search) ||
         product.categoryName?.toLowerCase().includes(search);
 
-      return matchesCategory && matchesSearch;
+      const matchesStatus =
+        statusFilter === "ALL" ||
+        (statusFilter === "ACTIVE" && product.active) ||
+        (statusFilter === "INACTIVE" && !product.active) ||
+        (statusFilter === "NO_STOCK" && product.stock === 0);
+
+      return matchesCategory && matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
       if (a.active !== b.active) {
@@ -393,6 +400,42 @@ export default function AdminProducts() {
                 value={searchText}
                 onChangeText={setSearchText}
               />
+
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.filterScroll}
+                contentContainerStyle={styles.filterContent}
+              >
+                {[
+                  { key: "ALL", label: "Todos" },
+                  { key: "ACTIVE", label: "Activos" },
+                  { key: "INACTIVE", label: "Inactivos" },
+                  { key: "NO_STOCK", label: "Sin stock" },
+                ].map((filter) => (
+                  <TouchableOpacity
+                    key={filter.key}
+                    style={[
+                      styles.filterChip,
+                      statusFilter === filter.key &&
+                        styles.filterChipActive,
+                    ]}
+                    onPress={() =>
+                      setStatusFilter(filter.key as any)
+                    }
+                  >
+                    <Text
+                      style={[
+                        styles.filterText,
+                        statusFilter === filter.key &&
+                          styles.filterTextActive,
+                      ]}
+                    >
+                      {filter.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
 
               <ScrollView
                 horizontal
@@ -702,14 +745,14 @@ export default function AdminProducts() {
                   <Text style={styles.saveButtonText}>{formButtonText}</Text>
                 </TouchableOpacity>
 
-                {editingProductId && (
-                  <TouchableOpacity
-                    style={styles.cancelButton}
-                    onPress={resetForm}
-                  >
-                    <Text style={styles.cancelButtonText}>Cancelar</Text>
-                  </TouchableOpacity>
-                )}
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={resetForm}
+                >
+                  <Text style={styles.cancelButtonText}>
+                    {editingProductId ? "Cancelar" : "Limpiar"}
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
