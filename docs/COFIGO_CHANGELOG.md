@@ -944,4 +944,38 @@ Impacto:
 
 ---
 
+---
+
+# v1.5.7 - Estabilidad móvil Safari
+
+Fecha: Junio 2026
+
+## Corrección
+
+### Protección ante datos locales corruptos
+
+Se fortaleció la lectura de datos almacenados en localStorage para evitar errores en navegadores móviles, especialmente Safari iPhone.
+
+Alcance:
+
+* Lectura segura del carrito.
+* Lectura segura del usuario autenticado.
+* Limpieza automática de datos corruptos.
+* Prevención de caída del Home después del login.
+
+## Frontend
+
+Archivos modificados:
+
+* home.tsx
+
+## Impacto
+
+* Sin cambios de backend.
+* Sin cambios de base de datos.
+* Sin cambios de API.
+* Mejora la estabilidad en navegadores móviles.
+
+---
+
 Fin del documento.

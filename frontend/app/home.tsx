@@ -55,8 +55,13 @@ export default function HomeScreen() {
   const [selectedSauces, setSelectedSauces] = useState<string[]>([]);  
 
   const [cart, setCart] = useState<any[]>(() => {
-    const savedCart = localStorage.getItem("cart");
-    return savedCart ? JSON.parse(savedCart) : [];
+    try {
+      const savedCart = localStorage.getItem("cart");
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch {
+      localStorage.removeItem("cart");
+      return [];
+    }
   });
 
   const categories = ["Todos", ...products.map((item) => item.category)];
@@ -121,20 +126,26 @@ export default function HomeScreen() {
       return;
     }
 
-    const storedUser = localStorage.getItem("user");
+    try {
+      const storedUser = localStorage.getItem("user");
 
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
 
-      const normalizedUser = {
-        ...parsedUser,
-        role: cleanRole(parsedUser.role),
-      };
+        const normalizedUser = {
+          ...parsedUser,
+          role: cleanRole(parsedUser.role),
+        };
 
-      localStorage.setItem("user", JSON.stringify(normalizedUser));
-      localStorage.setItem("role", normalizedUser.role);
+        localStorage.setItem("user", JSON.stringify(normalizedUser));
+        localStorage.setItem("role", normalizedUser.role);
 
-      setUser(normalizedUser);
+        setUser(normalizedUser);
+      }
+    } catch {
+      localStorage.removeItem("user");
+      localStorage.removeItem("role");
+      setUser(null);
     }
 
     loadProducts();

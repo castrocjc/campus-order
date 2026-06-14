@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.5.6
+v1.5.7
 
 Estado:
 
@@ -222,6 +222,8 @@ Funcionalidades:
 * Navegación administrativa visible en móvil.
 * Categorías con scroll horizontal.
 * Mensajes operativos visibles en móvil.
+* Protección ante datos locales corruptos en Safari iPhone.
+* Lectura segura de carrito y usuario desde localStorage.
 
 Validado en:
 
@@ -458,6 +460,8 @@ Validaciones realizadas:
 * Validación de reversa de stock al cancelar pedidos desde Mis Pedidos.
 * Validación de reversa de stock al cancelar pedidos desde Administración de Pedidos.
 * Validación de prevención de doble reversa de stock en pedidos ya cancelados.
+* Validación de login y carga de Home en Safari iPhone después de limpiar datos del sitio.
+* Validación de lectura segura de localStorage en Home.
 
 ---
 
