@@ -225,6 +225,14 @@ Mejora la calidad del catálogo, reduce errores operativos y facilita el control
 | createdAt   | LocalDateTime |
 | updatedAt   | LocalDateTime |
 
+Estados oficiales del pedido:
+
+* RECEIVED
+* IN_PREPARATION
+* READY_FOR_PICKUP
+* DELIVERED
+* CANCELLED
+
 ### Relación
 
 ```text
@@ -426,6 +434,28 @@ GET /api/orders/reports/sales-by-day
 
 ## Desarrollo
 
+## Pruebas Móviles
+
+Herramientas oficiales:
+
+* Xcode
+* iPhone Simulator
+
+Objetivo:
+
+Validar comportamiento responsive antes de despliegues productivos.
+
+Cobertura actual:
+
+* Home
+* Menú Digital
+* Carrito
+* Flujo de compra
+
+Estado:
+
+Adaptación Móvil Fase 1 completada.
+
 ### Frontend
 
 ```text
@@ -580,7 +610,7 @@ Evolución futura:
 
 # Historial del Documento
 
-Versión: v1.5.1
+Versión: v1.5.4
 
 Fecha de creación: Junio 2026
 
