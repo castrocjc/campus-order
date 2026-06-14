@@ -286,7 +286,15 @@ Estado:
 
 Estado:
 
-🔴 Pendiente
+🟡 Parcial
+
+Funcionalidades:
+
+- Notificación visual al usuario cuando un pedido está listo para recoger.
+
+Pendiente:
+
+- Notificación por correo cuando el pedido cambie a READY_FOR_PICKUP.
 
 ---
 

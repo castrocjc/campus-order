@@ -77,10 +77,17 @@ export function saveAuthData(data: any) {
 
   const decodedToken = decodeToken(data.token);
   console.log("TOKEN DECODIFICADO:", decodedToken);
+  console.log("DATA LOGIN:", data);
 
-  if (decodedToken) {
-    localStorage.setItem("user", JSON.stringify(decodedToken));
-  }
+  const userData = {
+    ...decodedToken,
+    ...data.user,
+    name: data.user?.name || data.name || decodedToken?.name || "",
+    email: data.user?.email || data.email || decodedToken?.sub || decodedToken?.email || "",
+    role: data.user?.role || data.role || decodedToken?.role || "USER",
+  };
+
+  localStorage.setItem("user", JSON.stringify(userData));
 }
 
 export function getToken() {

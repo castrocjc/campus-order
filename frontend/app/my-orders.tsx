@@ -35,6 +35,13 @@ export default function MyOrdersScreen() {
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
 
+      const readyOrder = data.find((order: any) => order.status === "READY_FOR_PICKUP");
+
+      if (readyOrder) {
+        setMessageType("success");
+        setMessage(`Tu pedido #${readyOrder.id} está listo para recoger.`);
+      }
+
       setOrders(data);
     } catch (error) {
       console.error("Error cargando pedidos", error);
