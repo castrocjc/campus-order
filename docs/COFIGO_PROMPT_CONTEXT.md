@@ -339,6 +339,7 @@ Validaciones recomendadas antes de despliegue:
 3. Validación Desktop Safari
 4. Validación iPhone Simulator
 5. Validación productiva en Vercel
+6. Validación Mobile Web en iPhone físico
 
 ---
 

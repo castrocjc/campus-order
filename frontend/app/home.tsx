@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Stack, useRouter } from "expo-router";
 import {
-  FlatList,
   Image,
   ScrollView,
   StyleSheet,
@@ -9,6 +8,7 @@ import {
   TouchableOpacity,
   View,
   Modal,
+  Platform,
   Dimensions,
 } from "react-native";
 import { getToken, logout } from "../src/services/authService";
@@ -25,14 +25,37 @@ const MIN_PREPARATION_MINUTES = 20;
 
 const isMobile = Dimensions.get("window").width < 768;
 
-const getProductImageSource = (product: any) => {
-  const imageUrl = product?.imageUrl || product?.image_url;
-
-  if (typeof imageUrl === "string" && imageUrl.trim().length > 0) {
-    return { uri: imageUrl.trim() };
+const getProductImageSource = (product: any, forcePlaceholder = false) => {
+  if (forcePlaceholder) {
+    return productPlaceholder;
   }
 
-  return productPlaceholder;
+  const imageUrl = product?.imageUrl || product?.image_url;
+
+  if (typeof imageUrl !== "string") {
+    return productPlaceholder;
+  }
+
+  const cleanUrl = imageUrl.trim();
+
+  if (cleanUrl.length === 0) {
+    return productPlaceholder;
+  }
+
+  try {
+    const parsedUrl = new URL(cleanUrl);
+
+    const isHttp = parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
+    const hasValidHost = parsedUrl.hostname.includes(".");
+
+    if (isHttp && hasValidHost) {
+      return { uri: cleanUrl };
+    }
+
+    return productPlaceholder;
+  } catch {
+    return productPlaceholder;
+  }
 };
 
 const cleanRole = (role?: string | null) => {
@@ -48,28 +71,37 @@ export default function HomeScreen() {
   const [pickupTime, setPickupTime] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [message, setMessage] = useState<string | null>(null);
-  const [messageType, setMessageType] = useState<"success" | "error">("success");
+  const [messageType, setMessageType] = useState<"success" | "error">(
+    "success",
+  );
 
   const [showCustomizationModal, setShowCustomizationModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
-  const [selectedSauces, setSelectedSauces] = useState<string[]>([]);  
+  const [selectedSauces, setSelectedSauces] = useState<string[]>([]);
 
   const [cart, setCart] = useState<any[]>(() => {
     try {
       const savedCart = localStorage.getItem("cart");
-      return savedCart ? JSON.parse(savedCart) : [];
+      const parsedCart = savedCart ? JSON.parse(savedCart) : [];
+
+      return Array.isArray(parsedCart) ? parsedCart : [];
     } catch {
       localStorage.removeItem("cart");
       return [];
     }
   });
 
-  const categories = ["Todos", ...products.map((item) => item.category)];
+  const categories = [
+    "Todos",
+    ...products
+      .map((item) => item?.category)
+      .filter((category) => Boolean(category)),
+  ];
 
   const filteredProducts =
     selectedCategory === "Todos"
       ? products
-      : products.filter((item) => item.category === selectedCategory);
+      : products.filter((item) => item?.category === selectedCategory);
 
   const generatePickupOptions = () => {
     const options: string[] = [];
@@ -77,7 +109,7 @@ export default function HomeScreen() {
     const peruNow = new Date(
       new Date().toLocaleString("en-US", {
         timeZone: "America/Lima",
-      })
+      }),
     );
 
     const now = peruNow;
@@ -89,7 +121,7 @@ export default function HomeScreen() {
     */
 
     const minimumTime = new Date(
-      now.getTime() + MIN_PREPARATION_MINUTES * 60000
+      now.getTime() + MIN_PREPARATION_MINUTES * 60000,
     );
 
     const openingTime = new Date();
@@ -106,7 +138,7 @@ export default function HomeScreen() {
         const minute = slot.getMinutes();
 
         options.push(
-          `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
+          `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`,
         );
       }
 
@@ -149,7 +181,7 @@ export default function HomeScreen() {
     }
 
     loadProducts();
-  }, [router]);  
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -157,13 +189,23 @@ export default function HomeScreen() {
 
   const loadProducts = async () => {
     try {
+
       const response = await getMenu();
 
-      const menuList = Array.isArray(response)
+      const rawMenuList = Array.isArray(response)
         ? response
-        : response?.data ?? [];
+        : (response?.data ?? []);
+
+      const menuList = rawMenuList
+        .map((item: any) => ({
+          ...item,
+          category: item?.category ?? item?.categoryName ?? "Sin categoría",
+          products: Array.isArray(item?.products) ? item.products : [],
+        }))
+        .filter((item: any) => item.products.length > 0);
 
       setProducts(menuList);
+
     } catch (error) {
       console.error("Error cargando menú", error);
     } finally {
@@ -171,10 +213,7 @@ export default function HomeScreen() {
     }
   };
 
-  const showMessage = (
-    text: string,
-    type: "success" | "error" = "success"
-  ) => {
+  const showMessage = (text: string, type: "success" | "error" = "success") => {
     setMessageType(type);
     setMessage(text);
 
@@ -196,25 +235,19 @@ export default function HomeScreen() {
 
     const customizationNotes = selectedSauces.join(", ");
 
-    addToCartDirect(
-      selectedProduct,
-      customizationNotes
-    );
+    addToCartDirect(selectedProduct, customizationNotes);
 
     setShowCustomizationModal(false);
     setSelectedProduct(null);
     setSelectedSauces([]);
   };
 
-  const addToCartDirect = (
-    product: any,
-    customizationNotes: string = ""
-  ) => {    
+  const addToCartDirect = (product: any, customizationNotes: string = "") => {
     setCart((currentCart) => {
       const existing = currentCart.find(
         (i) =>
           i.id === product.id &&
-          (i.customizationNotes || "") === customizationNotes
+          (i.customizationNotes || "") === customizationNotes,
       );
 
       if (existing && existing.quantity >= product.stock) {
@@ -234,7 +267,9 @@ export default function HomeScreen() {
       if (existing) {
         return currentCart.map((i) =>
           i.id === product.id &&
-          (i.customizationNotes || "") === customizationNotes ? { ...i, quantity: i.quantity + 1 } : i
+          (i.customizationNotes || "") === customizationNotes
+            ? { ...i, quantity: i.quantity + 1 }
+            : i,
         );
       }
 
@@ -249,23 +284,21 @@ export default function HomeScreen() {
     });
   };
 
-const addToCart = (product: any) => {
-  console.log("PRODUCTO SELECCIONADO:", product);
-  console.log("CUSTOMIZABLE:", product.customizable);
+  const addToCart = (product: any) => {
 
-  if (product.customizable) {
-    openCustomizationModal(product);
-    return;
-  }
+    if (product.customizable) {
+      openCustomizationModal(product);
+      return;
+    }
 
-  addToCartDirect(product);
-};
+    addToCartDirect(product);
+  };
 
   const toggleSauce = (sauce: string) => {
     setSelectedSauces((current) =>
       current.includes(sauce)
         ? current.filter((s) => s !== sauce)
-        : [...current, sauce]
+        : [...current, sauce],
     );
   };
 
@@ -275,15 +308,15 @@ const addToCart = (product: any) => {
         .map((item) =>
           item.id === productId
             ? { ...item, quantity: item.quantity - 1 }
-            : item
+            : item,
         )
-        .filter((item) => item.quantity > 0)
+        .filter((item) => item.quantity > 0),
     );
   };
 
   const removeFromCart = (
     productId: number,
-    customizationNotes: string = ""
+    customizationNotes: string = "",
   ) => {
     setCart((currentCart) =>
       currentCart.filter(
@@ -291,8 +324,8 @@ const addToCart = (product: any) => {
           !(
             item.id === productId &&
             (item.customizationNotes || "") === customizationNotes
-          )
-      )
+          ),
+      ),
     );
   };
 
@@ -302,10 +335,10 @@ const addToCart = (product: any) => {
       return;
     }
 
-  if (pickupOptions.length === 0) {
-    showMessage("No hay horarios disponibles para hoy", "error");
-    return;
-  }
+    if (pickupOptions.length === 0) {
+      showMessage("No hay horarios disponibles para hoy", "error");
+      return;
+    }
 
     if (!pickupTime) {
       showMessage("Selecciona una hora de recojo", "error");
@@ -313,10 +346,7 @@ const addToCart = (product: any) => {
     }
 
     if (!pickupOptions.includes(pickupTime)) {
-      showMessage(
-        "La hora seleccionada ya no está disponible",
-        "error"
-      );
+      showMessage("La hora seleccionada ya no está disponible", "error");
       return;
     }
 
@@ -330,14 +360,12 @@ const addToCart = (product: any) => {
       localStorage.removeItem("cart");
 
       await loadProducts();
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "Error creando pedido";
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Error creando pedido";
 
-        showMessage(errorMessage, "error");
-      }
+      showMessage(errorMessage, "error");
+    }
   };
 
   const handleLogout = () => {
@@ -366,13 +394,9 @@ const addToCart = (product: any) => {
               Bienvenido {user?.name || "Usuario"}
             </Text>
 
-            <Text style={styles.roleText}>
-              Rol: {user?.role || "USER"}
-            </Text>
+            <Text style={styles.roleText}>Rol: {user?.role || "USER"}</Text>
 
-            <Text style={styles.subtitle}>
-              Pide hoy, recoge sin esperas
-            </Text>
+            <Text style={styles.subtitle}>Pide hoy, recoge sin esperas</Text>
           </View>
 
           <ScrollView
@@ -405,7 +429,7 @@ const addToCart = (product: any) => {
                   onPress={() => router.push("/admin-users")}
                 >
                   <Text style={styles.backBtnText}>Usuarios</Text>
-                </TouchableOpacity>                
+                </TouchableOpacity>
               </>
             )}
 
@@ -428,12 +452,7 @@ const addToCart = (product: any) => {
           </View>
         )}
 
-          <View
-            style={[
-              styles.mainLayout,
-              isMobile && styles.mainLayoutMobile,
-            ]}
-          >
+        <View style={[styles.mainLayout, isMobile && styles.mainLayoutMobile]}>
           <View
             style={[
               styles.productsPanel,
@@ -447,8 +466,8 @@ const addToCart = (product: any) => {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={[
-                styles.categoryFilterContent,
-                isMobile && styles.categoryFilterContentMobile,
+                  styles.categoryFilterContent,
+                  isMobile && styles.categoryFilterContentMobile,
                 ]}
               >
                 {categories.map((category) => (
@@ -456,14 +475,16 @@ const addToCart = (product: any) => {
                     key={category}
                     style={[
                       styles.categoryFilterButton,
-                      selectedCategory === category && styles.categoryFilterButtonActive,
+                      selectedCategory === category &&
+                        styles.categoryFilterButtonActive,
                     ]}
                     onPress={() => setSelectedCategory(category)}
                   >
                     <Text
                       style={[
                         styles.categoryFilterText,
-                        selectedCategory === category && styles.categoryFilterTextActive,
+                        selectedCategory === category &&
+                          styles.categoryFilterTextActive,
                       ]}
                     >
                       {category}
@@ -473,73 +494,70 @@ const addToCart = (product: any) => {
               </ScrollView>
             </View>
 
-            <FlatList
-              data={filteredProducts}
-              keyExtractor={(item, index) => `${item.category}-${index}`}
+            <ScrollView
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.productsListContent}
-              renderItem={({ item }) => (
-                <View style={styles.categorySection}>
+            >
+              {filteredProducts.map((item) => (
+                <View key={item.category} style={styles.categorySection}>
                   <Text style={styles.categoryTitle}>{item.category}</Text>
 
-                  <View style={styles.productsGrid}>
-                    {item.products.map((product: any) => (
-                      <View
-                        key={product.id}
-                        style={[
-                          styles.productCard,
-                          isMobile && styles.productCardMobile,
-                        ]}
-                      >
-                        <Image
-                          source={getProductImageSource(product)}
-                          style={styles.productImage}
-                          resizeMode="cover"
-                        />
+                  {Array.isArray(item.products) && (
+                    <View style={styles.productsGrid}>
+                      {item.products.map((product: any) => (
+                        <View
+                          key={product.id}
+                          style={[
+                            styles.productCard,
+                            isMobile && styles.productCardMobile,
+                          ]}
+                        >
+                          <Image
+                            source={getProductImageSource(product, isMobile)}
+                            style={styles.productImage}
+                            resizeMode="cover"
+                          />
 
-                        <View style={styles.productInfo}>
-                          <Text style={styles.productName}>{product.name}</Text>
-                          <Text style={styles.productDescription} numberOfLines={2}>
-                            {product.description}
-                          </Text>
-
-                          <View style={styles.productMetaRow}>
-                            <Text style={styles.productPrice}>S/ {product.price}</Text>
-                            <Text style={styles.productStock}>Stock: {product.stock}</Text>
-                          </View>
-
-                          <TouchableOpacity
-                            style={[
-                              styles.addButton,
-                              (product.stock === 0 || pickupOptions.length === 0) &&
-                                styles.disabledButton,
-                            ]}
-                            onPress={() => addToCart(product)}
-                            disabled={product.stock === 0 || pickupOptions.length === 0}
-                          >
-                            <Text style={styles.addButtonText}>
-                              {product.stock === 0
-                                ? "Sin stock"
-                                : pickupOptions.length === 0
-                                ? "Fuera de horario"
-                                : "+ Agregar"}
+                          <View style={styles.productInfo}>
+                            <Text style={styles.productName}>{product.name}</Text>
+                            <Text style={styles.productDescription} numberOfLines={2}>
+                              {product.description}
                             </Text>
-                          </TouchableOpacity>
+
+                            <View style={styles.productMetaRow}>
+                              <Text style={styles.productPrice}>S/ {product.price}</Text>
+                              <Text style={styles.productStock}>Stock: {product.stock}</Text>
+                            </View>
+
+                            <TouchableOpacity
+                              style={[
+                                styles.addButton,
+                                (product.stock === 0 || pickupOptions.length === 0) &&
+                                  styles.addButtonDisabled,
+                              ]}
+                              disabled={product.stock === 0 || pickupOptions.length === 0}
+                              onPress={() => addToCart(product)}
+                            >
+                              <Text style={styles.addButtonText}>
+                                {product.stock === 0
+                                  ? "Sin stock"
+                                  : pickupOptions.length === 0
+                                  ? "Fuera de horario"
+                                  : "+ Agregar"}
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
                         </View>
-                      </View>
-                    ))}
-                  </View>
+                      ))}
+                    </View>
+                  )}
                 </View>
-              )}
-            />
+              ))}
+            </ScrollView>
+
           </View>
 
-          <View
-            style={[
-              styles.sidePanel,
-              isMobile && styles.sidePanelMobile,
-            ]}
-          >
+          <View style={[styles.sidePanel, isMobile && styles.sidePanelMobile]}>
             <View style={styles.cartBox}>
               <Text style={styles.cartTitle}>Carrito</Text>
               <Text style={styles.cartSubtitle}>Resumen</Text>
@@ -565,7 +583,8 @@ const addToCart = (product: any) => {
                         <Text
                           style={[
                             styles.pickupButtonText,
-                            pickupTime === time && styles.pickupButtonTextActive,
+                            pickupTime === time &&
+                              styles.pickupButtonTextActive,
                           ]}
                         >
                           {time}
@@ -573,7 +592,7 @@ const addToCart = (product: any) => {
                       </TouchableOpacity>
                     ))
                   )}
-                </View>                
+                </View>
               </View>
 
               {cart.length === 0 ? (
@@ -589,9 +608,7 @@ const addToCart = (product: any) => {
                       style={styles.cartItem}
                     >
                       <View style={styles.cartItemInfo}>
-                        <Text style={styles.cartItemName}>
-                          {item.name}
-                        </Text>
+                        <Text style={styles.cartItemName}>{item.name}</Text>
 
                         {item.customizationNotes ? (
                           <Text style={styles.customizationText}>
@@ -627,12 +644,12 @@ const addToCart = (product: any) => {
 
                         <TouchableOpacity
                           style={styles.removeButton}
-                            onPress={() =>
-                              removeFromCart(
-                                item.id,
-                                item.customizationNotes || ""
-                              )
-                            }
+                          onPress={() =>
+                            removeFromCart(
+                              item.id,
+                              item.customizationNotes || "",
+                            )
+                          }
                         >
                           <Text style={styles.removeButtonText}>x</Text>
                         </TouchableOpacity>
@@ -645,11 +662,17 @@ const addToCart = (product: any) => {
               <View style={styles.totalRow}>
                 <Text style={styles.cartTotalLabel}>Total:</Text>
                 <Text style={styles.cartTotalAmount}>
-                  S/ {cart.reduce((t, i) => t + i.price * i.quantity, 0).toFixed(2)}
+                  S/{" "}
+                  {cart
+                    .reduce((t, i) => t + i.price * i.quantity, 0)
+                    .toFixed(2)}
                 </Text>
               </View>
 
-              <TouchableOpacity style={styles.clearButton} onPress={() => setCart([])}>
+              <TouchableOpacity
+                style={styles.clearButton}
+                onPress={() => setCart([])}
+              >
                 <Text style={styles.clearButtonText}>Vaciar carrito</Text>
               </TouchableOpacity>
             </View>
@@ -664,7 +687,7 @@ const addToCart = (product: any) => {
                 >
                   {message}
                 </Text>
-              )}              
+              )}
               <TouchableOpacity
                 style={[
                   styles.mainButton,
@@ -688,21 +711,12 @@ const addToCart = (product: any) => {
         </View>
       </View>
 
-      <Modal
-        visible={showCustomizationModal}
-        transparent
-        animationType="fade"
-      >
+      <Modal visible={showCustomizationModal} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Personaliza tu pedido</Text>
 
-            <Text style={styles.modalTitle}>
-              Personaliza tu pedido
-            </Text>
-
-            <Text style={styles.modalProductName}>
-              {selectedProduct?.name}
-            </Text>
+            <Text style={styles.modalProductName}>{selectedProduct?.name}</Text>
 
             <Text style={styles.modalSubtitle}>
               Selecciona las salsas que deseas agregar
@@ -714,21 +728,16 @@ const addToCart = (product: any) => {
                 { name: "Ketchup", icon: "🍅" },
                 { name: "Mostaza", icon: "🌭" },
               ].map((sauce) => {
-                const selected = selectedSauces.includes(
-                  sauce.name
-                );
+                const selected = selectedSauces.includes(sauce.name);
 
                 return (
                   <TouchableOpacity
                     key={sauce.name}
                     style={[
                       styles.sauceChip,
-                      selected &&
-                        styles.sauceChipSelected,
+                      selected && styles.sauceChipSelected,
                     ]}
-                    onPress={() =>
-                      toggleSauce(sauce.name)
-                    }
+                    onPress={() => toggleSauce(sauce.name)}
                   >
                     <Text style={styles.sauceChipText}>
                       {selected ? "✓ " : ""}
@@ -746,30 +755,24 @@ const addToCart = (product: any) => {
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 style={styles.cancelButton}
-                onPress={() =>
-                  setShowCustomizationModal(false)
-                }
+                onPress={() => setShowCustomizationModal(false)}
               >
-                <Text style={styles.buttonText}>
-                  Cancelar
-                </Text>
+                <Text style={styles.buttonText}>Cancelar</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.confirmButton}
                 onPress={confirmCustomization}
               >
-                <Text style={styles.buttonText}>
-                  Agregar al carrito
-                </Text>
+                <Text style={styles.buttonText}>Agregar al carrito</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
-
     </>
   );
+
 }
 
 const styles = StyleSheet.create({
@@ -807,7 +810,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
     color: "#7a6a61",
-  },  
+  },
   headerActions: {
     flexDirection: "row",
     gap: 8,
@@ -1028,7 +1031,7 @@ const styles = StyleSheet.create({
     color: "#b42318",
     fontWeight: "800",
     marginTop: 4,
-  },  
+  },
   cartItemsScroll: {
     maxHeight: 250,
     marginTop: 6,
@@ -1127,7 +1130,7 @@ const styles = StyleSheet.create({
   },
   mainButtonDisabled: {
     opacity: 0.5,
-  },  
+  },
   mainButtonText: {
     color: "#fff",
     textAlign: "center",
@@ -1331,5 +1334,5 @@ const styles = StyleSheet.create({
   mobileCartMessageError: {
     backgroundColor: "#fdecea",
     color: "#b71c1c",
-  },  
+  },
 });
