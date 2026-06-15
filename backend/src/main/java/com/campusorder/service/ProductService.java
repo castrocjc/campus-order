@@ -33,6 +33,10 @@ public class ProductService {
                 Category category = categoryRepository.findById(dto.getCategoryId())
                                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
+                if (!Boolean.TRUE.equals(category.getActive())) {
+                        throw new RuntimeException("No se puede crear un producto con una categoría inactiva.");
+                }
+
                 String productName = dto.getName().trim();
 
                 if (productRepository.existsByNameIgnoreCase(productName)) {
@@ -64,7 +68,7 @@ public class ProductService {
         }
 
         public List<ProductResponseDTO> getAllProducts() {
-                return productRepository.findByActiveTrue()
+                return productRepository.findByActiveTrueAndCategory_ActiveTrue()
                                 .stream()
                                 .map(this::mapToDTO)
                                 .toList();
@@ -117,6 +121,10 @@ public class ProductService {
                 Category category = categoryRepository.findById(dto.getCategoryId())
                                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
+                if (!Boolean.TRUE.equals(category.getActive())) {
+                        throw new RuntimeException("No se puede asignar una categoría inactiva al producto.");
+                }
+
                 String productName = dto.getName().trim();
 
                 if (
@@ -154,7 +162,7 @@ public class ProductService {
 
         public List<MenuResponseDTO> getMenu() {
 
-                List<Product> products = productRepository.findByActiveTrue();
+                List<Product> products = productRepository.findByActiveTrueAndCategory_ActiveTrue();
 
                 return products.stream()
                                 .collect(java.util.stream.Collectors.groupingBy(p -> p.getCategory().getName()))

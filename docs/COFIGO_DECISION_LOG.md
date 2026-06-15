@@ -909,4 +909,48 @@ Implementar validación obligatoria de URLs de imágenes en backend.
 
 ---
 
+# DEC-021
+
+Fecha: 2026-06
+
+Título:
+Gestión de Categorías y protección de integridad del catálogo
+
+Estado:
+Aprobada
+
+Contexto:
+
+Los productos dependen funcionalmente de una categoría. Desactivar categorías con productos activos podría provocar inconsistencias en el menú digital y en la administración del catálogo.
+
+Decisión:
+
+Implementar gestión administrativa completa de categorías mediante activación y desactivación lógica.
+
+Reglas:
+
+* Las categorías no se eliminan físicamente.
+* No se permite desactivar categorías que tengan productos activos asociados.
+* Los productos pertenecientes a categorías inactivas no se muestran en el menú digital.
+* Se previenen categorías duplicadas ignorando mayúsculas y minúsculas.
+
+Justificación:
+
+* Preservar integridad del catálogo.
+* Evitar inconsistencias operativas.
+* Mantener trazabilidad histórica.
+* Mantener alineación con la estrategia de eliminación lógica utilizada en productos.
+
+Consecuencias positivas:
+
+* Mayor calidad de datos.
+* Menor riesgo operativo.
+* Administración consistente.
+
+Consecuencias negativas:
+
+* Requiere validaciones adicionales entre productos y categorías.
+
+---
+
 Fin del documento.

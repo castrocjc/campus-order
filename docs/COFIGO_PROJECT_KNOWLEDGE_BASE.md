@@ -113,6 +113,7 @@ UserService
 ProductService
 OrderService
 EmailService
+CategoryService
 ```
 
 ### Repositories
@@ -381,9 +382,17 @@ GET /api/users
 ## Categorías
 
 ```http
-POST /api/categories
+POST  /api/categories
 
-GET /api/categories
+GET   /api/categories
+
+GET   /api/categories/admin
+
+PUT   /api/categories/{id}
+
+PATCH /api/categories/{id}/activate
+
+PATCH /api/categories/{id}/deactivate
 ```
 
 ---
@@ -448,6 +457,7 @@ GET /api/orders/reports/sales-by-day
 | Reporte Ventas por Día    | Parcial  |
 | Recuperar Contraseña      | Completo |
 | Gestión de Usuarios       | Completo |
+| Gestión de Categorías     | Completo |
 
 Capacidades actuales:
 
@@ -467,7 +477,6 @@ Capacidades actuales:
 ## Prioridad Alta
 
 * Dashboard Administrativo
-* Gestión de Categorías
 * Reportes Frontend
 
 ## Prioridad Media
@@ -716,7 +725,7 @@ Evolución futura:
 
 # Historial del Documento
 
-Versión: v1.5.9
+Versión: v1.5.11
 
 Fecha de creación: Junio 2026
 
