@@ -1016,4 +1016,59 @@ Archivos modificados:
 
 ---
 
+# v1.5.8 - Seguridad y Control de Usuarios
+
+Fecha: Junio 2026
+
+## Mejoras
+
+### Validación obligatoria de correo institucional
+
+Se centralizó la validación de correo institucional en backend.
+
+Alcance:
+
+* Registro público.
+* Creación administrativa de usuarios.
+* Edición administrativa de usuarios.
+
+### Seguridad administrativa
+
+Se eliminaron de la interfaz administrativa:
+
+* verificationCode
+* passwordResetCode
+
+### Gestión de usuarios pendientes
+
+Se incorporó la opción de reenviar código de verificación desde administración.
+
+## Backend
+
+Archivos modificados:
+
+* UserService.java
+
+## Frontend
+
+Archivos modificados:
+
+* admin-users.tsx
+* userService.ts
+
+## Validaciones realizadas
+
+* Registro con correo institucional.
+* Bloqueo de correos externos.
+* Creación administrativa.
+* Edición administrativa.
+* Reenvío de código.
+* Ocultamiento de códigos sensibles.
+
+## Impacto
+
+Mayor seguridad y consistencia de reglas de negocio.
+
+---
+
 Fin del documento.
