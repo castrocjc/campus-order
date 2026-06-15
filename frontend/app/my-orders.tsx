@@ -204,7 +204,7 @@ return (
               ))}
             </View>
 
-            {item.status !== "CANCELLED" && item.status !== "DELIVERED" ? (
+            {item.status === "RECEIVED" ? (
               <TouchableOpacity
                 style={styles.cancelButton}
                 onPress={() => handleCancelOrder(item.id)}

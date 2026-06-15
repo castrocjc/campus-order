@@ -29,8 +29,24 @@ export default function RegisterScreen() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleRegister = async () => {
-    if (!name.trim() || !email.trim() || !password.trim()) {
-      setErrorMessage("Completa nombre, correo y contraseña.");
+    const missingFields = [];
+
+    if (!name.trim()) {
+      missingFields.push("Nombre");
+    }
+
+    if (!email.trim()) {
+      missingFields.push("Correo");
+    }
+
+    if (!password.trim()) {
+      missingFields.push("Contraseña");
+    }
+
+    if (missingFields.length > 0) {
+      setErrorMessage(
+        `Complete los campos obligatorios: ${missingFields.join(", ")}.`
+      );
       return;
     }
 

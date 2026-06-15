@@ -639,6 +639,12 @@ Validaciones implementadas:
 * La reversa de stock aplica tanto desde Mis Pedidos como desde Administración de Pedidos.
 * La reversa solo se ejecuta cuando el pedido cambia por primera vez a CANCELLED.
 
+Cancelación de pedidos:
+
+- Solo se permite cancelar pedidos en estado RECEIVED.
+- Pedidos en preparación, listos para recoger, entregados o cancelados no pueden ser cancelados.
+- El backend actúa como fuente de verdad de esta regla.
+
 Indicadores administrativos:
 
 * El indicador de ventas mostrado en Administración de Pedidos excluye pedidos en estado CANCELLED.
