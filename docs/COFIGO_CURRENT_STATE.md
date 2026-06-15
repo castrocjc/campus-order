@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.5.7
+v1.5.8
 
 Estado:
 
@@ -63,6 +63,10 @@ Funcionalidades:
 * Activación y desactivación.
 * Reseteo de contraseña.
 * Gestión de roles.
+* Validación obligatoria de correo institucional.
+* Reenvío de código de verificación desde mantenimiento para usuarios pendientes.
+* Ocultamiento de códigos sensibles en pantalla administrativa.
+* Usuarios creados por ADMIN se consideran verificados administrativamente.
 
 Roles soportados:
 
@@ -468,6 +472,10 @@ Validaciones realizadas:
 * Validación de Home después de login en Safari iPhone.
 * Validación de recuperación ante datos corruptos en localStorage.
 * Validación de actualización de ventas después de cancelar pedidos.
+* Validación de correo institucional en registro público.
+* Validación de correo institucional en administración de usuarios.
+* Validación de reenvío de código desde mantenimiento.
+* Validación de ocultamiento de códigos sensibles.
 
 ---
 

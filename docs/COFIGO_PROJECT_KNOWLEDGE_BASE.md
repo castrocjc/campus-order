@@ -308,6 +308,48 @@ Funcionalidades:
 
 ---
 
+## Regla de Correo Institucional
+
+CofiGO exige que todos los usuarios utilicen un correo institucional válido.
+
+La validación se encuentra centralizada en backend mediante UserService y aplica a:
+
+* Registro público de usuarios.
+* Creación administrativa de usuarios.
+* Edición administrativa de usuarios.
+
+La configuración del dominio permitido se realiza mediante:
+
+```properties
+app.institution.email-domain
+```
+
+### Usuarios creados por Administración
+
+Los usuarios creados desde la pantalla administrativa se consideran verificados administrativamente.
+
+Se crean con:
+
+* active = true
+* emailVerified = true
+
+No requieren pasar por el flujo de verificación por código.
+
+Si posteriormente cambian de rol, mantienen su estado de verificación.
+
+### Seguridad
+
+La pantalla administrativa no debe mostrar:
+
+* verificationCode
+* passwordResetCode
+
+Para usuarios pendientes se permite únicamente:
+
+* Reenviar código de verificación.
+
+---
+
 # 5. APIs Principales
 
 ## Autenticación
@@ -406,6 +448,17 @@ GET /api/orders/reports/sales-by-day
 | Reporte Ventas por Día    | Parcial  |
 | Recuperar Contraseña      | Completo |
 | Gestión de Usuarios       | Completo |
+
+Capacidades actuales:
+
+* Consulta de usuarios.
+* Creación de usuarios administrativos.
+* Edición de usuarios.
+* Activación y desactivación.
+* Reseteo de contraseña.
+* Validación de correo institucional.
+* Reenvío de código de verificación para usuarios pendientes.
+* Ocultamiento de códigos sensibles en administración.
 
 ---
 
@@ -632,7 +685,7 @@ Evolución futura:
 
 # Historial del Documento
 
-Versión: v1.5.7
+Versión: v1.5.8
 
 Fecha de creación: Junio 2026
 

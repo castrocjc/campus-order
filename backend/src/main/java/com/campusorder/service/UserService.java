@@ -36,15 +36,7 @@ public class UserService {
 
         public UserResponseDTO createUser(UserRequestDTO dto) {
 
-                String email = dto.getEmail().trim().toLowerCase();
-                String allowedDomain = institutionEmailDomain.trim().toLowerCase();
-
-                if (!email.endsWith(allowedDomain)) {
-                        throw new ResponseStatusException(
-                                        HttpStatus.BAD_REQUEST,
-                                        "Solo se permiten correos institucionales con dominio "
-                                                        + institutionEmailDomain);
-                }
+                String email = normalizeAndValidateInstitutionalEmail(dto.getEmail());
 
                 if (userRepository.findByEmail(email).isPresent()) {
                         throw new ResponseStatusException(
@@ -149,118 +141,137 @@ public class UserService {
         }
 
         public UserResponseDTO getUserById(Long id) {
-        User user = findUserById(id);
-        return mapToResponseDTO(user);
+                User user = findUserById(id);
+                return mapToResponseDTO(user);
         }
 
         public UserResponseDTO createAdminUser(UserRequestDTO dto) {
 
-        String email = dto.getEmail().trim().toLowerCase();
+                String email = normalizeAndValidateInstitutionalEmail(dto.getEmail());
 
-        if (userRepository.findByEmail(email).isPresent()) {
-                throw new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "El correo ya se encuentra registrado."
-                );
-        }
+                if (userRepository.findByEmail(email).isPresent()) {
+                        throw new ResponseStatusException(
+                                        HttpStatus.CONFLICT,
+                                        "El correo ya se encuentra registrado.");
+                }
 
-        String role = normalizeAndValidateRole(dto.getRole());
+                String role = normalizeAndValidateRole(dto.getRole());
 
-        User user = new User();
-        user.setName(dto.getName());
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setRole(role);
-        user.setActive(true);
-        user.setEmailVerified(true);
-        user.setVerificationCode(null);
-        user.setVerificationCodeExpiresAt(null);
-        user.setPasswordResetCode(null);
-        user.setPasswordResetCodeExpiresAt(null);
+                User user = new User();
+                user.setName(dto.getName());
+                user.setEmail(email);
+                user.setPassword(passwordEncoder.encode(dto.getPassword()));
+                user.setRole(role);
+                user.setActive(true);
+                user.setEmailVerified(true);
+                user.setVerificationCode(null);
+                user.setVerificationCodeExpiresAt(null);
+                user.setPasswordResetCode(null);
+                user.setPasswordResetCodeExpiresAt(null);
 
-        User savedUser = userRepository.save(user);
+                User savedUser = userRepository.save(user);
 
-        return mapToResponseDTO(savedUser);
+                return mapToResponseDTO(savedUser);
         }
 
         public UserResponseDTO updateUser(Long id, UserUpdateRequestDTO dto) {
 
-        User user = findUserById(id);
+                User user = findUserById(id);
 
-        String email = dto.getEmail().trim().toLowerCase();
+                String email = normalizeAndValidateInstitutionalEmail(dto.getEmail());
 
-        userRepository.findByEmail(email).ifPresent(existingUser -> {
-                if (!existingUser.getId().equals(id)) {
-                throw new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "El correo ya se encuentra registrado por otro usuario."
-                );
-                }
-        });
+                userRepository.findByEmail(email).ifPresent(existingUser -> {
+                        if (!existingUser.getId().equals(id)) {
+                                throw new ResponseStatusException(
+                                                HttpStatus.CONFLICT,
+                                                "El correo ya se encuentra registrado por otro usuario.");
+                        }
+                });
 
-        user.setName(dto.getName());
-        user.setEmail(email);
-        user.setRole(normalizeAndValidateRole(dto.getRole()));
+                user.setName(dto.getName());
+                user.setEmail(email);
+                user.setRole(normalizeAndValidateRole(dto.getRole()));
 
-        User savedUser = userRepository.save(user);
+                User savedUser = userRepository.save(user);
 
-        return mapToResponseDTO(savedUser);
+                return mapToResponseDTO(savedUser);
         }
 
         public UserResponseDTO toggleUserActive(Long id) {
 
-        User user = findUserById(id);
+                User user = findUserById(id);
 
-        user.setActive(!Boolean.TRUE.equals(user.getActive()));
+                user.setActive(!Boolean.TRUE.equals(user.getActive()));
 
-        User savedUser = userRepository.save(user);
+                User savedUser = userRepository.save(user);
 
-        return mapToResponseDTO(savedUser);
+                return mapToResponseDTO(savedUser);
         }
 
         public String resetPasswordByAdmin(Long id) {
 
-        User user = findUserById(id);
+                User user = findUserById(id);
 
-        String temporaryPassword = "Temp" + String.format("%06d", new Random().nextInt(999999));
+                String temporaryPassword = "Temp" + String.format("%06d", new Random().nextInt(999999));
 
-        user.setPassword(passwordEncoder.encode(temporaryPassword));
-        user.setPasswordResetCode(null);
-        user.setPasswordResetCodeExpiresAt(null);
+                user.setPassword(passwordEncoder.encode(temporaryPassword));
+                user.setPasswordResetCode(null);
+                user.setPasswordResetCodeExpiresAt(null);
 
-        userRepository.save(user);
+                userRepository.save(user);
 
-        return temporaryPassword;
+                return temporaryPassword;
         }
 
         private User findUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Usuario no encontrado."
-                ));
+                return userRepository.findById(id)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND,
+                                                "Usuario no encontrado."));
+        }
+
+        private String normalizeAndValidateInstitutionalEmail(String rawEmail) {
+
+        if (rawEmail == null || rawEmail.isBlank()) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "El correo es obligatorio."
+                );
+        }
+
+        String email = rawEmail.trim().toLowerCase();
+        String allowedDomain = institutionEmailDomain.trim().toLowerCase();
+
+        if (!email.endsWith(allowedDomain)) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Solo se permiten correos institucionales con dominio " + institutionEmailDomain
+                );
+        }
+
+        return email;
         }
 
         private String normalizeAndValidateRole(String role) {
 
-        if (role == null || role.isBlank()) {
-                return "USER";
+                if (role == null || role.isBlank()) {
+                        return "USER";
+                }
+
+                String normalizedRole = role.trim().toUpperCase();
+
+                if (!normalizedRole.equals("USER") &&
+                                !normalizedRole.equals("ADMIN") &&
+                                !normalizedRole.equals("WORKER")) {
+
+                        throw new ResponseStatusException(
+                                        HttpStatus.BAD_REQUEST,
+                                        "Rol inválido. Valores permitidos: USER, ADMIN, WORKER.");
+                }
+
+                return normalizedRole;
         }
 
-        String normalizedRole = role.trim().toUpperCase();
-
-        if (!normalizedRole.equals("USER") &&
-                !normalizedRole.equals("ADMIN") &&
-                !normalizedRole.equals("WORKER")) {
-
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Rol inválido. Valores permitidos: USER, ADMIN, WORKER."
-                );
-        }
-
-        return normalizedRole;
-        }        
         private UserResponseDTO mapToResponseDTO(User user) {
                 return new UserResponseDTO(
                                 user.getId(),

@@ -78,6 +78,7 @@ Funcionalidades:
 * Verificación por correo
 * Reenvío de código
 * Recuperación de contraseña
+* Validación obligatoria de correo institucional
 
 ---
 
@@ -259,6 +260,17 @@ Roles:
 Correo:
 
 SendGrid
+
+Regla de correo institucional:
+
+* Todos los usuarios deben utilizar correo institucional.
+* La validación se encuentra centralizada en UserService.
+* Aplica a registro público.
+* Aplica a creación administrativa de usuarios.
+* Aplica a edición administrativa de usuarios.
+* Los usuarios creados por ADMIN se consideran verificados administrativamente.
+* La administración de usuarios no muestra códigos sensibles de verificación ni recuperación.
+* Los usuarios pendientes pueden recibir un nuevo código mediante la opción Reenviar código.
 
 ---
 

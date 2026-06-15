@@ -17,6 +17,7 @@ import {
   updateUser,
   toggleUserActive,
   resetUserPassword,
+  resendVerificationCode,
   UserAdmin,
   UserRole,
 } from "../src/services/userService";
@@ -157,6 +158,24 @@ export default function AdminUsersScreen() {
       console.error("Error reseteando contraseña:", error);
       showMessage(
         error?.message || "No se pudo resetear la contraseña.",
+        "error",
+      );
+    }
+  };
+
+  const handleResendVerificationCode = async (user: UserAdmin) => {
+    try {
+      await resendVerificationCode(user.email);
+
+      showMessage(
+        "Código de verificación reenviado correctamente.",
+        "success",
+      );
+    } catch (error: any) {
+      console.error("Error reenviando código:", error);
+
+      showMessage(
+        error?.message || "No se pudo reenviar el código.",
         "error",
       );
     }
@@ -368,15 +387,6 @@ export default function AdminUsersScreen() {
                         </Text>
                       </View>
 
-                      <View style={styles.codesBox}>
-                        <Text style={styles.codeText}>
-                          Código verificación: {item.verificationCode || "-"}
-                        </Text>
-                        <Text style={styles.codeText}>
-                          Código recuperación: {item.passwordResetCode || "-"}
-                        </Text>
-                      </View>
-
                       <View style={styles.userActions}>
                         <TouchableOpacity
                           style={styles.editButton}
@@ -405,6 +415,17 @@ export default function AdminUsersScreen() {
                         >
                           <Text style={styles.actionButtonText}>Reset</Text>
                         </TouchableOpacity>
+
+                        {!item.emailVerified && (
+                          <TouchableOpacity
+                            style={styles.resendButton}
+                            onPress={() => handleResendVerificationCode(item)}
+                          >
+                            <Text style={styles.actionButtonText}>
+                              Reenviar código
+                            </Text>
+                          </TouchableOpacity>
+                        )}
                       </View>
                     </View>
                   </View>
@@ -849,5 +870,11 @@ filterChip: {
   },
   toastError: {
     backgroundColor: "#DC2626",
+  },
+  resendButton: {
+    backgroundColor: "#2563EB",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
   },
 });

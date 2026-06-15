@@ -816,4 +816,52 @@ Agregar manejo transaccional explícito con @Transactional en los métodos de cr
 
 ---
 
+# DEC-019
+
+Fecha: 2026-06
+
+Título:
+Validación obligatoria de correo institucional y verificación administrativa de usuarios
+
+Estado:
+Aprobada
+
+Contexto:
+
+CofiGO requiere que todos los usuarios utilicen correos institucionales. Se detectó que el registro público validaba esta regla, pero la gestión administrativa de usuarios permitía crear o editar usuarios con correos no institucionales.
+
+Decisión:
+
+Centralizar la validación de correo institucional en backend y aplicarla en todos los flujos de creación y edición de usuarios.
+
+Los usuarios creados desde administración se consideran verificados administrativamente, por lo que nacen activos y con emailVerified=true.
+
+Adicionalmente, la pantalla de administración no debe mostrar códigos sensibles de verificación o recuperación. Para usuarios pendientes, se permite reenviar el código de verificación.
+
+Justificación:
+
+* Garantizar consistencia en todos los flujos.
+* Mantener backend como fuente de verdad.
+* Evitar exposición de códigos sensibles.
+* Separar correctamente el registro público del mantenimiento administrativo.
+* Reducir riesgo de usuarios externos no institucionales.
+
+Consecuencias positivas:
+
+* Mayor seguridad.
+* Mejor control administrativo.
+* Regla de negocio centralizada.
+* Menor riesgo de inconsistencias.
+* Mejor alineamiento con el contexto universitario.
+
+Consecuencias negativas:
+
+* Requiere configurar correctamente el dominio institucional en cada ambiente.
+
+Observación:
+
+La propiedad app.institution.email-domain debe estar configurada en local y producción.
+
+---
+
 Fin del documento.
