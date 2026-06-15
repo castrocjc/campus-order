@@ -493,6 +493,7 @@ Herramientas oficiales:
 
 * Xcode
 * iPhone Simulator
+* iPhone físico
 
 Objetivo:
 
@@ -504,6 +505,15 @@ Cobertura actual:
 * Menú Digital
 * Carrito
 * Flujo de compra
+* Compatibilidad Mobile Web Safari
+
+Validaciones adicionales:
+
+* iPhone físico
+* Safari Mobile
+* Chrome Mobile
+* Manejo de imágenes inválidas
+* Renderización estable de Home
 
 Estado:
 
@@ -588,6 +598,21 @@ Actualmente la zona horaria America/Lima está definida en código como parte de
 Evolución futura:
 
 Gestionarla desde Configuración de Cafetería.
+
+## Calidad de URLs de Imágenes
+
+Las imágenes de productos dependen de URLs almacenadas en base de datos.
+
+Consideraciones:
+
+* URLs inválidas pueden afectar la experiencia visual.
+* El frontend implementa validación defensiva.
+* Cuando una imagen no puede ser utilizada se muestra una imagen referencial.
+
+Evolución futura:
+
+* Validar URLs desde backend al crear o editar productos.
+* Implementar monitoreo de imágenes inválidas.
 
 # Reglas Operativas de Pedidos
 
@@ -685,7 +710,7 @@ Evolución futura:
 
 # Historial del Documento
 
-Versión: v1.5.8
+Versión: v1.5.9
 
 Fecha de creación: Junio 2026
 

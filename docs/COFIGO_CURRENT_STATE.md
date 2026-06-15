@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.5.8
+v1.5.9
 
 Estado:
 
@@ -135,6 +135,9 @@ Funcionalidades:
 * Filtrado por disponibilidad
 * Experiencia responsive validada en iPhone Simulator
 * Actualización automática de stock después de registrar pedido
+* Validación defensiva de URLs de imágenes.
+* Fallback automático a imagen referencial para Mobile Web.
+* Compatibilidad validada con Safari iPhone físico.
 
 ---
 
@@ -231,6 +234,9 @@ Funcionalidades:
 * Lectura segura de carrito y usuario desde localStorage.
 * Protección ante datos corruptos en localStorage.
 * Compatibilidad validada con Safari iPhone.
+* Validación realizada en iPhone físico mediante Mobile Web.
+* Compatibilidad validada con Safari iPhone físico.
+* Manejo seguro de imágenes inválidas.
 
 Validado en:
 
@@ -476,6 +482,10 @@ Validaciones realizadas:
 * Validación de correo institucional en administración de usuarios.
 * Validación de reenvío de código desde mantenimiento.
 * Validación de ocultamiento de códigos sensibles.
+* Validación completa de Home en Safari iPhone físico.
+* Validación de imágenes con fallback automático.
+* Validación de catálogo Mobile Web.
+* Validación de flujo completo de compra desde iPhone.
 
 ---
 

@@ -864,4 +864,49 @@ La propiedad app.institution.email-domain debe estar configurada en local y prod
 
 ---
 
+# DEC-020
+
+Fecha: 2026-06
+
+Título:
+Manejo defensivo de imágenes para Mobile Web
+
+Estado:
+Aprobada
+
+Contexto:
+
+Durante las pruebas realizadas en Safari iPhone se detectó que URLs de imágenes inválidas podían provocar errores de renderización en la pantalla Home.
+
+Decisión:
+
+Implementar validación defensiva de URLs de imágenes en frontend.
+
+Cuando una URL no sea válida:
+
+* Se utilizará una imagen referencial.
+* Se evitará interrumpir el renderizado del catálogo.
+
+Justificación:
+
+* Mejorar estabilidad Mobile Web.
+* Reducir dependencia de la calidad de los datos.
+* Evitar caídas de Home por recursos externos inválidos.
+
+Consecuencias positivas:
+
+* Mayor robustez.
+* Mejor experiencia móvil.
+* Menor impacto de errores de datos.
+
+Consecuencias negativas:
+
+* Una imagen inválida puede ocultarse mediante placeholder y pasar desapercibida si no existe monitoreo administrativo.
+
+Evolución futura:
+
+Implementar validación obligatoria de URLs de imágenes en backend.
+
+---
+
 Fin del documento.

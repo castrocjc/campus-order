@@ -1071,4 +1071,68 @@ Mayor seguridad y consistencia de reglas de negocio.
 
 ---
 
+# v1.5.9 - Estabilidad Mobile Web y Validación Defensiva de Imágenes
+
+Fecha: Junio 2026
+
+## Correcciones
+
+### Compatibilidad Mobile Web (Safari iPhone)
+
+Se corrigió una falla de renderización que provocaba el cierre inesperado de la pantalla Home en Safari iPhone durante la carga del catálogo de productos.
+
+Incluye:
+
+* Identificación de imágenes con URLs inválidas.
+* Validación defensiva de URLs de imágenes.
+* Fallback automático hacia imagen referencial cuando la URL no es válida.
+* Compatibilidad validada en Safari iPhone.
+* Compatibilidad mantenida en Desktop Web.
+
+### Calidad de Datos
+
+Se detectó y corrigió información inválida en el catálogo:
+
+Producto afectado:
+
+* Producto sin stock demo
+
+URL inválida detectada:
+
+* http://images/inactivo.png
+
+Se reemplazó por una URL válida.
+
+## Frontend
+
+Archivos modificados:
+
+* home.tsx
+
+## Base de Datos
+
+Datos corregidos:
+
+* products.image_url
+
+## Validaciones realizadas
+
+* Chrome Desktop.
+* Safari Desktop.
+* Safari iPhone.
+* Login.
+* Home.
+* Catálogo.
+* Carrito.
+* Registro de pedido.
+* Visualización de imágenes.
+
+## Impacto
+
+* Mayor estabilidad en Mobile Web.
+* Prevención de errores provocados por URLs inválidas.
+* Compatibilidad validada en Safari iPhone.
+
+---
+
 Fin del documento.
