@@ -84,13 +84,33 @@ export default function AdminUsersScreen() {
   };
 
   const handleSubmit = async () => {
-    if (!form.name || !form.email || !form.role) {
-      showMessage("Completa los campos obligatorios.", "error");
+    const missingFields = [];
+
+    if (!form.name.trim()) {
+      missingFields.push("Nombre");
+    }
+
+    if (!form.email.trim()) {
+      missingFields.push("Correo");
+    }
+
+    if (!form.role) {
+      missingFields.push("Rol");
+    }
+
+    if (missingFields.length > 0) {
+      showMessage(
+        `Complete los campos obligatorios: ${missingFields.join(", ")}.`,
+        "error"
+      );
       return;
     }
 
-    if (!editingUserId && !form.password) {
-      showMessage("La contraseña es obligatoria para crear usuarios.", "error");
+    if (!editingUserId && !form.password.trim()) {
+      showMessage(
+        "Complete los campos obligatorios: Contraseña.",
+        "error"
+      );
       return;
     }
 

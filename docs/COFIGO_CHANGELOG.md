@@ -1135,4 +1135,37 @@ Datos corregidos:
 
 ---
 
+v1.5.10 - Reglas de Cancelación y Validaciones de Usuario
+
+Fecha: Junio 2026
+
+Mejoras
+
+Pedidos
+
+- El botón Cancelar en Mis Pedidos solo se muestra para pedidos en estado RECEIVED.
+- Se mantiene alineación completa con las reglas de negocio del backend.
+
+Usuarios
+
+- Mejora de mensajes de validación en Registro Público.
+- Mejora de mensajes de validación en Administración de Usuarios.
+- Identificación explícita de campos obligatorios faltantes.
+
+Frontend
+
+Archivos modificados:
+
+- my-orders.tsx
+- admin-users.tsx
+- register.tsx
+
+Impacto
+
+- Mejor experiencia de usuario.
+- Menor ambigüedad en formularios.
+- Consistencia entre frontend y backend.
+
+---
+
 Fin del documento.

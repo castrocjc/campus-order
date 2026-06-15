@@ -67,6 +67,7 @@ Funcionalidades:
 * Reenvío de código de verificación desde mantenimiento para usuarios pendientes.
 * Ocultamiento de códigos sensibles en pantalla administrativa.
 * Usuarios creados por ADMIN se consideran verificados administrativamente.
+- Validación detallada de campos obligatorios en formularios administrativos.
 
 Roles soportados:
 
@@ -180,6 +181,7 @@ Funcionalidades:
 * Validación horaria basada en zona oficial America/Lima.
 * Reversa automática de stock al cancelar pedidos.
 * Cancelación consistente desde Mis Pedidos y Administración de Pedidos.
+- Cancelación disponible únicamente para pedidos en estado RECEIVED.
 
 Reglas actuales de horario:
 
