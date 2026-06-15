@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.5.9
+v1.5.11
 
 Estado:
 
@@ -248,27 +248,27 @@ Validado en:
 
 # Funcionalidades Parciales
 
-## Categorías
+## Gestión de Categorías
 
 Estado:
 
-🟡 Parcial
+🟢 Completo
 
-Backend:
+Funcionalidades:
 
-* Crear categoría
-* Consultar categorías
-
-Frontend:
-
-* Consumo de categorías
-
-Pendiente:
-
-* Pantalla dedicada de administración
-* Edición de categorías
-* Activación / Desactivación
-* Eliminación lógica
+* Consulta de categorías activas.
+* Consulta administrativa de categorías.
+* Creación de categorías.
+* Edición de categorías.
+* Activación y desactivación.
+* Búsqueda por nombre y descripción.
+* Dashboard administrativo.
+* Prevención de categorías duplicadas.
+* Validación de nombre obligatorio.
+* Validación de longitud de nombre.
+* Validación de longitud de descripción.
+* Bloqueo de desactivación con productos activos.
+* Exclusión automática de categorías inactivas en el menú digital.
 
 ---
 
@@ -439,14 +439,10 @@ Las siguientes funcionalidades se consideran estables y no deben modificarse sin
 
 Prioridad Alta:
 
-1. Gestión de Categorías
-2. Dashboard Administrativo
-3. Reportes Frontend
-4. Gestión de Configuración de Cafetería
-
-Prioridad Media Alta:
-
-1. Gestión de Configuración de Cafetería
+1. Dashboard Administrativo
+2. Reportes Frontend
+3. Gestión de Configuración de Cafetería
+4. Perfil de Usuario
 
 ---
 

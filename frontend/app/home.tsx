@@ -430,6 +430,15 @@ export default function HomeScreen() {
                 >
                   <Text style={styles.backBtnText}>Usuarios</Text>
                 </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.backBtn}
+                  onPress={() => router.push("/admin-categories")}
+                >
+                  <Text style={styles.backBtnText}>
+                    Categorías
+                  </Text>
+                </TouchableOpacity>                
               </>
             )}
 

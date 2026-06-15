@@ -180,9 +180,27 @@ Estado: Completo
 
 Pantallas:
 
-* admin-products
 * admin-orders
+* admin-products
 * admin-users
+* admin-categories
+
+---
+
+## Gestión de Categorías
+
+Estado: Completo
+
+Funcionalidades:
+
+* Listado administrativo.
+* Creación.
+* Edición.
+* Activación.
+* Desactivación.
+* Búsqueda.
+* Prevención de duplicados.
+* Validaciones de negocio.
 
 ---
 
@@ -205,7 +223,6 @@ Frontend:
 Prioridad Alta:
 
 * Dashboard Administrativo
-* Gestión de Categorías
 * Reportes Frontend
 
 Prioridad Media:

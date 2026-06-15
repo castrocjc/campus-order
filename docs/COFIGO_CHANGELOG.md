@@ -1135,7 +1135,7 @@ Datos corregidos:
 
 ---
 
-v1.5.10 - Reglas de Cancelación y Validaciones de Usuario
+# v1.5.10 - Reglas de Cancelación y Validaciones de Usuario
 
 Fecha: Junio 2026
 
@@ -1165,6 +1165,75 @@ Impacto
 - Mejor experiencia de usuario.
 - Menor ambigüedad en formularios.
 - Consistencia entre frontend y backend.
+
+---
+
+# v1.5.11 - Gestión de Categorías
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Administración de Categorías
+
+Se implementó el módulo completo de gestión administrativa de categorías.
+
+Incluye:
+
+* Listado de categorías.
+* Búsqueda por nombre y descripción.
+* Creación de categorías.
+* Edición de categorías.
+* Activación de categorías.
+* Desactivación de categorías.
+* Dashboard de indicadores.
+* Prevención de categorías duplicadas.
+* Validaciones de negocio.
+
+### Reglas de negocio
+
+* No se permite desactivar una categoría que tenga productos activos asociados.
+* Los productos pertenecientes a categorías inactivas no se muestran en el menú digital.
+* Las categorías se gestionan mediante eliminación lógica (active/inactive).
+
+## Backend
+
+Archivos modificados:
+
+* CategoryController.java
+* CategoryRepository.java
+* ProductRepository.java
+
+Archivos creados:
+
+* CategoryService.java
+
+## Frontend
+
+Archivos modificados:
+
+* home.tsx
+* categoryService.ts
+
+Archivos creados:
+
+* admin-categories.tsx
+
+## Validaciones realizadas
+
+* Crear categoría.
+* Editar categoría.
+* Prevención de duplicados.
+* Activar categoría.
+* Desactivar categoría.
+* Bloqueo de desactivación con productos activos.
+* Búsqueda.
+* Filtro Activas/Inactivas.
+* Navegación administrativa.
+
+Impacto:
+
+CofiGO incorpora gestión administrativa completa de categorías y fortalece la integridad del catálogo.
 
 ---
 
