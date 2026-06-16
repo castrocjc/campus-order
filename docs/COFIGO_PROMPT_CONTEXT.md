@@ -184,7 +184,7 @@ Pantallas:
 * admin-products
 * admin-users
 * admin-categories
-- Las pantallas administrativas de Productos, Categorías y Usuarios comparten el estándar visual oficial CofiGO.
+* Las pantallas administrativas de Dashboard, Productos, Categorías, Usuarios y Pedidos comparten el estándar visual oficial CofiGO mediante AdminLayout y SideMenu.
 
 ---
 
@@ -223,12 +223,11 @@ Frontend:
 
 Prioridad Alta:
 
-* Dashboard Administrativo
 * Reportes Frontend
+* Gestión de Configuración de Cafetería
 
 Prioridad Media:
 
-* Gestión de Configuración de Cafetería
 * Perfil de Usuario
 * Auditoría
 * Notificaciones
@@ -335,6 +334,37 @@ Antes de modificar debe realizarse análisis de impacto sobre:
 * Configuración Vercel
 
 Estas funcionalidades se consideran estables.
+
+---
+
+# Navegación por Roles
+
+ADMIN
+
+* Dashboard
+* Productos
+* Categorías
+* Usuarios
+* Pedidos
+
+WORKER
+
+* Pedidos
+
+USER
+
+* Catálogo
+* Mis Pedidos
+* Perfil
+
+Componentes base:
+
+* AdminLayout
+* SideMenu
+
+Regla:
+
+Toda nueva pantalla debe integrarse al layout correspondiente y evitar navegación basada en botones Volver.
 
 ---
 

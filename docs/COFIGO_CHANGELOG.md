@@ -1285,4 +1285,113 @@ Archivos modificados:
 
 ---
 
+# v1.6 - Dashboard Administrativo, Navegación por Roles y Estandarización Visual
+
+Fecha: Junio 2026
+
+## Mejoras
+
+Esta versión marca la consolidación del Panel Administrativo de CofiGO.
+
+Incluye:
+
+* Dashboard Administrativo.
+* Gestión de Productos.
+* Gestión de Categorías.
+* Gestión de Usuarios.
+* Gestión de Pedidos.
+* Navegación por roles.
+* SideMenu persistente.
+* AdminLayout.
+* Experiencia WORKER.
+* Sincronización visual completa del sistema.
+
+### Navegación persistente por rol
+
+Se implementó una arquitectura de navegación unificada basada en SideMenu para todos los perfiles del sistema.
+
+Roles soportados:
+
+* ADMIN
+* WORKER
+* USER
+
+### Panel Administrativo
+
+Se consolidó la navegación administrativa mediante AdminLayout.
+
+Incluye:
+
+* Dashboard
+* Productos
+* Categorías
+* Usuarios
+* Pedidos
+
+### Panel Operativo
+
+Se habilitó navegación específica para WORKER.
+
+Incluye:
+
+* Pedidos
+* Salir
+
+La pantalla de pedidos muestra:
+
+* Panel administrador para ADMIN.
+* Panel operario para WORKER.
+
+### Experiencia Usuario
+
+Se unificó la navegación de usuario final.
+
+Incluye:
+
+* Catálogo
+* Mis Pedidos
+* Perfil
+* Salir
+
+### Armonización Visual
+
+Se alinearon visualmente las siguientes pantallas:
+
+* Dashboard
+* Productos
+* Categorías
+* Usuarios
+* Pedidos
+* Home
+* Mis Pedidos
+
+## Frontend
+
+Archivos modificados:
+
+* AdminLayout.tsx
+* SideMenu.tsx
+* admin-orders.tsx
+* admin-products.tsx
+* admin-categories.tsx
+* admin-users.tsx
+* home.tsx
+* my-orders.tsx
+
+## Validaciones realizadas
+
+* Navegación ADMIN.
+* Navegación WORKER.
+* Navegación USER.
+* Persistencia de menú lateral.
+* Responsive Desktop.
+* Responsive Mobile Web.
+* Validación funcional completa.
+
+## Impacto
+
+Se establece una arquitectura visual consistente para todos los perfiles del sistema.
+
+---
+
 Fin del documento.

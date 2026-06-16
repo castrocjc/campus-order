@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.5.12
+v1.6
 
 Estado:
 
@@ -182,7 +182,11 @@ Funcionalidades:
 * Validación horaria basada en zona oficial America/Lima.
 * Reversa automática de stock al cancelar pedidos.
 * Cancelación consistente desde Mis Pedidos y Administración de Pedidos.
-- Cancelación disponible únicamente para pedidos en estado RECEIVED.
+* Cancelación disponible únicamente para pedidos en estado RECEIVED.
+* Navegación persistente mediante menú lateral.
+* Título dinámico por rol:
+  * Panel administrador (ADMIN)
+  * Panel operario (WORKER)
 
 Reglas actuales de horario:
 
@@ -204,6 +208,15 @@ Estados soportados:
 
 ---
 
+## Gestión Administrativa
+
+* AdminLayout implementado como layout estándar.
+* SideMenu administrativo persistente.
+* Navegación unificada entre módulos administrativos.
+* Consistencia visual entre Dashboard, Productos, Categorías, Usuarios y Pedidos.
+
+---
+
 ## Administración de Pedidos
 
 Estado:
@@ -216,6 +229,39 @@ Funcionalidades:
 * Cambio de estado
 * Refresco automático
 * Indicador de ventas excluye pedidos cancelados.
+
+---
+
+## Navegación por Roles
+
+Estado:
+
+🟢 Completo
+
+ADMIN
+
+* Dashboard
+* Productos
+* Categorías
+* Usuarios
+* Pedidos
+
+WORKER
+
+* Pedidos
+
+USER
+
+* Catálogo
+* Mis Pedidos
+* Perfil
+
+Características:
+
+* Menú lateral persistente.
+* Navegación consistente.
+* Sin botones Volver.
+* Logout centralizado.
 
 ---
 
@@ -297,11 +343,7 @@ Pendiente:
 
 # Funcionalidades No Implementadas
 
-## Dashboard Administrativo
 
-Estado:
-
-🔴 Pendiente
 
 ---
 
@@ -440,10 +482,10 @@ Las siguientes funcionalidades se consideran estables y no deben modificarse sin
 
 Prioridad Alta:
 
-1. Dashboard Administrativo
-2. Reportes Frontend
-3. Gestión de Configuración de Cafetería
-4. Perfil de Usuario
+1. Reportes Frontend
+2. Gestión de Configuración de Cafetería
+3. Perfil de Usuario
+4. Dashboard Administrativo Avanzado
 
 ---
 

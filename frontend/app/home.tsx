@@ -14,6 +14,7 @@ import {
 import { getToken, logout } from "../src/services/authService";
 import { getMenu } from "../src/services/productService";
 import { createOrder } from "../src/services/orderService";
+import SideMenu from "../components/ui/SideMenu";
 
 const productPlaceholder = require("../assets/product-placeholder.png");
 
@@ -45,7 +46,8 @@ const getProductImageSource = (product: any, forcePlaceholder = false) => {
   try {
     const parsedUrl = new URL(cleanUrl);
 
-    const isHttp = parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
+    const isHttp =
+      parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
     const hasValidHost = parsedUrl.hostname.includes(".");
 
     if (isHttp && hasValidHost) {
@@ -130,7 +132,24 @@ export default function HomeScreen() {
     const closingTime = new Date();
     closingTime.setHours(CAFETERIA_CLOSE_HOUR, 0, 0, 0);
 
-    let slot = new Date(openingTime);
+    const firstOperationalPickupTime = new Date(
+      openingTime.getTime() + MIN_PREPARATION_MINUTES * 60000,
+    );
+
+    const firstPickupTime = new Date(firstOperationalPickupTime);
+
+    const minutes = firstPickupTime.getMinutes();
+    const remainder = minutes % PICKUP_INTERVAL_MINUTES;
+
+    if (remainder !== 0) {
+      firstPickupTime.setMinutes(
+        minutes + (PICKUP_INTERVAL_MINUTES - remainder),
+      );
+    }
+
+    firstPickupTime.setSeconds(0, 0);
+
+    let slot = new Date(firstPickupTime);
 
     while (slot <= closingTime) {
       if (slot >= minimumTime) {
@@ -189,7 +208,6 @@ export default function HomeScreen() {
 
   const loadProducts = async () => {
     try {
-
       const response = await getMenu();
 
       const rawMenuList = Array.isArray(response)
@@ -205,7 +223,6 @@ export default function HomeScreen() {
         .filter((item: any) => item.products.length > 0);
 
       setProducts(menuList);
-
     } catch (error) {
       console.error("Error cargando menú", error);
     } finally {
@@ -285,7 +302,6 @@ export default function HomeScreen() {
   };
 
   const addToCart = (product: any) => {
-
     if (product.customizable) {
       openCustomizationModal(product);
       return;
@@ -374,6 +390,16 @@ export default function HomeScreen() {
     router.replace("/");
   };
 
+  useEffect(() => {
+    if (user?.role === "WORKER") {
+      router.replace("/admin-orders");
+    }
+
+    if (user?.role === "ADMIN") {
+      router.replace("/admin-dashboard");
+    }
+  }, [user?.role, router]);
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -399,53 +425,11 @@ export default function HomeScreen() {
             <Text style={styles.subtitle}>Pide hoy, recoge sin esperas</Text>
           </View>
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={isMobile && styles.headerActionsScrollMobile}
-            contentContainerStyle={[
-              styles.headerActions,
-              isMobile && styles.headerActionsMobile,
-            ]}
-          >
-            {user?.role === "ADMIN" && (
-              <>
-                <TouchableOpacity
-                  style={styles.backBtn}
-                  onPress={() => router.push("/admin-orders")}
-                >
-                  <Text style={styles.backBtnText}>Pedidos</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.backBtn}
-                  onPress={() => router.push("/admin-products")}
-                >
-                  <Text style={styles.backBtnText}>Productos</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.backBtn}
-                  onPress={() => router.push("/admin-users")}
-                >
-                  <Text style={styles.backBtnText}>Usuarios</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.backBtn}
-                  onPress={() => router.push("/admin-categories")}
-                >
-                  <Text style={styles.backBtnText}>
-                    Categorías
-                  </Text>
-                </TouchableOpacity>                
-              </>
-            )}
-
+          {isMobile && (
             <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
               <Text style={styles.logoutBtnText}>Salir</Text>
             </TouchableOpacity>
-          </ScrollView>
+          )}
         </View>
 
         {message && (
@@ -461,260 +445,287 @@ export default function HomeScreen() {
           </View>
         )}
 
-        <View style={[styles.mainLayout, isMobile && styles.mainLayoutMobile]}>
+        <View
+          style={[styles.shellLayout, isMobile && styles.shellLayoutMobile]}
+        >
+          {!isMobile && (
+            <SideMenu role={user?.role || "USER"} onLogout={handleLogout} />
+          )}
+
           <View
-            style={[
-              styles.productsPanel,
-              isMobile && styles.productsPanelMobile,
-            ]}
+            style={[styles.mainLayout, isMobile && styles.mainLayoutMobile]}
           >
-            <View style={styles.categoryFilterBox}>
-              <Text style={styles.filterTitle}>Categorías</Text>
+            <View
+              style={[
+                styles.productsPanel,
+                isMobile && styles.productsPanelMobile,
+              ]}
+            >
+              <View style={styles.categoryFilterBox}>
+                <Text style={styles.filterTitle}>Categorías</Text>
+
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={[
+                    styles.categoryFilterContent,
+                    isMobile && styles.categoryFilterContentMobile,
+                  ]}
+                >
+                  {categories.map((category) => (
+                    <TouchableOpacity
+                      key={category}
+                      style={[
+                        styles.categoryFilterButton,
+                        selectedCategory === category &&
+                          styles.categoryFilterButtonActive,
+                      ]}
+                      onPress={() => setSelectedCategory(category)}
+                    >
+                      <Text
+                        style={[
+                          styles.categoryFilterText,
+                          selectedCategory === category &&
+                            styles.categoryFilterTextActive,
+                        ]}
+                      >
+                        {category}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
 
               <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={[
-                  styles.categoryFilterContent,
-                  isMobile && styles.categoryFilterContentMobile,
-                ]}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.productsListContent}
               >
-                {categories.map((category) => (
-                  <TouchableOpacity
-                    key={category}
-                    style={[
-                      styles.categoryFilterButton,
-                      selectedCategory === category &&
-                        styles.categoryFilterButtonActive,
-                    ]}
-                    onPress={() => setSelectedCategory(category)}
-                  >
-                    <Text
-                      style={[
-                        styles.categoryFilterText,
-                        selectedCategory === category &&
-                          styles.categoryFilterTextActive,
-                      ]}
-                    >
-                      {category}
-                    </Text>
-                  </TouchableOpacity>
+                {filteredProducts.map((item) => (
+                  <View key={item.category} style={styles.categorySection}>
+                    <Text style={styles.categoryTitle}>{item.category}</Text>
+
+                    {Array.isArray(item.products) && (
+                      <View style={styles.productsGrid}>
+                        {item.products.map((product: any) => (
+                          <View
+                            key={product.id}
+                            style={[
+                              styles.productCard,
+                              isMobile && styles.productCardMobile,
+                            ]}
+                          >
+                            <Image
+                              source={getProductImageSource(product, isMobile)}
+                              style={styles.productImage}
+                              resizeMode="cover"
+                            />
+
+                            <View style={styles.productInfo}>
+                              <Text style={styles.productName}>
+                                {product.name}
+                              </Text>
+                              <Text
+                                style={styles.productDescription}
+                                numberOfLines={2}
+                              >
+                                {product.description}
+                              </Text>
+
+                              <View style={styles.productMetaRow}>
+                                <Text style={styles.productPrice}>
+                                  S/ {product.price}
+                                </Text>
+                                <Text style={styles.productStock}>
+                                  Stock: {product.stock}
+                                </Text>
+                              </View>
+
+                              <TouchableOpacity
+                                style={[
+                                  styles.addButton,
+                                  (product.stock === 0 ||
+                                    pickupOptions.length === 0) &&
+                                    styles.addButtonDisabled,
+                                ]}
+                                disabled={
+                                  product.stock === 0 ||
+                                  pickupOptions.length === 0
+                                }
+                                onPress={() => addToCart(product)}
+                              >
+                                <Text style={styles.addButtonText}>
+                                  {product.stock === 0
+                                    ? "Sin stock"
+                                    : pickupOptions.length === 0
+                                      ? "Fuera de horario"
+                                      : "+ Agregar"}
+                                </Text>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        ))}
+                      </View>
+                    )}
+                  </View>
                 ))}
               </ScrollView>
             </View>
 
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.productsListContent}
+            <View
+              style={[styles.sidePanel, isMobile && styles.sidePanelMobile]}
             >
-              {filteredProducts.map((item) => (
-                <View key={item.category} style={styles.categorySection}>
-                  <Text style={styles.categoryTitle}>{item.category}</Text>
+              <View style={styles.cartBox}>
+                <Text style={styles.cartTitle}>Carrito</Text>
+                <Text style={styles.cartSubtitle}>Resumen</Text>
 
-                  {Array.isArray(item.products) && (
-                    <View style={styles.productsGrid}>
-                      {item.products.map((product: any) => (
-                        <View
-                          key={product.id}
+                <View style={styles.pickupBox}>
+                  <Text style={styles.pickupTitle}>Hora de recojo</Text>
+
+                  <View style={styles.pickupOptions}>
+                    {pickupOptions.length === 0 ? (
+                      <Text style={styles.noPickupOptions}>
+                        No hay horarios disponibles para hoy
+                      </Text>
+                    ) : (
+                      pickupOptions.map((time) => (
+                        <TouchableOpacity
+                          key={time}
                           style={[
-                            styles.productCard,
-                            isMobile && styles.productCardMobile,
+                            styles.pickupButton,
+                            pickupTime === time && styles.pickupButtonActive,
                           ]}
+                          onPress={() => setPickupTime(time)}
                         >
-                          <Image
-                            source={getProductImageSource(product, isMobile)}
-                            style={styles.productImage}
-                            resizeMode="cover"
-                          />
-
-                          <View style={styles.productInfo}>
-                            <Text style={styles.productName}>{product.name}</Text>
-                            <Text style={styles.productDescription} numberOfLines={2}>
-                              {product.description}
-                            </Text>
-
-                            <View style={styles.productMetaRow}>
-                              <Text style={styles.productPrice}>S/ {product.price}</Text>
-                              <Text style={styles.productStock}>Stock: {product.stock}</Text>
-                            </View>
-
-                            <TouchableOpacity
-                              style={[
-                                styles.addButton,
-                                (product.stock === 0 || pickupOptions.length === 0) &&
-                                  styles.addButtonDisabled,
-                              ]}
-                              disabled={product.stock === 0 || pickupOptions.length === 0}
-                              onPress={() => addToCart(product)}
-                            >
-                              <Text style={styles.addButtonText}>
-                                {product.stock === 0
-                                  ? "Sin stock"
-                                  : pickupOptions.length === 0
-                                  ? "Fuera de horario"
-                                  : "+ Agregar"}
-                              </Text>
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      ))}
-                    </View>
-                  )}
-                </View>
-              ))}
-            </ScrollView>
-
-          </View>
-
-          <View style={[styles.sidePanel, isMobile && styles.sidePanelMobile]}>
-            <View style={styles.cartBox}>
-              <Text style={styles.cartTitle}>Carrito</Text>
-              <Text style={styles.cartSubtitle}>Resumen</Text>
-
-              <View style={styles.pickupBox}>
-                <Text style={styles.pickupTitle}>Hora de recojo</Text>
-
-                <View style={styles.pickupOptions}>
-                  {pickupOptions.length === 0 ? (
-                    <Text style={styles.noPickupOptions}>
-                      No hay horarios disponibles para hoy
-                    </Text>
-                  ) : (
-                    pickupOptions.map((time) => (
-                      <TouchableOpacity
-                        key={time}
-                        style={[
-                          styles.pickupButton,
-                          pickupTime === time && styles.pickupButtonActive,
-                        ]}
-                        onPress={() => setPickupTime(time)}
-                      >
-                        <Text
-                          style={[
-                            styles.pickupButtonText,
-                            pickupTime === time &&
-                              styles.pickupButtonTextActive,
-                          ]}
-                        >
-                          {time}
-                        </Text>
-                      </TouchableOpacity>
-                    ))
-                  )}
-                </View>
-              </View>
-
-              {cart.length === 0 ? (
-                <Text style={styles.emptyCart}>Tu carrito está vacío</Text>
-              ) : (
-                <ScrollView
-                  style={styles.cartItemsScroll}
-                  showsVerticalScrollIndicator={false}
-                >
-                  {cart.map((item) => (
-                    <View
-                      key={`${item.id}-${item.customizationNotes || ""}`}
-                      style={styles.cartItem}
-                    >
-                      <View style={styles.cartItemInfo}>
-                        <Text style={styles.cartItemName}>{item.name}</Text>
-
-                        {item.customizationNotes ? (
-                          <Text style={styles.customizationText}>
-                            Personalización: {item.customizationNotes}
+                          <Text
+                            style={[
+                              styles.pickupButtonText,
+                              pickupTime === time &&
+                                styles.pickupButtonTextActive,
+                            ]}
+                          >
+                            {time}
                           </Text>
-                        ) : null}
+                        </TouchableOpacity>
+                      ))
+                    )}
+                  </View>
+                </View>
 
-                        <Text style={styles.cartItemPrice}>
-                          S/ {(item.price * item.quantity).toFixed(2)}
-                        </Text>
+                {cart.length === 0 ? (
+                  <Text style={styles.emptyCart}>Tu carrito está vacío</Text>
+                ) : (
+                  <ScrollView
+                    style={styles.cartItemsScroll}
+                    showsVerticalScrollIndicator={false}
+                  >
+                    {cart.map((item) => (
+                      <View
+                        key={`${item.id}-${item.customizationNotes || ""}`}
+                        style={styles.cartItem}
+                      >
+                        <View style={styles.cartItemInfo}>
+                          <Text style={styles.cartItemName}>{item.name}</Text>
+
+                          {item.customizationNotes ? (
+                            <Text style={styles.customizationText}>
+                              Personalización: {item.customizationNotes}
+                            </Text>
+                          ) : null}
+
+                          <Text style={styles.cartItemPrice}>
+                            S/ {(item.price * item.quantity).toFixed(2)}
+                          </Text>
+                        </View>
+
+                        <View style={styles.quantityControls}>
+                          <TouchableOpacity
+                            style={styles.quantityButton}
+                            onPress={() => decreaseQuantity(item.id)}
+                          >
+                            <Text style={styles.quantityButtonText}>-</Text>
+                          </TouchableOpacity>
+
+                          <Text style={styles.quantityText}>
+                            {item.quantity}
+                          </Text>
+
+                          <TouchableOpacity
+                            style={[
+                              styles.quantityButton,
+                              pickupOptions.length === 0 &&
+                                styles.disabledButton,
+                            ]}
+                            onPress={() => addToCart(item)}
+                            disabled={pickupOptions.length === 0}
+                          >
+                            <Text style={styles.quantityButtonText}>+</Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            style={styles.removeButton}
+                            onPress={() =>
+                              removeFromCart(
+                                item.id,
+                                item.customizationNotes || "",
+                              )
+                            }
+                          >
+                            <Text style={styles.removeButtonText}>x</Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
+                    ))}
+                  </ScrollView>
+                )}
 
-                      <View style={styles.quantityControls}>
-                        <TouchableOpacity
-                          style={styles.quantityButton}
-                          onPress={() => decreaseQuantity(item.id)}
-                        >
-                          <Text style={styles.quantityButtonText}>-</Text>
-                        </TouchableOpacity>
+                <View style={styles.totalRow}>
+                  <Text style={styles.cartTotalLabel}>Total:</Text>
+                  <Text style={styles.cartTotalAmount}>
+                    S/{" "}
+                    {cart
+                      .reduce((t, i) => t + i.price * i.quantity, 0)
+                      .toFixed(2)}
+                  </Text>
+                </View>
 
-                        <Text style={styles.quantityText}>{item.quantity}</Text>
-
-                        <TouchableOpacity
-                          style={[
-                            styles.quantityButton,
-                            pickupOptions.length === 0 && styles.disabledButton,
-                          ]}
-                          onPress={() => addToCart(item)}
-                          disabled={pickupOptions.length === 0}
-                        >
-                          <Text style={styles.quantityButtonText}>+</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                          style={styles.removeButton}
-                          onPress={() =>
-                            removeFromCart(
-                              item.id,
-                              item.customizationNotes || "",
-                            )
-                          }
-                        >
-                          <Text style={styles.removeButtonText}>x</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  ))}
-                </ScrollView>
-              )}
-
-              <View style={styles.totalRow}>
-                <Text style={styles.cartTotalLabel}>Total:</Text>
-                <Text style={styles.cartTotalAmount}>
-                  S/{" "}
-                  {cart
-                    .reduce((t, i) => t + i.price * i.quantity, 0)
-                    .toFixed(2)}
-                </Text>
+                <TouchableOpacity
+                  style={styles.clearButton}
+                  onPress={() => setCart([])}
+                >
+                  <Text style={styles.clearButtonText}>Vaciar carrito</Text>
+                </TouchableOpacity>
               </View>
 
-              <TouchableOpacity
-                style={styles.clearButton}
-                onPress={() => setCart([])}
-              >
-                <Text style={styles.clearButtonText}>Vaciar carrito</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.sideActions}>
-              {isMobile && message && (
-                <Text
+              <View style={styles.sideActions}>
+                {isMobile && message && (
+                  <Text
+                    style={[
+                      styles.mobileCartMessage,
+                      messageType === "error" && styles.mobileCartMessageError,
+                    ]}
+                  >
+                    {message}
+                  </Text>
+                )}
+                <TouchableOpacity
                   style={[
-                    styles.mobileCartMessage,
-                    messageType === "error" && styles.mobileCartMessageError,
+                    styles.mainButton,
+                    (cart.length === 0 || pickupOptions.length === 0) &&
+                      styles.mainButtonDisabled,
                   ]}
+                  onPress={handleCreateOrder}
+                  disabled={cart.length === 0 || pickupOptions.length === 0}
                 >
-                  {message}
-                </Text>
-              )}
-              <TouchableOpacity
-                style={[
-                  styles.mainButton,
-                  (cart.length === 0 || pickupOptions.length === 0) &&
-                    styles.mainButtonDisabled,
-                ]}
-                onPress={handleCreateOrder}
-                disabled={cart.length === 0 || pickupOptions.length === 0}
-              >
-                <Text style={styles.mainButtonText}>Realizar pedido</Text>
-              </TouchableOpacity>
+                  <Text style={styles.mainButtonText}>Realizar pedido</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.mainButton}
-                onPress={() => router.push("/my-orders")}
-              >
-                <Text style={styles.mainButtonText}>Ver mis pedidos</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.mainButton}
+                  onPress={() => router.push("/my-orders")}
+                >
+                  <Text style={styles.mainButtonText}>Ver mis pedidos</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
@@ -781,7 +792,6 @@ export default function HomeScreen() {
       </Modal>
     </>
   );
-
 }
 
 const styles = StyleSheet.create({
@@ -789,6 +799,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff8f1",
     padding: isMobile ? 14 : 20,
+  },
+  shellLayout: {
+    flex: 1,
+    flexDirection: "row",
+    gap: 16,
+    minHeight: 0,
+  },
+
+  shellLayoutMobile: {
+    flexDirection: "column",
   },
   header: {
     flexDirection: "row",

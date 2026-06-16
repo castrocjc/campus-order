@@ -55,6 +55,10 @@ app/
 ├── admin-products.tsx
 ├── admin-orders.tsx
 └── _layout.tsx
+components/
+└── ui
+    ├── AdminLayout.tsx
+    └── SideMenu.tsx
 ```
 
 ### Servicios
@@ -271,8 +275,12 @@ JWT (JSON Web Token)
 
 Permisos:
 
-* Gestionar pedidos
-* Cambiar estados de pedidos
+* Gestionar pedidos.
+* Cambiar estados de pedidos.
+
+Pantallas:
+
+* Pedidos
 
 ### USER
 
@@ -283,6 +291,12 @@ Permisos:
 * Consultar pedidos propios
 * Cancelar pedidos
 
+Pantallas:
+
+* Home
+* Mis Pedidos
+* Perfil (pendiente)
+
 ### ADMIN
 
 Permisos:
@@ -291,6 +305,14 @@ Permisos:
 * Administrar pedidos
 * Consultar información administrativa
 * Cambiar estados de pedidos
+
+Pantallas:
+
+* Dashboard
+* Productos
+* Categorías
+* Usuarios
+* Pedidos
 
 ---
 
@@ -477,14 +499,30 @@ Gestión de Usuarios:
 * Placeholders de ayuda para captura.
 * Botones Limpiar y Cancelar en mantenimiento.
 
+### Arquitectura de Navegación
+
+Estado: Completo
+
+Componentes:
+
+* AdminLayout
+* SideMenu
+
+Características:
+
+* Menú persistente.
+* Navegación por rol.
+* Logout centralizado.
+* Consistencia visual.
+
 ---
 
 # 7. Módulos Pendientes
 
 ## Prioridad Alta
 
-* Dashboard Administrativo
 * Reportes Frontend
+* Configuración de Cafetería
 
 ## Prioridad Media
 
@@ -722,17 +760,17 @@ Evolución futura:
 
 # 11. Próxima Evolución Recomendada
 
-1. Dashboard Administrativo
-2. Gestión de Categorías
-3. Reportes Frontend
-4. Gestión de Configuración de Cafetería
-5. Perfil de Usuario
+1. Reportes Frontend
+2. Gestión de Configuración de Cafetería
+3. Perfil de Usuario
+4. Notificaciones
+5. Auditoría
 
 ---
 
 # Historial del Documento
 
-Versión: v1.5.12
+Versión: v1.6
 
 Fecha de creación: Junio 2026
 

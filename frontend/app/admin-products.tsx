@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Stack, useRouter } from "expo-router";
 import {
   View,
   Text,
@@ -21,6 +20,7 @@ import {
 } from "../src/services/productService";
 
 import { getCategories } from "../src/services/categoryService";
+import AdminLayout from "../components/ui/AdminLayout";
 
 type Product = {
   id: number;
@@ -51,15 +51,17 @@ type ProductForm = {
 };
 
 export default function AdminProducts() {
-  const router = useRouter();
   const { width } = useWindowDimensions();
   const isWideLayout = width >= 900;
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
-  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>("ALL");
-  const [statusFilter, setStatusFilter] = useState< "ALL" | "ACTIVE" | "INACTIVE" | "NO_STOCK" >("ALL");
+  const [selectedCategoryFilter, setSelectedCategoryFilter] =
+    useState<string>("ALL");
+  const [statusFilter, setStatusFilter] = useState<
+    "ALL" | "ACTIVE" | "INACTIVE" | "NO_STOCK"
+  >("ALL");
   const [searchText, setSearchText] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<"success" | "error">(
@@ -236,12 +238,6 @@ export default function AdminProducts() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    router.replace("/");
-  };
-
   const totalProducts = products.length;
   const activeProducts = products.filter((p) => p.active).length;
   const inactiveProducts = products.filter((p) => !p.active).length;
@@ -310,9 +306,7 @@ export default function AdminProducts() {
     : "Crear producto";
 
   return (
-    <>
-      <Stack.Screen options={{ headerShown: false }} />
-
+    <AdminLayout title="Panel administrador" subtitle="Gestión de productos">
       <View style={styles.screen}>
         {message && (
           <View style={styles.toastContainer}>
@@ -327,54 +321,32 @@ export default function AdminProducts() {
           </View>
         )}
 
-        <View style={styles.topStickyBar}>
-          <View style={styles.header}>
-            <View>
-              <Text style={styles.title}>Panel administrador</Text>
-              <Text style={styles.subtitle}>Gestión de productos</Text>
-            </View>
-
-            <View style={styles.headerActions}>
-              <TouchableOpacity
-                style={styles.backBtn}
-                onPress={() => router.replace("/home")}
-              >
-                <Text style={styles.backBtnText}>Volver</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-                <Text style={styles.logoutBtnText}>Salir</Text>
-              </TouchableOpacity>
-            </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.summaryScroll}
+          contentContainerStyle={styles.summaryContent}
+        >
+          <View style={styles.summaryChip}>
+            <Text style={styles.summaryNumber}>{totalProducts}</Text>
+            <Text style={styles.summaryLabel}>Productos</Text>
           </View>
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.summaryScroll}
-            contentContainerStyle={styles.summaryContent}
-          >
-            <View style={styles.summaryChip}>
-              <Text style={styles.summaryNumber}>{totalProducts}</Text>
-              <Text style={styles.summaryLabel}>Productos</Text>
-            </View>
+          <View style={styles.summaryChip}>
+            <Text style={styles.summaryNumber}>{activeProducts}</Text>
+            <Text style={styles.summaryLabel}>Activos</Text>
+          </View>
 
-            <View style={styles.summaryChip}>
-              <Text style={styles.summaryNumber}>{activeProducts}</Text>
-              <Text style={styles.summaryLabel}>Activos</Text>
-            </View>
+          <View style={styles.summaryChip}>
+            <Text style={styles.summaryNumber}>{inactiveProducts}</Text>
+            <Text style={styles.summaryLabel}>Inactivos</Text>
+          </View>
 
-            <View style={styles.summaryChip}>
-              <Text style={styles.summaryNumber}>{inactiveProducts}</Text>
-              <Text style={styles.summaryLabel}>Inactivos</Text>
-            </View>
-
-            <View style={styles.summaryChip}>
-              <Text style={styles.summaryNumber}>{noStockProducts}</Text>
-              <Text style={styles.summaryLabel}>Sin stock</Text>
-            </View>
-          </ScrollView>
-        </View>
+          <View style={styles.summaryChip}>
+            <Text style={styles.summaryNumber}>{noStockProducts}</Text>
+            <Text style={styles.summaryLabel}>Sin stock</Text>
+          </View>
+        </ScrollView>
 
         <View
           style={[
@@ -417,18 +389,14 @@ export default function AdminProducts() {
                     key={filter.key}
                     style={[
                       styles.filterChip,
-                      statusFilter === filter.key &&
-                        styles.filterChipActive,
+                      statusFilter === filter.key && styles.filterChipActive,
                     ]}
-                    onPress={() =>
-                      setStatusFilter(filter.key as any)
-                    }
+                    onPress={() => setStatusFilter(filter.key as any)}
                   >
                     <Text
                       style={[
                         styles.filterText,
-                        statusFilter === filter.key &&
-                          styles.filterTextActive,
+                        statusFilter === filter.key && styles.filterTextActive,
                       ]}
                     >
                       {filter.label}
@@ -758,7 +726,7 @@ export default function AdminProducts() {
           </View>
         </View>
       </View>
-    </>
+    </AdminLayout>
   );
 }
 
@@ -766,21 +734,6 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: "#fff8f1",
-  },
-  topStickyBar: {
-    backgroundColor: "#fff8f1",
-    paddingTop: 20,
-    paddingBottom: 14,
-    paddingHorizontal: 20,
-    zIndex: 99999,
-    elevation: 30,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0dfd1",
-    ...(Platform.OS === "web"
-      ? ({
-          boxShadow: "0 8px 18px rgba(59, 36, 22, 0.12)",
-        } as any)
-      : {}),
   },
   header: {
     flexDirection: "row",
@@ -827,47 +780,51 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     fontSize: 12,
   },
-  summaryScroll: {
-    height: 72,
-    minHeight: 72,
-    maxHeight: 72,
-    flexShrink: 0,
-  },
-  summaryContent: {
-    alignItems: "center",
-    paddingRight: 8,
-    paddingVertical: 6,
-  },
-  summaryChip: {
-    minWidth: 110,
-    height: 56,
-    backgroundColor: "#fff",
-    borderRadius: 14,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: "#ead8c8",
-    justifyContent: "center",
-  },
-  summaryNumber: {
-    fontSize: 17,
-    fontWeight: "900",
-    color: "#f57c00",
-  },
-  summaryLabel: {
-    marginTop: 2,
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#7a6a61",
-  },
+summaryScroll: {
+  maxHeight: 54,
+  flexShrink: 0,
+  marginBottom: 12,
+},
+
+summaryContent: {
+  alignItems: "center",
+  paddingVertical: 4,
+  paddingHorizontal: 16,
+},
+
+summaryChip: {
+  minWidth: 110,
+  height: 52,
+  backgroundColor: "#fff",
+  borderRadius: 12,
+  paddingVertical: 6,
+  paddingHorizontal: 12,
+  marginRight: 8,
+  borderWidth: 1,
+  borderColor: "#ead8c8",
+  justifyContent: "center",
+},
+
+summaryNumber: {
+  fontSize: 18,
+  fontWeight: "900",
+  color: "#f57c00",
+  lineHeight: 18,
+},
+
+summaryLabel: {
+  marginTop: 1,
+  fontSize: 10,
+  fontWeight: "800",
+  color: "#7a6a61",
+},
   productsLayout: {
     flex: 1,
     flexDirection: "row",
     gap: 16,
     alignItems: "stretch",
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 0,
     paddingBottom: 20,
     zIndex: 1,
     minHeight: 0,
@@ -1278,5 +1235,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "800",
     color: "#3b2416",
-  },  
+  },
 });

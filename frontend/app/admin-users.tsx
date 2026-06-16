@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Stack, useRouter } from "expo-router";
 import {
   View,
   Text,
@@ -23,6 +22,8 @@ import {
   UserRole,
 } from "../src/services/userService";
 
+import AdminLayout from "../components/ui/AdminLayout";
+
 type UserForm = {
   name: string;
   email: string;
@@ -31,7 +32,6 @@ type UserForm = {
 };
 
 export default function AdminUsersScreen() {
-  const router = useRouter();
   const { width } = useWindowDimensions();
   const isWideLayout = width >= 900;
 
@@ -193,13 +193,6 @@ export default function AdminUsersScreen() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    localStorage.removeItem("user");
-    router.replace("/");
-  };
-
   const filteredUsers = users
     .filter((user) => {
       const search = searchText.trim().toLowerCase();
@@ -233,9 +226,11 @@ export default function AdminUsersScreen() {
   const formButtonText = editingUserId ? "Actualizar usuario" : "Crear usuario";
 
   return (
-    <>
-      <Stack.Screen options={{ headerShown: false }} />
-
+    <AdminLayout
+      title="Panel administrador"
+      subtitle="Gestión de usuarios"
+      allowedRoles={["ADMIN"]}
+    >
       <View style={styles.screen}>
         {message && (
           <View style={styles.toastContainer}>
@@ -249,27 +244,6 @@ export default function AdminUsersScreen() {
             </Text>
           </View>
         )}
-
-        <View style={styles.topStickyBar}>
-          <View style={styles.header}>
-            <View>
-              <Text style={styles.title}>Panel administrador</Text>
-              <Text style={styles.subtitle}>Gestión de usuarios</Text>
-            </View>
-
-            <View style={styles.headerActions}>
-              <TouchableOpacity
-                style={styles.backBtn}
-                onPress={() => router.replace("/home")}
-              >
-                <Text style={styles.backBtnText}>Volver</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-                <Text style={styles.logoutBtnText}>Salir</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
 
           <ScrollView
             horizontal
@@ -307,7 +281,6 @@ export default function AdminUsersScreen() {
               <Text style={styles.summaryLabel}>Users</Text>
             </View>
           </ScrollView>
-        </View>
 
         <View
           style={[
@@ -543,9 +516,9 @@ export default function AdminUsersScreen() {
             </View>
           </View>
         </View>
-      </View>
-    </>
-  );
+    </View>
+  </AdminLayout>
+);
 }
 
 const styles = StyleSheet.create({
@@ -553,91 +526,30 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff8f1",
   },
-  topStickyBar: {
-    backgroundColor: "#fff8f1",
-    paddingTop: 20,
-    paddingBottom: 14,
-    paddingHorizontal: 20,
-    zIndex: 99999,
-    elevation: 30,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0dfd1",
-    ...(Platform.OS === "web"
-      ? ({
-          boxShadow: "0 8px 18px rgba(59, 36, 22, 0.12)",
-        } as any)
-      : {}),
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 14,
-    gap: 12,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "800",
-    color: "#3b2416",
-  },
-  subtitle: {
-    marginTop: 4,
-    fontSize: 15,
-    color: "#7c5f4a",
-  },
-  headerActions: {
-    flexDirection: "row",
-    gap: 8,
-    flexWrap: "wrap",
-    justifyContent: "flex-end",
-  },
-  backBtn: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#ead8c8",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-  },
-  backBtnText: {
-    color: "#3b1f12",
-    fontWeight: "900",
-    fontSize: 12,
-  },
-  logoutBtn: {
-    backgroundColor: "#b42318",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-  },
-  logoutBtnText: {
-    color: "#fff",
-    fontWeight: "900",
-    fontSize: 12,
-  },
-  summaryScroll: {
-    height: 72,
-    minHeight: 72,
-    maxHeight: 72,
-    flexShrink: 0,
-  },
-  summaryContent: {
-    alignItems: "center",
-    paddingRight: 8,
-    paddingVertical: 6,
-  },
-  summaryChip: {
-    minWidth: 110,
-    height: 56,
-    backgroundColor: "#fff",
-    borderRadius: 14,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: "#ead8c8",
-    justifyContent: "center",
-  },
+summaryScroll: {
+  maxHeight: 54,
+  flexShrink: 0,
+  marginBottom: 12,
+},
+
+summaryContent: {
+  alignItems: "center",
+  paddingVertical: 4,
+  paddingHorizontal: 16,
+},
+
+summaryChip: {
+  minWidth: 110,
+  height: 52,
+  backgroundColor: "#fff",
+  borderRadius: 14,
+  paddingVertical: 8,
+  paddingHorizontal: 12,
+  marginRight: 8,
+  borderWidth: 1,
+  borderColor: "#ead8c8",
+  justifyContent: "center",
+},
   summaryNumber: {
     fontSize: 17,
     fontWeight: "900",
@@ -655,7 +567,7 @@ const styles = StyleSheet.create({
     gap: 16,
     alignItems: "stretch",
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 0,
     paddingBottom: 20,
     zIndex: 1,
     minHeight: 0,

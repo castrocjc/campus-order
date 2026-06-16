@@ -953,4 +953,73 @@ Consecuencias negativas:
 
 ---
 
+# DEC-022
+
+Fecha: 2026-06
+
+Título:
+Arquitectura de navegación basada en SideMenu y Layouts por Rol
+
+Estado:
+Aprobada
+
+Contexto:
+
+El crecimiento de módulos administrativos y operativos generaba navegación inconsistente mediante botones Volver y accesos independientes.
+
+Decisión:
+
+Implementar navegación persistente mediante SideMenu y layouts reutilizables.
+
+Componentes:
+
+* AdminLayout
+* SideMenu
+
+Roles:
+
+ADMIN
+
+* Dashboard
+* Productos
+* Categorías
+* Usuarios
+* Pedidos
+
+WORKER
+
+* Pedidos
+
+USER
+
+* Catálogo
+* Mis Pedidos
+* Perfil
+
+Justificación:
+
+* Mejor experiencia de usuario.
+* Menor duplicidad de navegación.
+* Consistencia visual.
+* Escalabilidad futura.
+
+Consecuencias positivas:
+
+* Navegación uniforme.
+* Menor mantenimiento.
+* Incorporación sencilla de nuevos módulos.
+
+Consecuencias negativas:
+
+* Mayor dependencia de componentes compartidos.
+
+Observación:
+
+La pantalla de pedidos utiliza título dinámico:
+
+* Panel administrador para ADMIN.
+* Panel operario para WORKER.
+
+---
+
 Fin del documento.
