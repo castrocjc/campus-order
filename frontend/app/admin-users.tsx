@@ -9,6 +9,7 @@ import {
   ScrollView,
   TextInput,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 
 import {
@@ -101,16 +102,13 @@ export default function AdminUsersScreen() {
     if (missingFields.length > 0) {
       showMessage(
         `Complete los campos obligatorios: ${missingFields.join(", ")}.`,
-        "error"
+        "error",
       );
       return;
     }
 
     if (!editingUserId && !form.password.trim()) {
-      showMessage(
-        "Complete los campos obligatorios: Contraseña.",
-        "error"
-      );
+      showMessage("Complete los campos obligatorios: Contraseña.", "error");
       return;
     }
 
@@ -187,17 +185,11 @@ export default function AdminUsersScreen() {
     try {
       await resendVerificationCode(user.email);
 
-      showMessage(
-        "Código de verificación reenviado correctamente.",
-        "success",
-      );
+      showMessage("Código de verificación reenviado correctamente.", "success");
     } catch (error: any) {
       console.error("Error reenviando código:", error);
 
-      showMessage(
-        error?.message || "No se pudo reenviar el código.",
-        "error",
-      );
+      showMessage(error?.message || "No se pudo reenviar el código.", "error");
     }
   };
 
@@ -232,8 +224,10 @@ export default function AdminUsersScreen() {
 
   const totalUsers = users.length;
   const activeUsers = users.filter((u) => u.active).length;
+  const inactiveUsers = users.filter((u) => !u.active).length;
   const adminUsers = users.filter((u) => u.role === "ADMIN").length;
   const workerUsers = users.filter((u) => u.role === "WORKER").length;
+  const regularUsers = users.filter((u) => u.role === "USER").length;
 
   const formTitle = editingUserId ? "Editar usuario" : "Nuevo usuario";
   const formButtonText = editingUserId ? "Actualizar usuario" : "Crear usuario";
@@ -294,6 +288,11 @@ export default function AdminUsersScreen() {
             </View>
 
             <View style={styles.summaryChip}>
+              <Text style={styles.summaryNumber}>{inactiveUsers}</Text>
+              <Text style={styles.summaryLabel}>Inactivos</Text>
+            </View>
+
+            <View style={styles.summaryChip}>
               <Text style={styles.summaryNumber}>{adminUsers}</Text>
               <Text style={styles.summaryLabel}>Admins</Text>
             </View>
@@ -301,6 +300,11 @@ export default function AdminUsersScreen() {
             <View style={styles.summaryChip}>
               <Text style={styles.summaryNumber}>{workerUsers}</Text>
               <Text style={styles.summaryLabel}>Workers</Text>
+            </View>
+
+            <View style={styles.summaryChip}>
+              <Text style={styles.summaryNumber}>{regularUsers}</Text>
+              <Text style={styles.summaryLabel}>Users</Text>
             </View>
           </ScrollView>
         </View>
@@ -463,34 +467,39 @@ export default function AdminUsersScreen() {
                   : "Registra un nuevo usuario para CofiGO"}
               </Text>
 
+              <Text style={styles.fieldLabel}>Nombre *</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Nombre"
+                placeholder="Ejemplo: Juan Pérez"
                 value={form.name}
                 onChangeText={(value) => setForm({ ...form, name: value })}
               />
 
+              <Text style={styles.fieldLabel}>Correo institucional *</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Correo"
+                placeholder="Ejemplo: juan.perez@institucion.edu"
                 value={form.email}
                 onChangeText={(value) => setForm({ ...form, email: value })}
                 autoCapitalize="none"
               />
 
               {!editingUserId && (
-                <TextInput
-                  style={styles.input}
-                  placeholder="Contraseña"
-                  value={form.password}
-                  onChangeText={(value) =>
-                    setForm({ ...form, password: value })
-                  }
-                  secureTextEntry
-                />
+                <>
+                  <Text style={styles.fieldLabel}>Contraseña *</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Ejemplo: Temporal123"
+                    value={form.password}
+                    onChangeText={(value) =>
+                      setForm({ ...form, password: value })
+                    }
+                    secureTextEntry
+                  />
+                </>
               )}
 
-              <Text style={styles.categoryLabel}>Rol</Text>
+              <Text style={styles.fieldLabel}>Rol *</Text>
 
               <View style={styles.roleOptions}>
                 {(["USER", "WORKER", "ADMIN"] as UserRole[]).map((role) => (
@@ -514,21 +523,23 @@ export default function AdminUsersScreen() {
                 ))}
               </View>
 
-              <TouchableOpacity
-                style={styles.submitButton}
-                onPress={handleSubmit}
-              >
-                <Text style={styles.submitButtonText}>{formButtonText}</Text>
-              </TouchableOpacity>
+              <View style={styles.formActions}>
+                <TouchableOpacity
+                  style={styles.saveButton}
+                  onPress={handleSubmit}
+                >
+                  <Text style={styles.saveButtonText}>{formButtonText}</Text>
+                </TouchableOpacity>
 
-              {editingUserId && (
                 <TouchableOpacity
                   style={styles.cancelButton}
                   onPress={resetForm}
                 >
-                  <Text style={styles.cancelButtonText}>Cancelar edición</Text>
+                  <Text style={styles.cancelButtonText}>
+                    {editingUserId ? "Cancelar" : "Limpiar"}
+                  </Text>
                 </TouchableOpacity>
-              )}
+              </View>
             </View>
           </View>
         </View>
@@ -540,33 +551,39 @@ export default function AdminUsersScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#F3F4F6",
-    padding: 16,
+    backgroundColor: "#fff8f1",
   },
   topStickyBar: {
-    zIndex: 10,
-    backgroundColor: "#F3F4F6",
-    paddingBottom: 8,
+    backgroundColor: "#fff8f1",
+    paddingTop: 20,
+    paddingBottom: 14,
+    paddingHorizontal: 20,
+    zIndex: 99999,
+    elevation: 30,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0dfd1",
+    ...(Platform.OS === "web"
+      ? ({
+          boxShadow: "0 8px 18px rgba(59, 36, 22, 0.12)",
+        } as any)
+      : {}),
   },
   header: {
-    backgroundColor: "#FFFFFF",
-    padding: 16,
-    borderRadius: 18,
-    marginBottom: 12,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 14,
     gap: 12,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "800",
-    color: "#111827",
+    color: "#3b2416",
   },
   subtitle: {
-    fontSize: 14,
-    color: "#6B7280",
     marginTop: 4,
+    fontSize: 15,
+    color: "#7c5f4a",
   },
   headerActions: {
     flexDirection: "row",
@@ -575,142 +592,197 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   backBtn: {
-    backgroundColor: "#E5E7EB",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#ead8c8",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 10,
   },
   backBtnText: {
-    color: "#111827",
-    fontWeight: "700",
+    color: "#3b1f12",
+    fontWeight: "900",
+    fontSize: 12,
   },
   logoutBtn: {
-    backgroundColor: "#111827",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+    backgroundColor: "#b42318",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 10,
   },
   logoutBtnText: {
-    color: "#FFFFFF",
-    fontWeight: "700",
+    color: "#fff",
+    fontWeight: "900",
+    fontSize: 12,
   },
   summaryScroll: {
-    marginBottom: 12,
+    height: 72,
+    minHeight: 72,
+    maxHeight: 72,
+    flexShrink: 0,
   },
   summaryContent: {
-    gap: 10,
+    alignItems: "center",
+    paddingRight: 8,
+    paddingVertical: 6,
   },
   summaryChip: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 18,
-    minWidth: 130,
+    minWidth: 110,
+    height: 56,
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: "#ead8c8",
+    justifyContent: "center",
   },
   summaryNumber: {
-    fontSize: 22,
-    fontWeight: "800",
-    color: "#111827",
+    fontSize: 17,
+    fontWeight: "900",
+    color: "#f57c00",
   },
   summaryLabel: {
-    fontSize: 13,
-    color: "#6B7280",
     marginTop: 2,
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#7a6a61",
   },
   usersLayout: {
     flex: 1,
     flexDirection: "row",
     gap: 16,
+    alignItems: "stretch",
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 20,
+    zIndex: 1,
+    minHeight: 0,
   },
   usersLayoutStacked: {
     flexDirection: "column",
   },
   usersListColumn: {
-    flex: 1.4,
+    flex: 2,
+    minWidth: 0,
+    minHeight: 0,
   },
   userFormColumn: {
-    flex: 0.8,
+    flex: 1,
+    minWidth: 320,
+    alignSelf: "stretch",
+    minHeight: 0,
   },
   listCard: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 18,
-    padding: 16,
+    backgroundColor: "#ffffff",
+    borderRadius: 22,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    zIndex: 1,
+    minHeight: 0,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
   formCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 18,
-    padding: 16,
+    backgroundColor: "#ffffff",
+    borderRadius: 22,
+    padding: 18,
+    marginBottom: 40,
+    borderWidth: 1,
+    borderColor: "#f0dfd1",
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowRadius: 14,
+    elevation: 5,
+    ...(Platform.OS === "web"
+      ? ({
+          maxHeight: "100%",
+          overflow: "auto",
+        } as any)
+      : {}),
   },
   listHeaderRow: {
-    marginBottom: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: 12,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: "#111827",
+    color: "#3b2416",
+    marginBottom: 2,
   },
   sectionSubtitle: {
-    fontSize: 13,
-    color: "#6B7280",
-    marginTop: 3,
-    marginBottom: 12,
+    fontSize: 12,
+    color: "#8a6a52",
+    marginBottom: 8,
   },
   searchInput: {
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#fffaf5",
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#ead8c8",
     borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    fontSize: 13,
+    color: "#3b2416",
+    marginBottom: 8,
   },
-filterScroll: {
-  marginBottom: 12,
-  maxHeight: 44,
-},
-filterContent: {
-  flexDirection: "row",
-  alignItems: "center",
-  gap: 8,
-  paddingVertical: 2,
-},
-filterChip: {
-  height: 34,
-  minWidth: 64,
-  paddingHorizontal: 14,
-  borderRadius: 999,
-  backgroundColor: "#F3F4F6",
-  alignItems: "center",
-  justifyContent: "center",
-},
+  filterScroll: {
+    marginBottom: 8,
+    maxHeight: 34,
+    flexShrink: 0,
+  },
+  filterContent: {
+    alignItems: "center",
+    paddingRight: 8,
+  },
+  filterChip: {
+    backgroundColor: "#fffaf5",
+    borderWidth: 1,
+    borderColor: "#ead8c8",
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    marginRight: 6,
+  },
   filterChipActive: {
-    backgroundColor: "#111827",
+    backgroundColor: "#6f4e37",
+    borderColor: "#6f4e37",
   },
   filterText: {
-    color: "#374151",
-    fontWeight: "700",
+    color: "#6f4e37",
+    fontWeight: "800",
+    fontSize: 12,
   },
   filterTextActive: {
-    color: "#FFFFFF",
+    color: "#ffffff",
   },
   usersFlatList: {
     flex: 1,
+    minHeight: 0,
   },
   usersFlatListContent: {
-    paddingBottom: 20,
-    gap: 12,
+    paddingBottom: 18,
   },
   emptyText: {
-    color: "#6B7280",
+    color: "#7c5f4a",
+    fontSize: 15,
+    paddingVertical: 12,
     textAlign: "center",
-    marginTop: 20,
   },
   userCard: {
-    backgroundColor: "#F9FAFB",
-    borderRadius: 16,
-    padding: 14,
+    backgroundColor: "#fffaf5",
+    borderRadius: 18,
+    padding: 12,
+    marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#ead8c8",
   },
   userInfo: {
     gap: 8,
@@ -718,39 +790,41 @@ filterChip: {
   userTitleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "flex-start",
     gap: 12,
   },
   userName: {
     fontSize: 16,
     fontWeight: "800",
-    color: "#111827",
+    color: "#3b2416",
   },
   userEmail: {
+    marginTop: 3,
+    color: "#8a6a52",
     fontSize: 13,
-    color: "#6B7280",
-    marginTop: 2,
+    fontWeight: "700",
   },
   statusBadge: {
     borderRadius: 999,
-    paddingVertical: 5,
     paddingHorizontal: 10,
+    paddingVertical: 4,
     alignSelf: "flex-start",
   },
   statusActive: {
-    backgroundColor: "#DCFCE7",
+    backgroundColor: "#d1e7dd",
   },
   statusInactive: {
-    backgroundColor: "#FEE2E2",
+    backgroundColor: "#f8d7da",
   },
   statusText: {
     fontSize: 12,
     fontWeight: "800",
   },
   statusTextActive: {
-    color: "#166534",
+    color: "#0f5132",
   },
   statusTextInactive: {
-    color: "#991B1B",
+    color: "#842029",
   },
   metaRow: {
     flexDirection: "row",
@@ -759,8 +833,8 @@ filterChip: {
     alignItems: "center",
   },
   roleBadge: {
-    backgroundColor: "#DBEAFE",
-    color: "#1D4ED8",
+    backgroundColor: "#f1e4d8",
+    color: "#3b2416",
     fontWeight: "800",
     paddingVertical: 5,
     paddingHorizontal: 10,
@@ -768,17 +842,18 @@ filterChip: {
     overflow: "hidden",
   },
   verifiedText: {
-    color: "#374151",
-    fontWeight: "600",
+    color: "#6f5a49",
+    fontWeight: "700",
+    fontSize: 12,
   },
   codesBox: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#ffffff",
     borderRadius: 10,
     padding: 10,
     gap: 4,
   },
   codeText: {
-    color: "#4B5563",
+    color: "#6f5a49",
     fontSize: 12,
   },
   userActions: {
@@ -788,44 +863,64 @@ filterChip: {
     marginTop: 4,
   },
   editButton: {
-    backgroundColor: "#2563EB",
-    paddingVertical: 9,
-    paddingHorizontal: 12,
-    borderRadius: 10,
+    backgroundColor: "#0d6efd",
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    alignItems: "center",
   },
   toggleButton: {
-    paddingVertical: 9,
+    borderRadius: 12,
     paddingHorizontal: 12,
-    borderRadius: 10,
+    paddingVertical: 8,
+    alignItems: "center",
   },
   deactivateButton: {
-    backgroundColor: "#DC2626",
+    backgroundColor: "#f59f00",
   },
   activateButton: {
-    backgroundColor: "#16A34A",
+    backgroundColor: "#198754",
   },
   resetButton: {
-    backgroundColor: "#7C3AED",
-    paddingVertical: 9,
-    paddingHorizontal: 12,
-    borderRadius: 10,
+    backgroundColor: "#6f4e37",
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    alignItems: "center",
+  },
+  resendButton: {
+    backgroundColor: "#0d6efd",
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    alignItems: "center",
   },
   actionButtonText: {
-    color: "#FFFFFF",
+    color: "#ffffff",
     fontWeight: "800",
+    fontSize: 12,
   },
   input: {
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#fffaf5",
     borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: 12,
-    padding: 12,
+    borderColor: "#ead8c8",
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 15,
     marginBottom: 10,
+    color: "#3b2416",
+  },
+  fieldLabel: {
+    fontSize: 13,
+    fontWeight: "800",
+    color: "#3b2416",
+    marginBottom: 6,
   },
   categoryLabel: {
-    fontSize: 13,
-    color: "#374151",
-    fontWeight: "800",
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#3b2416",
     marginBottom: 8,
   },
   roleOptions: {
@@ -835,66 +930,80 @@ filterChip: {
     marginBottom: 14,
   },
   roleOption: {
-    backgroundColor: "#F3F4F6",
+    borderWidth: 1,
+    borderColor: "#d8c2ad",
     borderRadius: 999,
-    paddingVertical: 9,
     paddingHorizontal: 14,
+    paddingVertical: 8,
+    backgroundColor: "#fffaf5",
   },
   roleOptionSelected: {
-    backgroundColor: "#111827",
+    backgroundColor: "#6f4e37",
+    borderColor: "#6f4e37",
   },
   roleOptionText: {
-    color: "#374151",
-    fontWeight: "800",
+    color: "#6f4e37",
+    fontWeight: "700",
   },
   roleOptionTextSelected: {
-    color: "#FFFFFF",
+    color: "#ffffff",
   },
-  submitButton: {
-    backgroundColor: "#111827",
-    borderRadius: 12,
-    paddingVertical: 13,
+  formActions: {
+    flexDirection: "row",
+    gap: 10,
+    paddingTop: 12,
+    backgroundColor: "#ffffff",
+    ...(Platform.OS === "web"
+      ? ({
+          position: "sticky",
+          bottom: 0,
+        } as any)
+      : {}),
+  },
+  saveButton: {
+    flex: 1,
+    backgroundColor: "#6f4e37",
+    borderRadius: 14,
+    paddingVertical: 14,
     alignItems: "center",
   },
-  submitButtonText: {
-    color: "#FFFFFF",
+  saveButtonText: {
+    color: "#ffffff",
     fontWeight: "800",
   },
   cancelButton: {
-    marginTop: 10,
-    borderRadius: 12,
-    paddingVertical: 12,
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
     alignItems: "center",
-    backgroundColor: "#E5E7EB",
+    backgroundColor: "#f1e4d8",
   },
   cancelButtonText: {
-    color: "#111827",
+    color: "#3b2416",
     fontWeight: "800",
   },
   toastContainer: {
     position: "absolute",
-    top: 14,
+    top: 70,
     left: 0,
     right: 0,
     alignItems: "center",
-    zIndex: 99,
+    zIndex: 100000,
   },
   toast: {
-    backgroundColor: "#16A34A",
-    color: "#FFFFFF",
-    paddingVertical: 10,
-    paddingHorizontal: 18,
+    alignSelf: "center",
+    backgroundColor: "#e7f7ed",
+    color: "#1f7a3f",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
     borderRadius: 999,
-    fontWeight: "800",
+    fontWeight: "700",
+    fontSize: 13,
+    textAlign: "center",
     overflow: "hidden",
   },
   toastError: {
-    backgroundColor: "#DC2626",
-  },
-  resendButton: {
-    backgroundColor: "#2563EB",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
+    backgroundColor: "#fdecea",
+    color: "#b71c1c",
   },
 });
