@@ -184,6 +184,7 @@ Pantallas:
 * admin-products
 * admin-users
 * admin-categories
+- Las pantallas administrativas de Productos, Categorías y Usuarios comparten el estándar visual oficial CofiGO.
 
 ---
 

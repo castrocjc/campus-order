@@ -470,6 +470,13 @@ Capacidades actuales:
 * Reenvío de código de verificación para usuarios pendientes.
 * Ocultamiento de códigos sensibles en administración.
 
+Gestión de Usuarios:
+
+* Formularios alineados al estándar visual administrativo CofiGO.
+* Etiquetas de campos obligatorios.
+* Placeholders de ayuda para captura.
+* Botones Limpiar y Cancelar en mantenimiento.
+
 ---
 
 # 7. Módulos Pendientes
@@ -725,7 +732,7 @@ Evolución futura:
 
 # Historial del Documento
 
-Versión: v1.5.11
+Versión: v1.5.12
 
 Fecha de creación: Junio 2026
 

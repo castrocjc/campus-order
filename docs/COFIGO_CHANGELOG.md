@@ -1237,4 +1237,52 @@ CofiGO incorpora gestión administrativa completa de categorías y fortalece la 
 
 ---
 
+# v1.5.12 - Armonización Visual de Administración de Usuarios
+
+Fecha: Junio 2026
+
+## Mejoras
+
+### Unificación visual del Panel Administrativo
+
+Se alineó la pantalla de Administración de Usuarios con el estándar visual oficial utilizado por Administración de Productos y Administración de Categorías.
+
+Incluye:
+
+* Unificación de colores institucionales CofiGO.
+* Estandarización de encabezados administrativos.
+* Estandarización de tarjetas de indicadores.
+* Estandarización de formularios.
+* Etiquetas de campos obligatorios (*).
+* Placeholders con ejemplos de captura.
+* Incorporación de botón Limpiar.
+* Incorporación de botón Cancelar durante edición.
+* Conservación completa de la compatibilidad responsive.
+
+## Frontend
+
+Archivos modificados:
+
+* admin-users.tsx
+
+## Validaciones realizadas
+
+* Crear usuario.
+* Editar usuario.
+* Activar usuario.
+* Desactivar usuario.
+* Resetear contraseña.
+* Reenviar código.
+* Validación Desktop.
+* Validación Mobile Web.
+
+## Impacto
+
+* Sin cambios de backend.
+* Sin cambios de API.
+* Sin cambios de base de datos.
+* Consistencia visual completa del Panel Administrativo.
+
+---
+
 Fin del documento.

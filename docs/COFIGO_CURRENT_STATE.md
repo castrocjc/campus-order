@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.5.11
+v1.5.12
 
 Estado:
 
@@ -68,6 +68,7 @@ Funcionalidades:
 * Ocultamiento de códigos sensibles en pantalla administrativa.
 * Usuarios creados por ADMIN se consideran verificados administrativamente.
 - Validación detallada de campos obligatorios en formularios administrativos.
+- Interfaz administrativa alineada al estándar visual oficial CofiGO.
 
 Roles soportados:
 
