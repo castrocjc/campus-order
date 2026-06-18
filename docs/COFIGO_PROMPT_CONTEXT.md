@@ -237,12 +237,37 @@ Frontend:
 
 ---
 
+## Perfil de Usuario
+
+Estado: Completo
+
+Funcionalidades:
+
+* Consulta de perfil autenticado.
+* Edición de nombre.
+* Edición de celular.
+* Cambio seguro de contraseña.
+* Visualización de correo institucional en solo lectura.
+* Visualización de rol en solo lectura.
+* Visualización de estado en solo lectura.
+* Visualización de verificación de correo en solo lectura.
+
+Reglas:
+
+* El usuario no puede modificar correo institucional.
+* El usuario no puede modificar rol.
+* El usuario no puede modificar estado.
+* El usuario no puede modificar verificación de correo.
+* El celular queda disponible para futuras notificaciones SMS o WhatsApp.
+
+---
+
 # Módulos Pendientes
 
 Prioridad Alta:
 
-* Perfil de Usuario
 * Reportes Frontend
+* Notificaciones READY_FOR_PICKUP
 
 Prioridad Media:
 
@@ -261,7 +286,7 @@ Prioridad Baja:
 
 Entidades principales:
 
-* User
+* User, incluye phone para perfil y futuras notificaciones
 * Category
 * Product
 * Order
@@ -371,7 +396,7 @@ WORKER
 
 USER
 
-* Catálogo
+* Menú
 * Mis Pedidos
 * Perfil
 

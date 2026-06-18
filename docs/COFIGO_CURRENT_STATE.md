@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.7
+v1.8
 
 Estado:
 
@@ -249,7 +249,7 @@ WORKER
 
 USER
 
-* Catálogo
+* Menú
 * Mis Pedidos
 * Perfil
 
@@ -367,7 +367,27 @@ Funcionalidades:
 
 Estado:
 
-🔴 Pendiente
+🟢 Completo
+
+Funcionalidades:
+
+* Consulta de perfil autenticado.
+* Edición de nombre.
+* Edición de celular.
+* Visualización de correo institucional en modo solo lectura.
+* Visualización de rol en modo solo lectura.
+* Visualización de estado de cuenta en modo solo lectura.
+* Visualización de estado de verificación de correo en modo solo lectura.
+* Cambio seguro de contraseña.
+* Sincronización del nombre actualizado en sesión activa.
+
+Reglas:
+
+* El usuario no puede modificar su correo institucional.
+* El usuario no puede modificar su rol.
+* El usuario no puede modificar su estado de cuenta.
+* El usuario no puede modificar el estado de verificación de correo.
+* El celular queda disponible para futuras notificaciones SMS o WhatsApp.
 
 ---
 
@@ -484,8 +504,8 @@ Las siguientes funcionalidades se consideran estables y no deben modificarse sin
 
 Prioridad Alta:
 
-1. Perfil de Usuario
-2. Reportes Frontend
+1. Reportes Frontend
+2. Notificaciones READY_FOR_PICKUP
 3. Dashboard Administrativo Avanzado
 
 ---

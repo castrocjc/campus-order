@@ -37,11 +37,11 @@ VALUES
 
 -- Users
 INSERT INTO users
-(name, email, password, role, active, email_verified)
+(name, email, phone, password, role, active, email_verified)
 VALUES
-('Administrador', 'admin@upc.edu.pe', '$2a$10$GUJwG6.J9qBp7ccUIeeWpueF1VLqIO7/VVxvI4pypae3YEnN/egKK', 'ADMIN', true, true),
-('Worker', 'worker@upc.edu.pe', '$2a$10$GUJwG6.J9qBp7ccUIeeWpueF1VLqIO7/VVxvI4pypae3YEnN/egKK', 'WORKER', true, true),
-('Juan Carlos Castro', 'jc.castroc@upc.edu.pe', '$2a$10$GUJwG6.J9qBp7ccUIeeWpueF1VLqIO7/VVxvI4pypae3YEnN/egKK', 'USER', true, true);
+('Administrador', 'admin@upc.edu.pe', NULL, '$2a$10$GUJwG6.J9qBp7ccUIeeWpueF1VLqIO7/VVxvI4pypae3YEnN/egKK', 'ADMIN', true, true),
+('Worker', 'worker@upc.edu.pe', NULL, '$2a$10$GUJwG6.J9qBp7ccUIeeWpueF1VLqIO7/VVxvI4pypae3YEnN/egKK', 'WORKER', true, true),
+('Juan Carlos Castro', NULL, 'jc.castroc@upc.edu.pe', '$2a$10$GUJwG6.J9qBp7ccUIeeWpueF1VLqIO7/VVxvI4pypae3YEnN/egKK', 'USER', true, true);
 
 -- Cafeteria Settings
 INSERT INTO cafeteria_settings

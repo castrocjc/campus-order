@@ -13,6 +13,27 @@ export type UserAdmin = {
   passwordResetCode?: string | null;
 };
 
+export type UserProfile = {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string | null;
+  role: UserRole;
+  active: boolean;
+  emailVerified: boolean;
+};
+
+export type UpdateProfilePayload = {
+  name: string;
+  phone?: string;
+};
+
+export type ChangePasswordPayload = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
+
 export type UserFormPayload = {
   name: string;
   email: string;
@@ -176,6 +197,58 @@ export async function resetUserPassword(id: number): Promise<string> {
       error?.response?.data?.message ||
         error?.message ||
         "No se pudo resetear la contraseña."
+    );
+  }
+}
+
+export async function getMyProfile(): Promise<UserProfile> {
+  try {
+    const result = await apiRequest("/api/users/me", {
+      method: "GET",
+    });
+
+    return result.data;
+  } catch (error: any) {
+    throw new Error(
+      error?.response?.data?.message ||
+      error?.message ||
+      "No se pudo cargar el perfil."
+    );
+  }
+}
+
+export async function updateMyProfile(
+  payload: UpdateProfilePayload
+): Promise<UserProfile> {
+  try {
+    const result = await apiRequest("/api/users/me/profile", {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+
+    return result.data;
+  } catch (error: any) {
+    throw new Error(
+      error?.response?.data?.message ||
+      error?.message ||
+      "No se pudo actualizar el perfil."
+    );
+  }
+}
+
+export async function changeMyPassword(
+  payload: ChangePasswordPayload
+): Promise<void> {
+  try {
+    await apiRequest("/api/users/me/password", {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+  } catch (error: any) {
+    throw new Error(
+      error?.response?.data?.message ||
+      error?.message ||
+      "No se pudo cambiar la contraseña."
     );
   }
 }

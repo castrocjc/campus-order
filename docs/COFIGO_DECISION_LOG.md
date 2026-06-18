@@ -1076,4 +1076,92 @@ La zona horaria deja de estar fija en America/Lima y pasa a ser configurable.
 
 ---
 
+# DEC-024
+
+Fecha: 2026-06
+
+Título:
+Perfil de Usuario con edición restringida
+
+Estado:
+Aprobada
+
+Contexto:
+
+Se requería habilitar la opción Perfil disponible en la navegación USER, permitiendo que el usuario gestione información personal sin afectar reglas sensibles de seguridad.
+
+Decisión:
+
+Permitir que el usuario edite únicamente:
+
+* Nombre
+* Celular
+
+Mantener como solo lectura:
+
+* Correo institucional
+* Rol
+* Estado de cuenta
+* Estado de verificación de correo
+
+Justificación:
+
+* Reduce riesgos de seguridad.
+* Evita complejidad por revalidación de correo institucional.
+* Evita cambios no autorizados de rol o estado.
+* Mantiene la administración de usuarios como fuente de control operativo.
+* Permite una experiencia simple para el usuario final.
+
+Consecuencias positivas:
+
+* Perfil funcional con bajo riesgo de regresión.
+* Separación clara entre autogestión y administración.
+* Mayor control sobre datos sensibles.
+* Preparación para futuras notificaciones.
+
+Consecuencias negativas:
+
+* El usuario no puede actualizar su correo desde Perfil.
+* Si requiere cambio de correo, deberá gestionarse mediante administración.
+
+---
+
+# DEC-025
+
+Fecha: 2026-06
+
+Título:
+Incorporación de celular para futuras notificaciones
+
+Estado:
+Aprobada
+
+Contexto:
+
+Se evaluó la posibilidad de notificar al usuario por SMS o WhatsApp cuando un pedido cambie al estado READY_FOR_PICKUP.
+
+Decisión:
+
+Agregar el atributo phone a la entidad User y permitir su gestión desde Perfil.
+
+Justificación:
+
+* Prepara el modelo de datos para futuras notificaciones.
+* Evita modificar nuevamente la estructura User cuando se implemente SMS o WhatsApp.
+* Permite capturar información de contacto sin obligarla en el registro inicial.
+* Mantiene bajo impacto en el onboarding del usuario.
+
+Consecuencias positivas:
+
+* Base preparada para notificaciones móviles.
+* Mejor información de contacto del usuario.
+* Evolución compatible con SMS, WhatsApp o ambos.
+
+Consecuencias negativas:
+
+* El celular requiere validaciones adicionales.
+* En una versión futura se deberá definir consentimiento explícito de notificaciones.
+
+---
+
 Fin del documento.

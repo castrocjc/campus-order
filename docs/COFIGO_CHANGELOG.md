@@ -1480,4 +1480,84 @@ CofiGO evoluciona de una configuración basada en código a una configuración a
 
 ---
 
+# v1.8 - Perfil de Usuario
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Perfil de Usuario
+
+Se implementó la pantalla Mi Perfil para usuarios finales.
+
+Incluye:
+
+* Consulta de información personal.
+* Edición de nombre.
+* Edición de celular.
+* Visualización de correo institucional en modo solo lectura.
+* Visualización de rol en modo solo lectura.
+* Visualización de estado de cuenta en modo solo lectura.
+* Visualización de estado de verificación de correo en modo solo lectura.
+* Cambio seguro de contraseña desde Perfil.
+* Sincronización del nombre actualizado en la sesión activa.
+* Integración de Perfil en SideMenu USER.
+
+## Backend
+
+Archivos modificados:
+
+* User.java
+* UserController.java
+* UserService.java
+* UserResponseDTO.java
+* SecurityConfig.java
+
+Archivos creados:
+
+* UserProfileUpdateRequestDTO.java
+* ChangePasswordRequestDTO.java
+
+## Frontend
+
+Archivos modificados:
+
+* SideMenu.tsx
+* userService.ts
+
+Archivos creados:
+
+* profile.tsx
+
+## Base de datos
+
+Nueva columna:
+
+* users.phone
+
+## Endpoints nuevos
+
+* GET /api/users/me
+* PUT /api/users/me/profile
+* PUT /api/users/me/password
+
+## Validaciones realizadas
+
+* Consulta de perfil autenticado.
+* Actualización de nombre.
+* Actualización de celular.
+* Cambio de contraseña.
+* Validación de contraseña actual.
+* Validación de longitud mínima de contraseña.
+* Validación de confirmación de contraseña.
+* Login posterior al cambio de contraseña.
+* Navegación USER hacia Perfil.
+* Validación visual Desktop.
+
+## Impacto
+
+CofiGO incorpora gestión de perfil personal para usuarios finales y queda preparado para futuras notificaciones por SMS o WhatsApp usando el celular registrado.
+
+---
+
 Fin del documento.

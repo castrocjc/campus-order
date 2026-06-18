@@ -26,20 +26,21 @@ export default function SideMenu({ role = "USER", onLogout }: SideMenuProps) {
             style={styles.menuItem}
             onPress={() => goTo("/home")}
           >
-            <Text style={styles.menuText}>Catálogo</Text>
+            <Text style={styles.menuText}>☕ Menú</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.menuItem}
             onPress={() => goTo("/my-orders")}
           >
-            <Text style={styles.menuText}>Mis Pedidos</Text>
+            <Text style={styles.menuText}>🧾 Mis Pedidos</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItemDisabled}>
-            <Text style={styles.menuTextDisabled}>
-              👤 Perfil (Próximamente)
-            </Text>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => goTo("/profile")}
+          >
+            <Text style={styles.menuText}>👤 Perfil</Text>
           </TouchableOpacity>
         </>
       )}
@@ -52,7 +53,7 @@ export default function SideMenu({ role = "USER", onLogout }: SideMenuProps) {
             style={styles.menuItem}
             onPress={() => goTo("/admin-orders")}
           >
-            <Text style={styles.menuText}>🛒 Pedidos</Text>
+            <Text style={styles.menuText}>🧾 Pedidos</Text>
           </TouchableOpacity>
         </>
       )}
@@ -79,14 +80,14 @@ export default function SideMenu({ role = "USER", onLogout }: SideMenuProps) {
             style={styles.menuItem}
             onPress={() => goTo("/admin-categories")}
           >
-            <Text style={styles.menuText}>📂 Categorías</Text>
+            <Text style={styles.menuText}>🏷️ Categorías</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.menuItem}
             onPress={() => goTo("/admin-orders")}
           >
-            <Text style={styles.menuText}>🛒 Pedidos</Text>
+            <Text style={styles.menuText}>🧾 Pedidos</Text>
           </TouchableOpacity>
 
           <Text style={styles.sectionTitle}>ADMINISTRACIÓN</Text>

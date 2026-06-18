@@ -5,11 +5,15 @@ import com.campusorder.dto.UserResponseDTO;
 import com.campusorder.dto.VerifyEmailRequestDTO;
 import com.campusorder.dto.response.ApiResponse;
 import com.campusorder.dto.UserUpdateRequestDTO;
+import com.campusorder.dto.UserProfileUpdateRequestDTO;
+import com.campusorder.dto.ChangePasswordRequestDTO;
 import com.campusorder.service.UserService;
-import jakarta.validation.Valid;
+import com.campusorder.entity.User;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
+import java.security.Principal;
 import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/users")
@@ -43,6 +47,31 @@ public class UserController {
                 "Código de verificación reenviado correctamente",
                 null
         );
+    }
+
+    @GetMapping("/me")
+    public ApiResponse<UserResponseDTO> getMyProfile(@AuthenticationPrincipal User authenticatedUser) {
+
+        UserResponseDTO user = userService.getMyProfile(authenticatedUser.getEmail());
+        return new ApiResponse<>(true, "Perfil del usuario", user);
+    }
+
+    @PutMapping("/me/profile")
+    public ApiResponse<UserResponseDTO> updateMyProfile(
+            @AuthenticationPrincipal User authenticatedUser,
+            @Valid @RequestBody UserProfileUpdateRequestDTO dto) {
+
+        UserResponseDTO user = userService.updateMyProfile(authenticatedUser.getEmail(), dto);
+        return new ApiResponse<>(true, "Perfil actualizado correctamente", user);
+    }
+
+    @PutMapping("/me/password")
+    public ApiResponse<Void> changeMyPassword(
+            @AuthenticationPrincipal User authenticatedUser,
+            @Valid @RequestBody ChangePasswordRequestDTO dto) {
+
+        userService.changeMyPassword(authenticatedUser.getEmail(), dto);
+        return new ApiResponse<>(true, "Contraseña actualizada correctamente", null);
     }
 
     @GetMapping

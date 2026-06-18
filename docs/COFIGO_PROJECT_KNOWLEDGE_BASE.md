@@ -152,6 +152,7 @@ JwtService
 | id                         | Long          |
 | name                       | String        |
 | email                      | String        |
+| phone                      | String        |
 | password                   | String        |
 | role                       | String        |
 | active                     | Boolean       |
@@ -328,7 +329,7 @@ Pantallas:
 
 * Home
 * Mis Pedidos
-* Perfil (pendiente)
+* Perfil
 
 ### ADMIN
 
@@ -430,6 +431,12 @@ POST /api/users/verify-email
 POST /api/users/resend-code
 
 GET /api/users
+
+GET /api/users/me
+
+PUT /api/users/me/profile
+
+PUT /api/users/me/password
 ```
 
 ---
@@ -524,6 +531,7 @@ PUT /api/cafeteria-settings
 | Gestión de Usuarios        | Completo |
 | Gestión de Categorías      | Completo |
 | Configuración de Cafetería | Completo |
+| Perfil de Usuario          | Completo |
 
 Capacidades actuales:
 
@@ -569,7 +577,6 @@ Características:
 
 ## Prioridad Media
 
-* Perfil de Usuario
 * Auditoría
 * Notificaciones
 
@@ -801,13 +808,53 @@ Evolución futura:
 
 ---
 
+# Perfil de Usuario
+
+Estado:
+
+Completo
+
+Implementación actual:
+
+Frontend:
+
+* profile.tsx
+* userService.ts
+* SideMenu.tsx
+
+Backend:
+
+* UserController
+* UserService
+* User
+* UserResponseDTO
+* UserProfileUpdateRequestDTO
+* ChangePasswordRequestDTO
+* SecurityConfig
+
+Base de datos:
+
+* users.phone
+
+Endpoints:
+
+```http
+GET /api/users/me
+
+PUT /api/users/me/profile
+
+PUT /api/users/me/password
+```
+
+---
+
 # 11. Próxima Evolución Recomendada
 
 1. Reportes Frontend
-2. Gestión de Configuración de Cafetería
-3. Perfil de Usuario
-4. Notificaciones
-5. Auditoría
+2. Notificaciones READY_FOR_PICKUP
+3. Auditoría
+4. Mejoras visuales finales
+5. Multi Cafetería
 
 ---
 
