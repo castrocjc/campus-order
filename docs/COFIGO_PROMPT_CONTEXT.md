@@ -158,11 +158,7 @@ Funcionalidades:
 
 Reglas actuales de horario:
 
-* Zona horaria oficial: America/Lima
-* Horario de atención: 07:00 a 21:00
-* Tiempo mínimo de preparación: 20 minutos
-* Intervalo de recojo: 30 minutos
-* Configuración centralizada en código para el MVP
+* Las reglas operativas son obtenidas dinámicamente desde Configuración de Cafetería.
 
 Estados:
 
@@ -205,6 +201,28 @@ Funcionalidades:
 
 ---
 
+## Configuración de Cafetería
+
+Estado: Completo
+
+Funcionalidades:
+
+* Datos generales.
+* Ubicación.
+* Zona horaria.
+* Moneda.
+* Tiempo mínimo de preparación.
+* Intervalo de recojo.
+* Horarios por día.
+* Días cerrados.
+
+Integraciones:
+
+* Home
+* OrderService
+
+---
+
 ## Reportes
 
 Estado: Parcial
@@ -223,12 +241,12 @@ Frontend:
 
 Prioridad Alta:
 
+* Perfil de Usuario
 * Reportes Frontend
-* Gestión de Configuración de Cafetería
 
 Prioridad Media:
 
-* Perfil de Usuario
+* Dashboard Administrativo Avanzado
 * Auditoría
 * Notificaciones
 

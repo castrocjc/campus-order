@@ -107,6 +107,7 @@ UserController
 ProductController
 CategoryController
 OrderController
+CafeteriaSettingsController
 ```
 
 ### Services
@@ -118,6 +119,7 @@ ProductService
 OrderService
 EmailService
 CategoryService
+CafeteriaSettingsService
 ```
 
 ### Repositories
@@ -127,6 +129,8 @@ UserRepository
 ProductRepository
 CategoryRepository
 OrderRepository
+CafeteriaSettingsRepository
+CafeteriaScheduleRepository
 ```
 
 ### Seguridad
@@ -258,6 +262,35 @@ Order 1 : N OrderItem
 | subtotal           | BigDecimal |
 | orderId            | Long       |
 | customizationNotes | String     |
+
+---
+
+## CafeteriaSettings
+
+| Campo                 | Tipo    |
+|--------               |------   |
+| id                    | Long    |
+| name                  | String  |
+| description           | String  |
+| active                | Boolean |
+| address               | String  |
+| reference             | String  |
+| contactPhone          | String  |
+| timezone              | String  |
+| currency              | String  |
+| minPreparationMinutes | Integer |
+| pickupIntervalMinutes | Integer |
+
+## CafeteriaSchedule
+
+| Campo               | Tipo      |
+|--------             |------     |
+| id                  | Long      |
+| cafeteriaSettingsId | Long      |
+| dayOfWeek           | String    |
+| openingTime         | LocalTime |
+| closingTime         | LocalTime |
+| closed              | Boolean.  |
 
 ---
 
@@ -461,25 +494,36 @@ GET /api/orders/reports/sales-by-day
 
 ---
 
+## Cafeteria Settings
+
+```http
+GET /api/cafeteria-settings
+
+PUT /api/cafeteria-settings
+```
+
+---
+
 # 6. Módulos Implementados
 
-| Módulo                    | Estado   |
-| ----------------------    | -------- |
-| Login                     | Completo |
-| Registro                  | Completo |
-| Verificación Correo       | Completo |
-| JWT                       | Completo |
-| Roles                     | Completo |
-| Productos                 | Completo |
-| Personalización Productos | Completo |
-| Menú Digital              | Completo |
-| Carrito                   | Completo |
-| Pedidos                   | Completo |
-| Gestión Pedidos           | Completo |
-| Reporte Ventas por Día    | Parcial  |
-| Recuperar Contraseña      | Completo |
-| Gestión de Usuarios       | Completo |
-| Gestión de Categorías     | Completo |
+| Módulo                     | Estado   |
+| ----------------------     | -------- |
+| Login                      | Completo |
+| Registro                   | Completo |
+| Verificación Correo        | Completo |
+| JWT                        | Completo |
+| Roles                      | Completo |
+| Productos                  | Completo |
+| Personalización Productos  | Completo |
+| Menú Digital               | Completo |
+| Carrito                    | Completo |
+| Pedidos                    | Completo |
+| Gestión Pedidos            | Completo |
+| Reporte Ventas por Día     | Parcial  |
+| Recuperar Contraseña       | Completo |
+| Gestión de Usuarios        | Completo |
+| Gestión de Categorías      | Completo |
+| Configuración de Cafetería | Completo |
 
 Capacidades actuales:
 
@@ -522,7 +566,6 @@ Características:
 ## Prioridad Alta
 
 * Reportes Frontend
-* Configuración de Cafetería
 
 ## Prioridad Media
 

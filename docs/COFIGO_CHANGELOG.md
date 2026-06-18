@@ -1394,4 +1394,90 @@ Se establece una arquitectura visual consistente para todos los perfiles del sis
 
 ---
 
+# v1.7 - Configuración de Cafetería
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Configuración Operativa de Cafetería
+
+Se implementó un módulo completo para administrar los parámetros operativos de la cafetería sin necesidad de modificar código fuente.
+
+Incluye:
+
+* Nombre de cafetería.
+* Descripción.
+* Estado activa/inactiva.
+* Dirección.
+* Referencia.
+* Teléfono.
+* Zona horaria.
+* Moneda.
+* Tiempo mínimo de preparación.
+* Intervalo de recojo.
+* Horarios de atención por día de la semana.
+* Días cerrados.
+
+## Backend
+
+Archivos creados:
+
+* CafeteriaSettings.java
+* CafeteriaSchedule.java
+* CafeteriaSettingsController.java
+* CafeteriaSettingsService.java
+* CafeteriaSettingsRepository.java
+* CafeteriaScheduleRepository.java
+* CafeteriaSettingsRequestDTO.java
+* CafeteriaSettingsResponseDTO.java
+
+Archivos modificados:
+
+* OrderService.java
+* SecurityConfig.java
+
+## Frontend
+
+Archivos creados:
+
+* admin-settings.tsx
+* cafeteriaSettingsService.ts
+
+Archivos modificados:
+
+* home.tsx
+* orderService.ts
+* SideMenu.tsx
+
+## Arquitectura
+
+Se eliminaron los parámetros operativos hardcodeados del sistema:
+
+* Hora de apertura.
+* Hora de cierre.
+* Tiempo mínimo de preparación.
+* Intervalo de recojo.
+* Zona horaria.
+
+OrderService y Home ahora consumen la configuración desde CafeteriaSettings.
+
+## Validaciones realizadas
+
+* Cafetería activa.
+* Cafetería inactiva.
+* Domingo cerrado.
+* Horario especial de sábado.
+* Tiempo mínimo de preparación configurable.
+* Intervalo de recojo configurable.
+* Generación dinámica de horarios.
+* Consumo de configuración desde Home.
+* Validación backend mediante Postman.
+
+## Impacto
+
+CofiGO evoluciona de una configuración basada en código a una configuración administrable desde pantalla.
+
+---
+
 Fin del documento.

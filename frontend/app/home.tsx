@@ -14,17 +14,22 @@ import {
 import { getToken, logout } from "../src/services/authService";
 import { getMenu } from "../src/services/productService";
 import { createOrder } from "../src/services/orderService";
+import { getCafeteriaSettings } from "../src/services/cafeteriaSettingsService";
 import SideMenu from "../components/ui/SideMenu";
 
 const productPlaceholder = require("../assets/product-placeholder.png");
 
-const CAFETERIA_OPEN_HOUR = 7;
-const CAFETERIA_CLOSE_HOUR = 21;
-
-const PICKUP_INTERVAL_MINUTES = 30;
-const MIN_PREPARATION_MINUTES = 20;
-
 const isMobile = Dimensions.get("window").width < 768;
+
+const DAY_NAMES = [
+  "SUNDAY",
+  "MONDAY",
+  "TUESDAY",
+  "WEDNESDAY",
+  "THURSDAY",
+  "FRIDAY",
+  "SATURDAY",
+];
 
 const getProductImageSource = (product: any, forcePlaceholder = false) => {
   if (forcePlaceholder) {
@@ -71,6 +76,8 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [pickupTime, setPickupTime] = useState("");
+  const [cafeteriaSettings, setCafeteriaSettings] = useState<any>(null);
+  const [loadingSettings, setLoadingSettings] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<"success" | "error">(
@@ -106,44 +113,67 @@ export default function HomeScreen() {
       : products.filter((item) => item?.category === selectedCategory);
 
   const generatePickupOptions = () => {
+    if (!cafeteriaSettings) {
+      return {
+        options: [],
+        message: loadingSettings
+          ? "Cargando horarios de atención..."
+          : "No se pudo cargar la configuración de horarios.",
+      };
+    }
+
     const options: string[] = [];
 
-    const peruNow = new Date(
+    const timezone = cafeteriaSettings.timezone || "America/Lima";
+    const interval = cafeteriaSettings.pickupIntervalMinutes || 30;
+    const minPreparation = cafeteriaSettings.minPreparationMinutes || 20;
+
+    const now = new Date(
       new Date().toLocaleString("en-US", {
-        timeZone: "America/Lima",
+        timeZone: timezone,
       }),
     );
 
-    const now = peruNow;
+    const todayDay = DAY_NAMES[now.getDay()];
 
-    /*
-      Líneas para simular diferentes horas y probar la lógica de horarios de recojo:
-      now.setHours(20);
-      now.setMinutes(20);
-    */
-
-    const minimumTime = new Date(
-      now.getTime() + MIN_PREPARATION_MINUTES * 60000,
+    const schedule = cafeteriaSettings.schedules?.find(
+      (item: any) => item.dayOfWeek === todayDay,
     );
 
-    const openingTime = new Date();
-    openingTime.setHours(CAFETERIA_OPEN_HOUR, 0, 0, 0);
+    if (!schedule) {
+      return {
+        options: [],
+        message: "No existe horario configurado para el día de hoy.",
+      };
+    }
 
-    const closingTime = new Date();
-    closingTime.setHours(CAFETERIA_CLOSE_HOUR, 0, 0, 0);
+    if (schedule.closed) {
+      return {
+        options: [],
+        message: "La cafetería se encuentra cerrada el día de hoy.",
+      };
+    }
 
-    const firstOperationalPickupTime = new Date(
-      openingTime.getTime() + MIN_PREPARATION_MINUTES * 60000,
+    const minimumTime = new Date(now.getTime() + minPreparation * 60000);
+
+    const openingParts = schedule.openingTime.substring(0, 5).split(":");
+    const closingParts = schedule.closingTime.substring(0, 5).split(":");
+
+    const openingTime = new Date(now);
+    openingTime.setHours(Number(openingParts[0]), Number(openingParts[1]), 0, 0);
+
+    const closingTime = new Date(now);
+    closingTime.setHours(Number(closingParts[0]), Number(closingParts[1]), 0, 0);
+
+    const firstPickupTime = new Date(
+      Math.max(openingTime.getTime(), minimumTime.getTime()),
     );
 
-    const firstPickupTime = new Date(firstOperationalPickupTime);
-
-    const minutes = firstPickupTime.getMinutes();
-    const remainder = minutes % PICKUP_INTERVAL_MINUTES;
+    const remainder = firstPickupTime.getMinutes() % interval;
 
     if (remainder !== 0) {
       firstPickupTime.setMinutes(
-        minutes + (PICKUP_INTERVAL_MINUTES - remainder),
+        firstPickupTime.getMinutes() + (interval - remainder),
       );
     }
 
@@ -152,22 +182,26 @@ export default function HomeScreen() {
     let slot = new Date(firstPickupTime);
 
     while (slot <= closingTime) {
-      if (slot >= minimumTime) {
-        const hour = slot.getHours();
-        const minute = slot.getMinutes();
+      options.push(
+        `${String(slot.getHours()).padStart(2, "0")}:${String(
+          slot.getMinutes(),
+        ).padStart(2, "0")}`,
+      );
 
-        options.push(
-          `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`,
-        );
-      }
-
-      slot = new Date(slot.getTime() + PICKUP_INTERVAL_MINUTES * 60000);
+      slot = new Date(slot.getTime() + interval * 60000);
     }
 
-    return options;
+    return {
+      options,
+      message:
+        options.length === 0
+          ? "Ya no hay horarios disponibles para hoy."
+          : null,
+    };
   };
 
-  const pickupOptions = generatePickupOptions();
+  const pickupAvailability = generatePickupOptions();
+  const pickupOptions = pickupAvailability.options;
 
   useEffect(() => {
     const token = getToken();
@@ -200,6 +234,7 @@ export default function HomeScreen() {
     }
 
     loadProducts();
+    loadCafeteriaSettings();
   }, []);
 
   useEffect(() => {
@@ -227,6 +262,20 @@ export default function HomeScreen() {
       console.error("Error cargando menú", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadCafeteriaSettings = async () => {
+    try {
+      setLoadingSettings(true);
+
+      const settings = await getCafeteriaSettings();
+      setCafeteriaSettings(settings);
+    } catch (error) {
+      console.error("Error cargando configuración de cafetería", error);
+      setCafeteriaSettings(null);
+    } finally {
+      setLoadingSettings(false);
     }
   };
 
@@ -352,7 +401,10 @@ export default function HomeScreen() {
     }
 
     if (pickupOptions.length === 0) {
-      showMessage("No hay horarios disponibles para hoy", "error");
+      showMessage(
+        pickupAvailability.message || "No hay horarios disponibles para hoy",
+        "error"
+      );
       return;
     }
 
@@ -584,7 +636,7 @@ export default function HomeScreen() {
                   <View style={styles.pickupOptions}>
                     {pickupOptions.length === 0 ? (
                       <Text style={styles.noPickupOptions}>
-                        No hay horarios disponibles para hoy
+                        {pickupAvailability.message || "No hay horarios disponibles para hoy"}
                       </Text>
                     ) : (
                       pickupOptions.map((time) => (
@@ -995,6 +1047,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 10,
     alignItems: "center",
+  },
+  addButtonDisabled: {
+  opacity: 0.5,
   },
   addButtonText: {
     color: "#fff",

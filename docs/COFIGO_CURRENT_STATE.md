@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.6
+v1.7
 
 Estado:
 
@@ -190,10 +190,7 @@ Funcionalidades:
 
 Reglas actuales de horario:
 
-* Horario de atención: 07:00 a 21:00
-* Tiempo mínimo de preparación: 20 minutos
-* Intervalo de recojo: 30 minutos
-* Los parámetros se encuentran centralizados en código como solución MVP
+* Las reglas operativas se obtienen dinámicamente desde Configuración de Cafetería.
 
 Estados soportados:
 
@@ -418,15 +415,20 @@ Estado:
 
 Estado:
 
-🔴 Pendiente
+🟢 Completo
 
-Descripción:
+Funcionalidades:
 
-Funcionalidad futura para administrar desde pantalla los parámetros operativos de la cafetería, como hora de apertura, hora de cierre, tiempo mínimo de preparación e intervalo de recojo.
-
-Objetivo:
-
-Evitar modificar código cuando cambien los horarios de atención o reglas operativas.
+* Gestión de datos generales de cafetería.
+* Gestión de ubicación.
+* Gestión de zona horaria.
+* Gestión de moneda.
+* Gestión de tiempo mínimo de preparación.
+* Gestión de intervalo de recojo.
+* Gestión de horarios por día.
+* Gestión de días cerrados.
+* Configuración dinámica consumida por Home.
+* Configuración dinámica consumida por OrderService.
 
 ---
 
@@ -482,10 +484,9 @@ Las siguientes funcionalidades se consideran estables y no deben modificarse sin
 
 Prioridad Alta:
 
-1. Reportes Frontend
-2. Gestión de Configuración de Cafetería
-3. Perfil de Usuario
-4. Dashboard Administrativo Avanzado
+1. Perfil de Usuario
+2. Reportes Frontend
+3. Dashboard Administrativo Avanzado
 
 ---
 

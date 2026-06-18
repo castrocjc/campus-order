@@ -9,6 +9,10 @@ import com.campusorder.entity.Product;
 import com.campusorder.entity.User;
 import com.campusorder.enums.OrderStatus;
 import com.campusorder.exception.BusinessException;
+import com.campusorder.entity.CafeteriaSettings;
+import com.campusorder.entity.CafeteriaSchedule;
+import com.campusorder.repository.CafeteriaSettingsRepository;
+import com.campusorder.repository.CafeteriaScheduleRepository;
 import com.campusorder.repository.OrderRepository;
 import com.campusorder.repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -20,23 +24,27 @@ import java.util.Map;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.DayOfWeek;
 
 @Service
 public class OrderService {
 
-        private static final LocalTime CAFETERIA_OPEN_TIME = LocalTime.of(7, 0);
-        private static final LocalTime CAFETERIA_CLOSE_TIME = LocalTime.of(21, 0);
-        private static final int MIN_PREPARATION_MINUTES = 20;
-        private static final ZoneId CAFETERIA_ZONE_ID =
-                ZoneId.of("America/Lima");
-
         private final OrderRepository orderRepository;
         private final ProductRepository productRepository;
 
-        public OrderService(OrderRepository orderRepository,
-                        ProductRepository productRepository) {
+        private final CafeteriaSettingsRepository cafeteriaSettingsRepository;
+        private final CafeteriaScheduleRepository cafeteriaScheduleRepository;
+        
+        public OrderService(
+                        OrderRepository orderRepository,
+                        ProductRepository productRepository,
+                        CafeteriaSettingsRepository cafeteriaSettingsRepository,
+                        CafeteriaScheduleRepository cafeteriaScheduleRepository) {
+
                 this.orderRepository = orderRepository;
                 this.productRepository = productRepository;
+                this.cafeteriaSettingsRepository = cafeteriaSettingsRepository;
+                this.cafeteriaScheduleRepository = cafeteriaScheduleRepository;
         }
 
         public OrderResponseDTO createOrder(OrderRequestDTO dto) {
@@ -180,21 +188,70 @@ public class OrderService {
 
         private void validatePickupTime(LocalDateTime pickupTime) {
 
+                CafeteriaSettings settings = cafeteriaSettingsRepository
+                                .findFirstByOrderByIdAsc()
+                                .orElseThrow(() -> new BusinessException(
+                                                "Configuración de cafetería no encontrada"));
+
+                if (!Boolean.TRUE.equals(settings.getActive())) {
+                        throw new BusinessException(
+                                        "La cafetería no se encuentra activa para recibir pedidos");
+                }
+
+                ZoneId cafeteriaZoneId;
+
+                try {
+                        cafeteriaZoneId = ZoneId.of(settings.getTimezone());
+                } catch (Exception ex) {
+                        throw new BusinessException(
+                                        "La zona horaria configurada para la cafetería no es válida");
+                }
+
+                Integer minPreparationMinutes = settings.getMinPreparationMinutes();
+
+                if (minPreparationMinutes == null || minPreparationMinutes < 1) {
+                        throw new BusinessException(
+                                        "El tiempo mínimo de preparación de la cafetería no es válido");
+                }
+
                 LocalDateTime minimumAllowed = LocalDateTime
-                        .now(CAFETERIA_ZONE_ID)
-                        .plusMinutes(MIN_PREPARATION_MINUTES);
+                                .now(cafeteriaZoneId)
+                                .plusMinutes(minPreparationMinutes);
 
                 if (pickupTime.isBefore(minimumAllowed)) {
                         throw new BusinessException(
                                         "La hora de recojo debe ser al menos "
-                                                        + MIN_PREPARATION_MINUTES
+                                                        + minPreparationMinutes
                                                         + " minutos posterior a la hora actual");
                 }
 
-                LocalTime requestedTime = pickupTime.toLocalTime();
+                DayOfWeek dayOfWeek = pickupTime.getDayOfWeek();
+                String dayOfWeekName = dayOfWeek.name();
 
-                if (requestedTime.isBefore(CAFETERIA_OPEN_TIME)
-                                || requestedTime.isAfter(CAFETERIA_CLOSE_TIME)) {
+                CafeteriaSchedule schedule = cafeteriaScheduleRepository
+                                .findByCafeteriaSettings_IdAndDayOfWeek(
+                                                settings.getId(),
+                                                dayOfWeekName)
+                                .orElseThrow(() -> new BusinessException(
+                                                "No existe horario configurado para el día "
+                                                                + dayOfWeekName));
+
+                if (Boolean.TRUE.equals(schedule.getClosed())) {
+                        throw new BusinessException(
+                                        "La cafetería se encuentra cerrada para el día seleccionado");
+                }
+
+                LocalTime requestedTime = pickupTime.toLocalTime();
+                LocalTime openingTime = schedule.getOpeningTime();
+                LocalTime closingTime = schedule.getClosingTime();
+
+                if (openingTime == null || closingTime == null) {
+                        throw new BusinessException(
+                                        "El horario de atención configurado para el día seleccionado no es válido");
+                }
+
+                if (requestedTime.isBefore(openingTime)
+                                || requestedTime.isAfter(closingTime)) {
 
                         throw new BusinessException(
                                         "La hora de recojo está fuera del horario de atención");

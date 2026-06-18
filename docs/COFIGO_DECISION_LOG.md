@@ -1022,4 +1022,58 @@ La pantalla de pedidos utiliza título dinámico:
 
 ---
 
+# DEC-023
+
+Fecha: 2026-06
+
+Título:
+Configuración dinámica de cafetería mediante entidad CafeteriaSettings
+
+Estado:
+Aprobada
+
+Contexto:
+
+Los horarios de atención, tiempo mínimo de preparación, intervalo de recojo y zona horaria se encontraban definidos en código tanto en frontend como en backend.
+
+Decisión:
+
+Crear las entidades:
+
+* CafeteriaSettings
+* CafeteriaSchedule
+
+y trasladar la configuración operativa a base de datos.
+
+Alcance:
+
+* Home consume configuración dinámica.
+* OrderService consume configuración dinámica.
+* Administración mediante pantalla.
+* Soporte para horarios diferentes por día.
+* Soporte para días cerrados.
+
+Justificación:
+
+* Evitar despliegues por cambios operativos.
+* Reducir hardcodeo.
+* Mejorar escalabilidad.
+* Preparar el camino hacia Multi Cafetería.
+
+Consecuencias positivas:
+
+* Configuración administrable.
+* Menor dependencia de desarrolladores.
+* Arquitectura más flexible.
+
+Consecuencias negativas:
+
+* Mayor complejidad del modelo de datos.
+
+Observación:
+
+La zona horaria deja de estar fija en America/Lima y pasa a ser configurable.
+
+---
+
 Fin del documento.

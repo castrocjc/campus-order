@@ -104,11 +104,13 @@ export default function SideMenu({ role = "USER", onLogout }: SideMenuProps) {
             </Text>            
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItemDisabled}>
-            <Text style={styles.menuTextDisabled}>
-              ⚙️ Configuración (Próximamente)
-            </Text>            
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => goTo("/admin-settings")}
+          >
+            <Text style={styles.menuText}>⚙️ Configuración</Text>
           </TouchableOpacity>
+
         </>
       )}
 

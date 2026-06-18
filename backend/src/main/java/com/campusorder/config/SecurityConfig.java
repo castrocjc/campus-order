@@ -41,6 +41,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users/resend-code").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/cafeteria-settings").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/cafeteria-settings").hasRole("ADMIN")                        
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .requestMatchers("/api/products/menu").permitAll()
                         .requestMatchers("/api/products").permitAll()
