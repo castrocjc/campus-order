@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -72,13 +71,4 @@ public class OrderController {
                 orderService.updateOrderStatus(orderId, status)
         );
     }    
-
-    @GetMapping("/reports/sales-by-day")
-    public ApiResponse<List<Map<String, Object>>> getSalesByDay() {
-        return new ApiResponse<>(
-                true,
-                "Ventas por día",
-                orderService.getSalesByDay()
-        );
-    }
 }

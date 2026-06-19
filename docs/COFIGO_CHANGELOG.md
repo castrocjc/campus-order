@@ -182,8 +182,8 @@ Implementación de flujo administrativo de pedidos.
 Estados:
 
 * RECEIVED
-* PREPARING
-* READY
+* IN_PREPARATION
+* READY_FOR_PICKUP
 * DELIVERED
 * CANCELLED
 
@@ -1620,6 +1620,93 @@ OrderService
 ## Impacto
 
 CofiGO incorpora notificaciones automáticas para mejorar la experiencia de recojo y queda preparado para futuras integraciones SMS y WhatsApp.
+
+---
+
+# v2.0 - Dashboard de Reportes y Analítica Operativa
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Dashboard Analítico
+
+Se implementó un módulo independiente de reportes para administración.
+
+Incluye:
+
+* Indicadores ejecutivos.
+* Ventas totales.
+* Pedidos totales.
+* Ticket promedio.
+* Productos vendidos.
+* Usuarios registrados.
+* Usuarios activos.
+* Ventas por día.
+* Pedidos por estado.
+* Top productos vendidos.
+* Horas pico.
+* Filtros por rango de fechas.
+* Validación de fechas.
+* Dashboard visual integrado al Panel Administrativo.
+
+## Backend
+
+Archivos creados:
+
+* ReportsController.java
+* ReportsService.java
+
+Archivos modificados:
+
+* OrderRepository.java
+* UserRepository.java
+* ProductRepository.java
+
+## Frontend
+
+Archivos creados:
+
+* admin-reports.tsx
+* reportService.ts
+* SalesByDayChart.tsx
+* OrdersStatusChart.tsx
+* PeakHoursChart.tsx
+
+Archivos modificados:
+
+* SideMenu.tsx
+
+## Arquitectura
+
+Se separa la analítica operativa de la gestión transaccional.
+
+Nueva capa:
+
+ReportsController
+→ ReportsService
+→ Repository
+
+## Reglas de negocio
+
+* Ventas consideran únicamente pedidos DELIVERED.
+* Ticket promedio = Ventas entregadas / Pedidos entregados.
+* Productos vendidos consideran únicamente pedidos DELIVERED.
+* Pedidos CANCELLED aparecen en distribución de estados.
+* Ventas excluyen CANCELLED.
+
+## Validaciones realizadas
+
+* Endpoints mediante Postman.
+* Dashboard Desktop.
+* Dashboard Mobile Web.
+* Filtros por fecha.
+* Gráfico de estados.
+* Gráfico de horas pico.
+
+## Impacto
+
+CofiGO incorpora capacidades analíticas para soporte de decisiones operativas.
 
 ---
 

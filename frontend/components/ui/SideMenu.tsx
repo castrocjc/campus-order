@@ -99,10 +99,13 @@ export default function SideMenu({ role = "USER", onLogout }: SideMenuProps) {
             <Text style={styles.menuText}>👥 Usuarios</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItemDisabled}>
-            <Text style={styles.menuTextDisabled}>
-              📈 Reportes (Próximamente)
-            </Text>            
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => goTo("/admin-reports")}
+          >
+            <Text style={styles.menuText}>
+              📈 Reportes
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity

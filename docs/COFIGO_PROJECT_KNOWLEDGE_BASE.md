@@ -108,6 +108,7 @@ ProductController
 CategoryController
 OrderController
 CafeteriaSettingsController
+ReportsController
 ```
 
 ### Services
@@ -121,6 +122,7 @@ NotificationService
 EmailService
 CategoryService
 CafeteriaSettingsService
+ReportsService
 ```
 
 ### Repositories
@@ -349,6 +351,7 @@ Pantallas:
 * Categorías
 * Usuarios
 * Pedidos
+* Reportes
 
 ---
 
@@ -514,6 +517,22 @@ PUT /api/cafeteria-settings
 
 ---
 
+## Reportes
+
+```http
+GET /api/reports/summary
+
+GET /api/reports/sales-by-day
+
+GET /api/reports/orders-by-status
+
+GET /api/reports/top-products
+
+GET /api/reports/peak-hours
+```
+
+---
+
 # 6. Módulos Implementados
 
 | Módulo                          | Estado   |
@@ -529,7 +548,7 @@ PUT /api/cafeteria-settings
 | Carrito                         | Completo |
 | Pedidos                         | Completo |
 | Gestión Pedidos                 | Completo |
-| Reporte Ventas por Día          | Parcial  |
+| Dashboard Analítico             | Completo |
 | Recuperar Contraseña            | Completo |
 | Gestión de Usuarios             | Completo |
 | Gestión de Categorías           | Completo |
@@ -701,11 +720,7 @@ No persiste entre sesiones.
 
 ## Configuración fija de zona horaria
 
-Actualmente la zona horaria America/Lima está definida en código como parte del MVP.
-
-Evolución futura:
-
-Gestionarla desde Configuración de Cafetería.
+Actualmente la zona horaria se gestiona desde Configuración de Cafetería.
 
 ## Calidad de URLs de Imágenes
 

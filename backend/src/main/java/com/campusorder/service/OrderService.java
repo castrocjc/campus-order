@@ -20,7 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -196,15 +195,6 @@ public class OrderService {
                 Order cancelledOrder = orderRepository.save(order);
 
                 return mapToDTO(cancelledOrder);
-        }
-
-        public List<Map<String, Object>> getSalesByDay() {
-                return orderRepository.getSalesByDay()
-                                .stream()
-                                .map(row -> Map.of(
-                                                "date", row[0],
-                                                "total", row[1]))
-                                .toList();
         }
 
         private void validatePickupTime(LocalDateTime pickupTime) {

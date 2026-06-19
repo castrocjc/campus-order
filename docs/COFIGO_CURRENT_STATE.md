@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.9
+v2.0
 
 Estado:
 
@@ -242,6 +242,7 @@ ADMIN
 * Categorías
 * Usuarios
 * Pedidos
+* Reportes
 
 WORKER
 
@@ -320,21 +321,27 @@ Funcionalidades:
 
 Estado:
 
-🟡 Parcial
+🟢 Completo
 
-Backend:
+Funcionalidades:
 
-* Ventas por día
+* Dashboard Analítico.
+* Indicadores ejecutivos.
+* Ventas por día.
+* Pedidos por estado.
+* Top productos vendidos.
+* Horas pico.
+* Filtros por rango de fechas.
+* Validación de fechas.
+* Dashboard visual.
+* Integración con AdminLayout.
+* Integración con SideMenu.
 
-Frontend:
+Reglas:
 
-* No implementado
-
-Pendiente:
-
-* Dashboard visual
-* Exportación
-* Filtros
+* Ventas consideran únicamente pedidos DELIVERED.
+* Ticket promedio considera únicamente pedidos DELIVERED.
+* Pedidos CANCELLED participan en distribución de estados.
 
 ---
 
@@ -509,9 +516,9 @@ Las siguientes funcionalidades se consideran estables y no deben modificarse sin
 
 Prioridad Alta:
 
-1. Reportes Frontend
-2. Dashboard Administrativo Avanzado
-3. Notificaciones WhatsApp READY_FOR_PICKUP
+1. Notificaciones WhatsApp READY_FOR_PICKUP
+2. Notificaciones SMS READY_FOR_PICKUP
+3. Auditoría
 
 ---
 

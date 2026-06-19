@@ -1216,4 +1216,55 @@ NotificationService
 
 ---
 
+# DEC-027
+
+Fecha: 2026-06
+
+Título:
+Arquitectura independiente para Reportes y Analítica Operativa
+
+Estado:
+Aprobada
+
+Contexto:
+
+El crecimiento de necesidades analíticas requería evitar agregar responsabilidades de reportes dentro de OrderController y OrderService.
+
+Decisión:
+
+Crear un módulo independiente de reportes compuesto por:
+
+* ReportsController
+* ReportsService
+
+La analítica se separa de la operación transaccional.
+
+Reglas oficiales:
+
+* Ventas consideran únicamente pedidos DELIVERED.
+* Ticket promedio = Ventas entregadas / Pedidos entregados.
+* Productos vendidos consideran únicamente pedidos DELIVERED.
+* CANCELLED participa únicamente en análisis de estados.
+* CANCELLED no participa en ventas.
+
+Justificación:
+
+* Separación de responsabilidades.
+* Escalabilidad futura.
+* Mejor mantenibilidad.
+* Preparación para exportación y BI.
+
+Consecuencias positivas:
+
+* Menor acoplamiento.
+* Mejor organización arquitectónica.
+* Facilidad para incorporar nuevos reportes.
+
+Consecuencias negativas:
+
+* Nueva capa funcional.
+* Más endpoints que mantener.
+
+---
+
 Fin del documento.
