@@ -1710,4 +1710,55 @@ CofiGO incorpora capacidades analíticas para soporte de decisiones operativas.
 
 ---
 
+# v2.0.1 - Operación Diaria de Pedidos
+
+Fecha: Junio 2026
+
+## Mejoras
+
+### Administración de Pedidos
+
+Se ajustó la pantalla administrativa de pedidos para enfocarse exclusivamente en la operación diaria de la cafetería.
+
+Incluye:
+
+* Visualización únicamente de pedidos correspondientes al día operativo actual.
+* Filtrado utilizando pickupTime.
+* Exclusión automática de pedidos históricos.
+* Exclusión automática de pedidos futuros.
+* Ordenamiento por hora de recojo descendente.
+* Mensaje informativo cuando no existen pedidos para el día.
+* Compatibilidad con el mecanismo de refresco automático existente.
+
+## Backend
+
+Archivos modificados:
+
+* OrderController.java
+* OrderService.java
+* OrderRepository.java
+
+## Frontend
+
+Archivos modificados:
+
+* admin-orders.tsx
+
+## Validaciones realizadas
+
+* Visualización de pedidos del día.
+* Exclusión de pedidos históricos.
+* Exclusión de pedidos futuros.
+* Refresco automático.
+* Cambio de estados.
+* Cancelación de pedidos.
+* Actualización de indicadores.
+* Ordenamiento por hora de recojo.
+
+## Impacto
+
+La pantalla de pedidos queda alineada con la operación diaria de la cafetería y preparada para una futura funcionalidad de cierre operativo.
+
+---
+
 Fin del documento.

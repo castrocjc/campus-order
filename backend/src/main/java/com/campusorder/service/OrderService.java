@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -115,6 +116,36 @@ public class OrderService {
 
         public List<OrderResponseDTO> getAllOrders() {
                 return orderRepository.findAll()
+                                .stream()
+                                .map(this::mapToDTO)
+                                .toList();
+        }
+
+        public List<OrderResponseDTO> getTodayOrders() {
+
+                CafeteriaSettings settings = cafeteriaSettingsRepository
+                                .findFirstByOrderByIdAsc()
+                                .orElseThrow(() -> new BusinessException(
+                                                "Configuración de cafetería no encontrada"));
+
+                ZoneId cafeteriaZoneId;
+
+                try {
+                        cafeteriaZoneId = ZoneId.of(settings.getTimezone());
+                } catch (Exception ex) {
+                        throw new BusinessException(
+                                        "La zona horaria configurada para la cafetería no es válida");
+                }
+
+                LocalDate today = LocalDate.now(cafeteriaZoneId);
+
+                LocalDateTime startOfDay = today.atStartOfDay();
+                LocalDateTime endOfDay = today.plusDays(1).atStartOfDay().minusNanos(1);
+
+                return orderRepository
+                                .findByPickupTimeBetweenOrderByPickupTimeDesc(
+                                                startOfDay,
+                                                endOfDay)
                                 .stream()
                                 .map(this::mapToDTO)
                                 .toList();

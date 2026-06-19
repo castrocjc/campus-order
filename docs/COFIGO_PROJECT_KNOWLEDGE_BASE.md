@@ -764,9 +764,18 @@ Validaciones implementadas:
 
 Cancelación de pedidos:
 
-- Solo se permite cancelar pedidos en estado RECEIVED.
-- Pedidos en preparación, listos para recoger, entregados o cancelados no pueden ser cancelados.
-- El backend actúa como fuente de verdad de esta regla.
+* Solo se permite cancelar pedidos en estado RECEIVED.
+* Pedidos en preparación, listos para recoger, entregados o cancelados no pueden ser cancelados.
+* El backend actúa como fuente de verdad de esta regla.
+
+Operación diaria:
+
+* La pantalla administrativa muestra únicamente pedidos correspondientes al día operativo actual.
+* El filtrado se realiza utilizando pickupTime.
+* Los pedidos históricos no aparecen en la vista operativa.
+* Los pedidos futuros no aparecen en la vista operativa.
+* Los pedidos se muestran ordenados por hora de recojo descendente.
+* Cuando no existen pedidos para el día se muestra un mensaje informativo.
 
 Indicadores administrativos:
 
@@ -879,7 +888,7 @@ PUT /api/users/me/password
 
 # Historial del Documento
 
-Versión: v1.6
+Versión: v2.0.1
 
 Fecha de creación: Junio 2026
 

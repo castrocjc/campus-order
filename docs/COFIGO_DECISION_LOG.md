@@ -1267,4 +1267,51 @@ Consecuencias negativas:
 
 ---
 
+# DEC-028
+
+Fecha: 2026-06
+
+Título:
+Administración de Pedidos enfocada en operación diaria
+
+Estado:
+Aprobada
+
+Contexto:
+
+La pantalla administrativa mostraba simultáneamente pedidos históricos y pedidos vigentes, generando ruido operativo para ADMIN y WORKER.
+
+Decisión:
+
+La pantalla administrativa de pedidos mostrará únicamente pedidos cuya fecha de recojo (pickupTime) corresponda al día operativo actual.
+
+El filtrado se realiza en backend.
+
+La fecha operativa utiliza la zona horaria configurada en CafeteriaSettings.
+
+Justificación:
+
+* Reducir ruido visual.
+* Facilitar la operación diaria.
+* Mantener backend como fuente de verdad.
+* Mejorar escalabilidad futura.
+
+Consecuencias positivas:
+
+* Operación más limpia.
+* Menor volumen de información.
+* Mejor experiencia para ADMIN y WORKER.
+
+Consecuencias negativas:
+
+* Los pedidos históricos dejan de ser visibles desde la pantalla operativa.
+
+Evolución futura:
+
+* Consulta histórica de pedidos.
+* Cierre operativo diario.
+* Estado NOT_ATTENDED para pedidos no atendidos.
+
+---
+
 Fin del documento.

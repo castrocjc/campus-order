@@ -158,6 +158,15 @@ Funcionalidades:
 * Notificación automática por correo al cambiar a READY_FOR_PICKUP.
 * Prevención de envíos duplicados mediante flag de notificación.
 
+Administración de Pedidos:
+
+* La pantalla operativa muestra únicamente pedidos del día.
+* El filtrado se realiza utilizando pickupTime.
+* Los pedidos históricos quedan fuera de la operación diaria.
+* Los pedidos futuros quedan fuera de la operación diaria.
+* Los pedidos se ordenan por hora de recojo descendente.
+* Existe una iniciativa futura para implementar cierre operativo diario y gestión de pedidos no atendidos.
+
 Reglas actuales de horario:
 
 * Las reglas operativas son obtenidas dinámicamente desde Configuración de Cafetería.

@@ -28,7 +28,7 @@ export default function AdminOrdersScreen() {
 
       data.sort(
         (a: any, b: any) =>
-          new Date(a.pickupTime).getTime() - new Date(b.pickupTime).getTime(),
+          new Date(b.pickupTime).getTime() - new Date(a.pickupTime).getTime(),
       );
 
       setOrders(data);
@@ -152,191 +152,221 @@ export default function AdminOrdersScreen() {
         <View style={styles.ordersLayout}>
           <View style={styles.ordersListColumn}>
             <View style={styles.listCard}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Pedidos registrados</Text>
-            <Text style={styles.cardSubtitle}>
-              {filteredOrders.length} pedidos en vista
-            </Text>
-          </View>
-
-          <View style={styles.filters}>
-            {[
-              "ALL",
-              "RECEIVED",
-              "IN_PREPARATION",
-              "READY_FOR_PICKUP",
-              "DELIVERED",
-              "CANCELLED",
-            ].map((status) => (
-              <TouchableOpacity
-                key={status}
-                style={[
-                  styles.filterBtn,
-                  filter === status && styles.filterActive,
-                ]}
-                onPress={() => setFilter(status)}
-              >
-                <Text
-                  style={[
-                    styles.filterText,
-                    filter === status && styles.filterTextActive,
-                  ]}
-                >
-                  {status === "ALL" ? "Todos" : formatStatus(status)}
+              <View style={styles.cardHeader}>
+                <Text style={styles.cardTitle}>Pedidos registrados</Text>
+                <Text style={styles.cardSubtitle}>
+                  {filteredOrders.length} pedidos en vista
                 </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+              </View>
 
-          <FlatList
-            style={styles.ordersList}
-            contentContainerStyle={styles.ordersListContent}
-            data={filteredOrders}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.card}>
-                <Text style={styles.orderId}>Pedido #{item.id}</Text>
+              <View style={styles.filters}>
+                {[
+                  "ALL",
+                  "RECEIVED",
+                  "IN_PREPARATION",
+                  "READY_FOR_PICKUP",
+                  "DELIVERED",
+                  "CANCELLED",
+                ].map((status) => (
+                  <TouchableOpacity
+                    key={status}
+                    style={[
+                      styles.filterBtn,
+                      filter === status && styles.filterActive,
+                    ]}
+                    onPress={() => setFilter(status)}
+                  >
+                    <Text
+                      style={[
+                        styles.filterText,
+                        filter === status && styles.filterTextActive,
+                      ]}
+                    >
+                      {status === "ALL" ? "Todos" : formatStatus(status)}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
 
-                <View style={[styles.statusBadge, getStatusStyle(item.status)]}>
-                  <Text style={styles.statusText}>
-                    {formatStatus(item.status)}
+              {filteredOrders.length === 0 ? (
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyTitle}>
+                    No existen pedidos para el día
+                  </Text>
+
+                  <Text style={styles.emptyText}>
+                    Cuando se registren nuevos pedidos aparecerán
+                    automáticamente.
                   </Text>
                 </View>
-                <Text style={styles.text}>Total: S/ {item.totalAmount}</Text>
-                <Text style={styles.text}>
-                  Recojo: {new Date(item.pickupTime).toLocaleString("es-PE")}
-                </Text>
+              ) : (
+                <FlatList
+                  style={styles.ordersList}
+                  contentContainerStyle={styles.ordersListContent}
+                  data={filteredOrders}
+                  keyExtractor={(item) => item.id.toString()}
+                  renderItem={({ item }) => (
+                    <View style={styles.card}>
+                      <Text style={styles.orderId}>Pedido #{item.id}</Text>
 
-                <View style={styles.itemsBox}>
-                  {item.items?.map((prod: any) => (
-                    <View
-                      key={`${prod.productId}-${prod.customizationNotes || ""}`}
-                    >
-                      <Text style={styles.itemText}>
-                        {prod.productName} x{prod.quantity} - S/ {prod.subtotal}
+                      <View
+                        style={[
+                          styles.statusBadge,
+                          getStatusStyle(item.status),
+                        ]}
+                      >
+                        <Text style={styles.statusText}>
+                          {formatStatus(item.status)}
+                        </Text>
+                      </View>
+                      <Text style={styles.text}>
+                        Total: S/ {item.totalAmount}
+                      </Text>
+                      <Text style={styles.text}>
+                        Recojo:{" "}
+                        {new Date(item.pickupTime).toLocaleString("es-PE")}
                       </Text>
 
-                      {prod.customizationNotes ? (
-                        <Text style={styles.customizationText}>
-                          Personalización: {prod.customizationNotes}
-                        </Text>
-                      ) : null}
+                      <View style={styles.itemsBox}>
+                        {item.items?.map((prod: any) => (
+                          <View
+                            key={`${prod.productId}-${prod.customizationNotes || ""}`}
+                          >
+                            <Text style={styles.itemText}>
+                              {prod.productName} x{prod.quantity} - S/{" "}
+                              {prod.subtotal}
+                            </Text>
+
+                            {prod.customizationNotes ? (
+                              <Text style={styles.customizationText}>
+                                Personalización: {prod.customizationNotes}
+                              </Text>
+                            ) : null}
+                          </View>
+                        ))}
+                      </View>
+
+                      <View style={styles.buttons}>
+                        <TouchableOpacity
+                          style={[
+                            styles.btn,
+                            !canChangeStatus(item.status, "IN_PREPARATION") &&
+                              styles.btnDisabled,
+                          ]}
+                          disabled={
+                            !canChangeStatus(item.status, "IN_PREPARATION")
+                          }
+                          onPress={() =>
+                            changeStatus(item.id, "IN_PREPARATION")
+                          }
+                        >
+                          <Text style={styles.btnText}>En Preparación</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={[
+                            styles.btn,
+                            !canChangeStatus(item.status, "READY_FOR_PICKUP") &&
+                              styles.btnDisabled,
+                          ]}
+                          disabled={
+                            !canChangeStatus(item.status, "READY_FOR_PICKUP")
+                          }
+                          onPress={() =>
+                            changeStatus(item.id, "READY_FOR_PICKUP")
+                          }
+                        >
+                          <Text style={styles.btnText}>Listo</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={[
+                            styles.btn,
+                            !canChangeStatus(item.status, "DELIVERED") &&
+                              styles.btnDisabled,
+                          ]}
+                          disabled={!canChangeStatus(item.status, "DELIVERED")}
+                          onPress={() => changeStatus(item.id, "DELIVERED")}
+                        >
+                          <Text style={styles.btnText}>Entregado</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={[
+                            styles.cancelBtn,
+                            !canChangeStatus(item.status, "CANCELLED") &&
+                              styles.btnDisabled,
+                          ]}
+                          disabled={!canChangeStatus(item.status, "CANCELLED")}
+                          onPress={() => changeStatus(item.id, "CANCELLED")}
+                        >
+                          <Text style={styles.btnText}>Cancelar</Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                  ))}
-                </View>
-
-                <View style={styles.buttons}>
-                  <TouchableOpacity
-                    style={[
-                      styles.btn,
-                      !canChangeStatus(item.status, "IN_PREPARATION") &&
-                        styles.btnDisabled,
-                    ]}
-                    disabled={!canChangeStatus(item.status, "IN_PREPARATION")}
-                    onPress={() => changeStatus(item.id, "IN_PREPARATION")}
-                  >
-                    <Text style={styles.btnText}>En Preparación</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[
-                      styles.btn,
-                      !canChangeStatus(item.status, "READY_FOR_PICKUP") &&
-                        styles.btnDisabled,
-                    ]}
-                    disabled={!canChangeStatus(item.status, "READY_FOR_PICKUP")}
-                    onPress={() => changeStatus(item.id, "READY_FOR_PICKUP")}
-                  >
-                    <Text style={styles.btnText}>Listo</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[
-                      styles.btn,
-                      !canChangeStatus(item.status, "DELIVERED") &&
-                        styles.btnDisabled,
-                    ]}
-                    disabled={!canChangeStatus(item.status, "DELIVERED")}
-                    onPress={() => changeStatus(item.id, "DELIVERED")}
-                  >
-                    <Text style={styles.btnText}>Entregado</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[
-                      styles.cancelBtn,
-                      !canChangeStatus(item.status, "CANCELLED") &&
-                        styles.btnDisabled,
-                    ]}
-                    disabled={!canChangeStatus(item.status, "CANCELLED")}
-                    onPress={() => changeStatus(item.id, "CANCELLED")}
-                  >
-                    <Text style={styles.btnText}>Cancelar</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
-          />
-    </View>
-  </View>
-</View>
+                  )}
+                />
+              )}
+            </View>
+          </View>
+        </View>
       </View>
     </AdminLayout>
   );
 }
 
 const styles = StyleSheet.create({
-screen: {
-  flex: 1,
-  backgroundColor: "#fff8f1",
-},
-ordersLayout: {
-  flex: 1,
-  flexDirection: "row",
-  gap: 16,
-  alignItems: "stretch",
-  paddingHorizontal: 20,
-  paddingTop: 0,
-  paddingBottom: 20,
-  zIndex: 1,
-  minHeight: 0,
-},
+  screen: {
+    flex: 1,
+    backgroundColor: "#fff8f1",
+  },
+  ordersLayout: {
+    flex: 1,
+    flexDirection: "row",
+    gap: 16,
+    alignItems: "stretch",
+    paddingHorizontal: 20,
+    paddingTop: 0,
+    paddingBottom: 20,
+    zIndex: 1,
+    minHeight: 0,
+  },
 
-ordersListColumn: {
-  flex: 2,
-  minWidth: 0,
-  minHeight: 0,
-},
-listCard: {
-  flex: 1,
-  backgroundColor: "#ffffff",
-  borderRadius: 22,
-  paddingVertical: 12,
-  paddingHorizontal: 14,
-  zIndex: 1,
-  minHeight: 0,
-  shadowColor: "#000",
-  shadowOpacity: 0.08,
-  shadowRadius: 8,
-  elevation: 3,
-},
+  ordersListColumn: {
+    flex: 2,
+    minWidth: 0,
+    minHeight: 0,
+  },
+  listCard: {
+    flex: 1,
+    backgroundColor: "#ffffff",
+    borderRadius: 22,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    zIndex: 1,
+    minHeight: 0,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
 
-cardHeader: {
-  marginBottom: 8,
-},
+  cardHeader: {
+    marginBottom: 8,
+  },
 
-cardTitle: {
-  fontSize: 18,
-  fontWeight: "800",
-  color: "#3b2416",
-  marginBottom: 2,
-},
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: "800",
+    color: "#3b2416",
+    marginBottom: 2,
+  },
 
-cardSubtitle: {
-  fontSize: 12,
-  color: "#8a6a52",
-  marginBottom: 8,
-},
+  cardSubtitle: {
+    fontSize: 12,
+    color: "#8a6a52",
+    marginBottom: 8,
+  },
   summaryScroll: {
     maxHeight: 54,
     flexShrink: 0,
@@ -372,14 +402,14 @@ cardSubtitle: {
     fontWeight: "700",
     color: "#7a6a61",
   },
-card: {
-  backgroundColor: "#fff8f1",
-  padding: 16,
-  borderRadius: 16,
-  marginBottom: 12,
-  borderWidth: 1,
-  borderColor: "#ead8c8",
-},
+  card: {
+    backgroundColor: "#fff8f1",
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#ead8c8",
+  },
   orderId: {
     fontWeight: "900",
     fontSize: 16,
@@ -485,5 +515,27 @@ card: {
 
   ordersListContent: {
     paddingBottom: 12,
+  },
+  emptyState: {
+    backgroundColor: "#fff8f1",
+    borderWidth: 1,
+    borderColor: "#ead8c8",
+    borderRadius: 16,
+    padding: 20,
+    alignItems: "center",
+  },
+
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: "900",
+    color: "#3b1f12",
+    marginBottom: 6,
+  },
+
+  emptyText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#8a6a52",
+    textAlign: "center",
   },
 });

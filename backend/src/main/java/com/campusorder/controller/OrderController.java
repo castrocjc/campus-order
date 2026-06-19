@@ -28,8 +28,12 @@ public class OrderController {
     }
 
     @GetMapping
-    public ApiResponse<List<OrderResponseDTO>> getAllOrders() {
-        return new ApiResponse<>(true, "Lista de pedidos", orderService.getAllOrders());
+    public ApiResponse<List<OrderResponseDTO>> getTodayOrders() {
+        return new ApiResponse<>(
+                true,
+                "Lista de pedidos del día",
+                orderService.getTodayOrders()
+        );
     }
 
     @GetMapping("/user/{userId}")

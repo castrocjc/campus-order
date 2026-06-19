@@ -18,13 +18,13 @@ Ambiente Productivo:
 
 # Versión Actual
 
-Versión funcional:
+# Control de Versiones
 
-v2.0
-
-Estado:
-
-MVP Operativo
+| Ambiente   | Versión  | Estado             |
+|----------- |----------|----------          |
+| Producción | v1.9     | Operativo          |
+| Develop    | v2.0.1   | Desarrollo estable |
+| Main       | v1.9     | Operativo          |
 
 ---
 
@@ -226,6 +226,12 @@ Funcionalidades:
 * Cambio de estado
 * Refresco automático
 * Indicador de ventas excluye pedidos cancelados.
+* Visualización exclusiva de pedidos del día operativo.
+* Filtrado utilizando pickupTime.
+* Exclusión automática de pedidos históricos.
+* Exclusión automática de pedidos futuros.
+* Ordenamiento por hora de recojo descendente.
+* Mensaje informativo cuando no existen pedidos para el día.
 
 ---
 
