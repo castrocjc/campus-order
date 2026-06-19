@@ -245,6 +245,7 @@ Estados oficiales del pedido:
 * IN_PREPARATION
 * READY_FOR_PICKUP
 * DELIVERED
+* NOT_ATTENDED
 * CANCELLED
 
 ### Relación
@@ -503,6 +504,8 @@ PUT /api/orders/{orderId}/cancel
 PUT /api/orders/{orderId}/status
 
 GET /api/orders/reports/sales-by-day
+
+PUT /api/orders/operational-close
 ```
 
 ---
@@ -777,6 +780,17 @@ Operación diaria:
 * Los pedidos se muestran ordenados por hora de recojo descendente.
 * Cuando no existen pedidos para el día se muestra un mensaje informativo.
 
+Cierre operativo diario:
+
+* Existe un cierre manual ejecutado desde Administración de Pedidos.
+* Los pedidos RECEIVED pasan a NOT_ATTENDED.
+* Los pedidos IN_PREPARATION pasan a NOT_ATTENDED.
+* Los pedidos READY_FOR_PICKUP pasan a NOT_ATTENDED.
+* DELIVERED no es modificado.
+* CANCELLED no es modificado.
+* NOT_ATTENDED no participa en ventas.
+* El cierre operativo no revierte stock.
+
 Indicadores administrativos:
 
 * El indicador de ventas mostrado en Administración de Pedidos excluye pedidos en estado CANCELLED.
@@ -888,7 +902,7 @@ PUT /api/users/me/password
 
 # Historial del Documento
 
-Versión: v2.0.1
+Versión: v2.1
 
 Fecha de creación: Junio 2026
 

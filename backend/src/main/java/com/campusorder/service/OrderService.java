@@ -17,6 +17,7 @@ import com.campusorder.repository.OrderRepository;
 import com.campusorder.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -184,6 +185,47 @@ public class OrderService {
         }
 
         return mapToDTO(savedOrder);
+        }
+
+        @Transactional
+        public int closeDailyOperation() {
+
+                CafeteriaSettings settings = cafeteriaSettingsRepository
+                                .findFirstByOrderByIdAsc()
+                                .orElseThrow(() -> new BusinessException(
+                                                "Configuración de cafetería no encontrada"));
+
+                ZoneId cafeteriaZoneId;
+
+                try {
+                        cafeteriaZoneId = ZoneId.of(settings.getTimezone());
+                } catch (Exception ex) {
+                        throw new BusinessException(
+                                        "La zona horaria configurada para la cafetería no es válida");
+                }
+
+                LocalDate today = LocalDate.now(cafeteriaZoneId);
+
+                LocalDateTime startOfDay = today.atStartOfDay();
+                LocalDateTime endOfDay = today.plusDays(1).atStartOfDay().minusNanos(1);
+
+                List<OrderStatus> pendingStatuses = List.of(
+                                OrderStatus.RECEIVED,
+                                OrderStatus.IN_PREPARATION,
+                                OrderStatus.READY_FOR_PICKUP);
+
+                List<Order> pendingOrders = orderRepository
+                                .findByPickupTimeBetweenAndStatusIn(
+                                                startOfDay,
+                                                endOfDay,
+                                                pendingStatuses);
+
+                pendingOrders.forEach(order ->
+                                order.setStatus(OrderStatus.NOT_ATTENDED));
+
+                orderRepository.saveAll(pendingOrders);
+
+                return pendingOrders.size();
         }
 
         private OrderResponseDTO mapToDTO(Order order) {

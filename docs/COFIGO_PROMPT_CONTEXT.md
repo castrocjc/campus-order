@@ -165,7 +165,9 @@ Administración de Pedidos:
 * Los pedidos históricos quedan fuera de la operación diaria.
 * Los pedidos futuros quedan fuera de la operación diaria.
 * Los pedidos se ordenan por hora de recojo descendente.
-* Existe una iniciativa futura para implementar cierre operativo diario y gestión de pedidos no atendidos.
+* Existe cierre operativo diario manual.
+* Los pedidos pendientes pueden pasar a NOT_ATTENDED.
+* El cierre operativo no revierte stock.
 
 Reglas actuales de horario:
 
@@ -177,6 +179,7 @@ Estados:
 * IN_PREPARATION
 * READY_FOR_PICKUP
 * DELIVERED
+* NOT_ATTENDED
 * CANCELLED
 
 ---

@@ -1314,4 +1314,64 @@ Evolución futura:
 
 ---
 
+# DEC-029
+
+Fecha: 2026-06
+
+Título:
+Cierre Operativo Diario y Estado NOT_ATTENDED
+
+Estado:
+Aprobada
+
+Contexto:
+
+La pantalla operativa de pedidos fue diseñada para mostrar únicamente pedidos correspondientes al día operativo actual. Era necesario definir el tratamiento de pedidos que permanecieran pendientes al finalizar la jornada.
+
+Decisión:
+
+Incorporar el estado NOT_ATTENDED y un proceso de cierre operativo diario ejecutado manualmente por ADMIN.
+
+Reglas:
+
+* RECEIVED → NOT_ATTENDED
+* IN_PREPARATION → NOT_ATTENDED
+* READY_FOR_PICKUP → NOT_ATTENDED
+
+Estados protegidos:
+
+* DELIVERED
+* CANCELLED
+* NOT_ATTENDED
+
+Inventario:
+
+* El cierre operativo no revierte stock.
+* La reversa continúa siendo exclusiva de CANCELLED.
+
+Justificación:
+
+* Mantener trazabilidad histórica.
+* Diferenciar cancelaciones de pedidos abandonados.
+* Mantener simplicidad operativa para el MVP.
+* Preparar futuras capacidades de auditoría.
+
+Consecuencias positivas:
+
+* Mayor control operativo.
+* Histórico más preciso.
+* Preparación para auditoría.
+
+Consecuencias negativas:
+
+* Requiere ejecución manual por parte de ADMIN.
+
+Evolución futura:
+
+* OperationalCloseLog.
+* Auditoría de cierres.
+* Automatización mediante job programado.
+
+---
+
 Fin del documento.

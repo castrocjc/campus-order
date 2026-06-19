@@ -1761,4 +1761,78 @@ La pantalla de pedidos queda alineada con la operación diaria de la cafetería 
 
 ---
 
+# v2.1 - Cierre Operativo Diario
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Cierre Operativo Diario
+
+Se implementó un mecanismo administrativo para cerrar la operación diaria de pedidos al finalizar la jornada de atención.
+
+Incluye:
+
+* Nuevo estado NOT_ATTENDED.
+* Cierre manual desde Administración de Pedidos.
+* Conversión automática de pedidos pendientes a NOT_ATTENDED.
+* Protección de pedidos DELIVERED.
+* Protección de pedidos CANCELLED.
+* Exclusión de NOT_ATTENDED del indicador de ventas operativas.
+* Visualización de pedidos no atendidos para usuarios y administradores.
+* Operación idempotente.
+
+## Backend
+
+Archivos modificados:
+
+* OrderStatus.java
+* OrderRepository.java
+* OrderService.java
+* OrderController.java
+
+## Frontend
+
+Archivos modificados:
+
+* orderService.ts
+* admin-orders.tsx
+* my-orders.tsx
+
+## Reglas de negocio
+
+Transiciones permitidas:
+
+* RECEIVED → NOT_ATTENDED
+* IN_PREPARATION → NOT_ATTENDED
+* READY_FOR_PICKUP → NOT_ATTENDED
+
+Estados protegidos:
+
+* DELIVERED
+* CANCELLED
+* NOT_ATTENDED
+
+Inventario:
+
+* El cierre operativo NO restaura stock.
+* La reversa de stock continúa siendo exclusiva de CANCELLED.
+
+## Validaciones realizadas
+
+* Cierre de pedidos RECEIVED.
+* Cierre de pedidos IN_PREPARATION.
+* Cierre de pedidos READY_FOR_PICKUP.
+* Protección de DELIVERED.
+* Protección de CANCELLED.
+* Validación de stock.
+* Validación de interfaz administrativa.
+* Validación de Mis Pedidos.
+
+## Impacto
+
+CofiGO incorpora el cierre formal de la jornada operativa y gestión de pedidos no atendidos.
+
+---
+
 Fin del documento.

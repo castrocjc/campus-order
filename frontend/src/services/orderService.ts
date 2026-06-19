@@ -60,3 +60,11 @@ export async function updateOrderStatus(orderId: number, status: string) {
 
   return result.data;
 }
+
+export async function closeDailyOperation() {
+  const result = await apiRequest("/api/orders/operational-close", {
+    method: "PUT",
+  });
+
+  return result.data;
+}

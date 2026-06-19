@@ -7,7 +7,11 @@ import {
   FlatList,
   ScrollView,
 } from "react-native";
-import { getAllOrders, updateOrderStatus } from "../src/services/orderService";
+import {
+  closeDailyOperation,
+  getAllOrders,
+  updateOrderStatus,
+} from "../src/services/orderService";
 
 import AdminLayout from "../components/ui/AdminLayout";
 
@@ -46,6 +50,28 @@ export default function AdminOrdersScreen() {
     }
   };
 
+  const handleCloseDailyOperation = async () => {
+    const confirmed =
+      typeof window === "undefined" ||
+      window.confirm(
+        "¿Confirmas el cierre operativo del día? Los pedidos pendientes pasarán a No atendido.",
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      const closedOrders = await closeDailyOperation();
+      alert(
+        `Cierre ejecutado correctamente. Pedidos cerrados: ${closedOrders}`,
+      );
+      loadOrders();
+    } catch (error) {
+      alert("Error ejecutando el cierre operativo diario");
+    }
+  };
+
   const formatStatus = (status: string) => {
     switch (status) {
       case "RECEIVED":
@@ -58,6 +84,8 @@ export default function AdminOrdersScreen() {
         return "Entregado";
       case "CANCELLED":
         return "Cancelado";
+      case "NOT_ATTENDED":
+        return "No atendido";
       default:
         return status;
     }
@@ -75,6 +103,8 @@ export default function AdminOrdersScreen() {
         return { backgroundColor: "#64748B" };
       case "CANCELLED":
         return { backgroundColor: "#DC2626" };
+      case "NOT_ATTENDED":
+        return { backgroundColor: "#7C3AED" };
       default:
         return { backgroundColor: "#6B7280" };
     }
@@ -86,6 +116,7 @@ export default function AdminOrdersScreen() {
       IN_PREPARATION: ["READY_FOR_PICKUP"],
       READY_FOR_PICKUP: ["DELIVERED"],
       DELIVERED: [],
+      NOT_ATTENDED: [],
       CANCELLED: [],
     };
 
@@ -96,7 +127,10 @@ export default function AdminOrdersScreen() {
     filter === "ALL" ? orders : orders.filter((o) => o.status === filter);
 
   const totalRevenue = orders
-    .filter((order) => order.status !== "CANCELLED")
+    .filter(
+      (order) =>
+        order.status !== "CANCELLED" && order.status !== "NOT_ATTENDED",
+    )
     .reduce((sum, order) => sum + Number(order.totalAmount || 0), 0);
 
   const countByStatus = (status: string) =>
@@ -167,6 +201,7 @@ export default function AdminOrdersScreen() {
                   "READY_FOR_PICKUP",
                   "DELIVERED",
                   "CANCELLED",
+                  "NOT_ATTENDED",
                 ].map((status) => (
                   <TouchableOpacity
                     key={status}
@@ -186,6 +221,25 @@ export default function AdminOrdersScreen() {
                     </Text>
                   </TouchableOpacity>
                 ))}
+              </View>
+
+              <View style={styles.operationalCloseBox}>
+                <Text style={styles.operationalCloseTitle}>
+                  Cierre operativo diario
+                </Text>
+                <Text style={styles.operationalCloseText}>
+                  Marca como No atendido los pedidos del día que no fueron
+                  entregados ni cancelados.
+                </Text>
+
+                <TouchableOpacity
+                  style={styles.operationalCloseButton}
+                  onPress={handleCloseDailyOperation}
+                >
+                  <Text style={styles.operationalCloseButtonText}>
+                    Cerrar operación del día
+                  </Text>
+                </TouchableOpacity>
               </View>
 
               {filteredOrders.length === 0 ? (
@@ -537,5 +591,41 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#8a6a52",
     textAlign: "center",
+  },
+  operationalCloseBox: {
+    backgroundColor: "#fff8f1",
+    borderWidth: 1,
+    borderColor: "#ead8c8",
+    borderRadius: 16,
+    padding: 12,
+    marginBottom: 12,
+  },
+
+  operationalCloseTitle: {
+    fontSize: 14,
+    fontWeight: "900",
+    color: "#3b1f12",
+    marginBottom: 4,
+  },
+
+  operationalCloseText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#8a6a52",
+    marginBottom: 10,
+  },
+
+  operationalCloseButton: {
+    backgroundColor: "#7C3AED",
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    alignSelf: "flex-start",
+  },
+
+  operationalCloseButtonText: {
+    color: "#fff",
+    fontWeight: "900",
+    fontSize: 12,
   },
 });

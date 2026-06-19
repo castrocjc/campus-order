@@ -74,5 +74,16 @@ public class OrderController {
                 "Estado actualizado",
                 orderService.updateOrderStatus(orderId, status)
         );
-    }    
+    }
+
+    @PutMapping("/operational-close")
+    public ApiResponse<Integer> closeDailyOperation() {
+        int closedOrders = orderService.closeDailyOperation();
+
+        return new ApiResponse<>(
+                true,
+                "Cierre operativo diario ejecutado correctamente",
+                closedOrders
+        );
+    }
 }

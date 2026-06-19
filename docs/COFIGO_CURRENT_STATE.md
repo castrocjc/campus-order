@@ -23,7 +23,7 @@ Ambiente Productivo:
 | Ambiente   | Versión  | Estado             |
 |----------- |----------|----------          |
 | Producción | v1.9     | Operativo          |
-| Develop    | v2.0.1   | Desarrollo estable |
+| Develop    | v2.1     | Desarrollo estable |
 | Main       | v1.9     | Operativo          |
 
 ---
@@ -198,6 +198,7 @@ Estados soportados:
 * IN_PREPARATION
 * READY_FOR_PICKUP
 * DELIVERED
+* NOT_ATTENDED
 * CANCELLED
 
 - Generación dinámica de horarios basada en PICKUP_INTERVAL_MINUTES.
@@ -232,6 +233,9 @@ Funcionalidades:
 * Exclusión automática de pedidos futuros.
 * Ordenamiento por hora de recojo descendente.
 * Mensaje informativo cuando no existen pedidos para el día.
+* Cierre operativo diario manual.
+* Conversión automática de pedidos pendientes a NOT_ATTENDED.
+* Protección de pedidos DELIVERED y CANCELLED.
 
 ---
 

@@ -125,4 +125,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
                         OrderStatus status,
                         LocalDateTime from,
                         LocalDateTime to);
+
+        List<Order> findByPickupTimeBetweenAndStatusIn(
+                LocalDateTime start,
+                LocalDateTime end,
+                List<OrderStatus> statuses);
 }

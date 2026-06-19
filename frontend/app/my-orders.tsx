@@ -102,6 +102,8 @@ export default function MyOrdersScreen() {
         return { backgroundColor: "#16A34A" };
       case "DELIVERED":
         return { backgroundColor: "#64748B" };
+      case "NOT_ATTENDED":
+        return { backgroundColor: "#7C3AED" };
       case "CANCELLED":
         return { backgroundColor: "#DC2626" };
       default:
@@ -119,6 +121,8 @@ export default function MyOrdersScreen() {
         return "Listo para recoger";
       case "DELIVERED":
         return "Entregado";
+      case "NOT_ATTENDED":
+        return "No atendido";
       case "CANCELLED":
         return "Cancelado";
       default:
@@ -199,7 +203,9 @@ export default function MyOrdersScreen() {
                       Recojo: {new Date(item.pickupTime).toLocaleTimeString()}
                     </Text>
 
-                    <Text style={styles.text}>Total: S/ {item.totalAmount}</Text>
+                    <Text style={styles.text}>
+                      Total: S/ {item.totalAmount}
+                    </Text>
 
                     <View style={styles.itemsBox}>
                       {item.items.map((prod: any) => (
@@ -220,6 +226,13 @@ export default function MyOrdersScreen() {
                         </View>
                       ))}
                     </View>
+
+                    {item.status === "NOT_ATTENDED" ? (
+                      <Text style={styles.notAttendedText}>
+                        El pedido no fue recogido antes del cierre operativo de
+                        la cafetería.
+                      </Text>
+                    ) : null}
 
                     {item.status === "RECEIVED" ? (
                       <TouchableOpacity
@@ -399,5 +412,11 @@ const styles = StyleSheet.create({
   toastError: {
     backgroundColor: "#fdecea",
     color: "#b71c1c",
+  },
+  notAttendedText: {
+    marginTop: 8,
+    color: "#7C3AED",
+    fontWeight: "800",
+    fontSize: 12,
   },
 });
