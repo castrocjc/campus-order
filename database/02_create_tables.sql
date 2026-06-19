@@ -60,6 +60,7 @@ CREATE TABLE orders (
     status VARCHAR(50) NOT NULL,
     pickup_time DATETIME,
     total_amount DECIMAL(10,2),
+    ready_for_pickup_notification_sent BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP

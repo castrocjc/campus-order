@@ -20,7 +20,7 @@ Ambiente Productivo:
 
 Versión funcional:
 
-v1.8
+v1.9
 
 Estado:
 
@@ -395,15 +395,20 @@ Reglas:
 
 Estado:
 
-🟡 Parcial
+🟢 Completo (Fase Email)
 
 Funcionalidades:
 
-- Notificación visual al usuario cuando un pedido está listo para recoger.
+* Notificación visual al usuario cuando un pedido está listo para recoger.
+* Notificación automática por correo al cambiar a READY_FOR_PICKUP.
+* Integración SendGrid.
+* Prevención de notificaciones duplicadas.
+* Registro de envío mediante flag en base de datos.
 
 Pendiente:
 
-- Notificación por correo cuando el pedido cambie a READY_FOR_PICKUP.
+* WhatsApp READY_FOR_PICKUP.
+* SMS READY_FOR_PICKUP.
 
 ---
 
@@ -505,8 +510,8 @@ Las siguientes funcionalidades se consideran estables y no deben modificarse sin
 Prioridad Alta:
 
 1. Reportes Frontend
-2. Notificaciones READY_FOR_PICKUP
-3. Dashboard Administrativo Avanzado
+2. Dashboard Administrativo Avanzado
+3. Notificaciones WhatsApp READY_FOR_PICKUP
 
 ---
 

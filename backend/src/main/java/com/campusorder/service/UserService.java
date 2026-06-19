@@ -62,7 +62,7 @@ public class UserService {
 
                 User savedUser = userRepository.save(user);
 
-                emailService.sendVerificationCode(email, code);
+                emailService.sendVerificationCode(email, user.getName(), code);
 
                 return mapToResponseDTO(savedUser);
         }
@@ -139,8 +139,9 @@ public class UserService {
                 userRepository.save(user);
 
                 emailService.sendVerificationCode(
-                                user.getEmail(),
-                                code);
+                        user.getEmail(),
+                        user.getName(),
+                        code);
         }
 
         public UserResponseDTO getUserById(Long id) {

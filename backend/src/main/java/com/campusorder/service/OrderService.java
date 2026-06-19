@@ -31,6 +31,7 @@ public class OrderService {
 
         private final OrderRepository orderRepository;
         private final ProductRepository productRepository;
+        private final NotificationService notificationService;
 
         private final CafeteriaSettingsRepository cafeteriaSettingsRepository;
         private final CafeteriaScheduleRepository cafeteriaScheduleRepository;
@@ -38,11 +39,13 @@ public class OrderService {
         public OrderService(
                         OrderRepository orderRepository,
                         ProductRepository productRepository,
+                        NotificationService notificationService,
                         CafeteriaSettingsRepository cafeteriaSettingsRepository,
                         CafeteriaScheduleRepository cafeteriaScheduleRepository) {
 
                 this.orderRepository = orderRepository;
                 this.productRepository = productRepository;
+                this.notificationService = notificationService;
                 this.cafeteriaSettingsRepository = cafeteriaSettingsRepository;
                 this.cafeteriaScheduleRepository = cafeteriaScheduleRepository;
         }
@@ -118,21 +121,39 @@ public class OrderService {
                                 .toList();
         }
 
-        public OrderResponseDTO updateOrderStatus(Long orderId, OrderStatus status) {
+        public OrderResponseDTO updateOrderStatus(
+                Long orderId,
+                OrderStatus status) {
 
-                Order order = orderRepository.findById(orderId)
-                                .orElseThrow(() -> new BusinessException("Pedido no encontrado"));
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() ->
+                        new BusinessException("Pedido no encontrado"));
 
-                if (
-                        status == OrderStatus.CANCELLED
-                        && order.getStatus() != OrderStatus.CANCELLED
-                ) {
-                        restoreStock(order);
-                }
+        OrderStatus previousStatus = order.getStatus();
 
-                order.setStatus(status);
+        if (
+                status == OrderStatus.CANCELLED
+                && previousStatus != OrderStatus.CANCELLED
+        ) {
+                restoreStock(order);
+        }
 
-                return mapToDTO(orderRepository.save(order));
+        order.setStatus(status);
+
+        Order savedOrder = orderRepository.save(order);
+
+        if (
+                previousStatus != OrderStatus.READY_FOR_PICKUP
+                && status == OrderStatus.READY_FOR_PICKUP
+                && !Boolean.TRUE.equals(
+                        savedOrder.getReadyForPickupNotificationSent())
+        ) {
+
+                notificationService
+                        .notifyOrderReadyForPickup(savedOrder);
+        }
+
+        return mapToDTO(savedOrder);
         }
 
         private OrderResponseDTO mapToDTO(Order order) {

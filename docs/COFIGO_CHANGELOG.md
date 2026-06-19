@@ -1560,4 +1560,67 @@ CofiGO incorpora gestión de perfil personal para usuarios finales y queda prepa
 
 ---
 
+# v1.9 - Notificaciones READY_FOR_PICKUP
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Notificación automática de pedido listo para recoger
+
+Se implementó el envío automático de correo electrónico cuando un pedido cambia por primera vez al estado READY_FOR_PICKUP.
+
+Incluye:
+
+* Envío automático mediante SendGrid.
+* Plantilla HTML personalizada.
+* Inclusión de nombre del usuario.
+* Inclusión de número de pedido.
+* Inclusión de hora de recojo.
+* Inclusión del monto total.
+* Prevención de envíos duplicados.
+* Registro de estado de notificación en base de datos.
+
+## Backend
+
+Archivos modificados:
+
+* Order.java
+* OrderService.java
+* EmailService.java
+
+Archivos creados:
+
+* NotificationService.java
+
+## Base de datos
+
+Nueva columna:
+
+* orders.ready_for_pickup_notification_sent
+
+## Arquitectura
+
+Nuevo flujo:
+
+OrderService
+→ NotificationService
+→ EmailService
+→ SendGrid
+
+## Validaciones realizadas
+
+* Cambio RECEIVED → IN_PREPARATION.
+* Cambio IN_PREPARATION → READY_FOR_PICKUP.
+* Validación de correo enviado.
+* Validación de contenido dinámico.
+* Prevención de reenvío.
+* Validación de flag en base de datos.
+
+## Impacto
+
+CofiGO incorpora notificaciones automáticas para mejorar la experiencia de recojo y queda preparado para futuras integraciones SMS y WhatsApp.
+
+---
+
 Fin del documento.

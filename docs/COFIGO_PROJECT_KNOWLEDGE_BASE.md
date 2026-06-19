@@ -117,6 +117,7 @@ AuthService
 UserService
 ProductService
 OrderService
+NotificationService
 EmailService
 CategoryService
 CafeteriaSettingsService
@@ -225,15 +226,16 @@ Mejora la calidad del catálogo, reduce errores operativos y facilita el control
 
 ## Order
 
-| Campo       | Tipo          |
-| ----------- | ------------- |
-| id          | Long          |
-| userId      | Long          |
-| status      | OrderStatus   |
-| pickupTime  | LocalDateTime |
-| totalAmount | BigDecimal    |
-| createdAt   | LocalDateTime |
-| updatedAt   | LocalDateTime |
+| Campo                          | Tipo          |
+| -----------                    | ------------- |
+| id                             | Long          |
+| userId                         | Long          |
+| status                         | OrderStatus   |
+| pickupTime                     | LocalDateTime |
+| totalAmount                    | BigDecimal    |
+| readyForPickupNotificationSent | Boolean       |
+| createdAt                      | LocalDateTime |
+| updatedAt                      | LocalDateTime |
 
 Estados oficiales del pedido:
 
@@ -362,6 +364,7 @@ Funcionalidades:
 * Reenvío de código
 * Recuperación de contraseña
 * Reenvío de código de recuperación
+* Notificación READY_FOR_PICKUP
 
 ---
 
@@ -513,25 +516,26 @@ PUT /api/cafeteria-settings
 
 # 6. Módulos Implementados
 
-| Módulo                     | Estado   |
-| ----------------------     | -------- |
-| Login                      | Completo |
-| Registro                   | Completo |
-| Verificación Correo        | Completo |
-| JWT                        | Completo |
-| Roles                      | Completo |
-| Productos                  | Completo |
-| Personalización Productos  | Completo |
-| Menú Digital               | Completo |
-| Carrito                    | Completo |
-| Pedidos                    | Completo |
-| Gestión Pedidos            | Completo |
-| Reporte Ventas por Día     | Parcial  |
-| Recuperar Contraseña       | Completo |
-| Gestión de Usuarios        | Completo |
-| Gestión de Categorías      | Completo |
-| Configuración de Cafetería | Completo |
-| Perfil de Usuario          | Completo |
+| Módulo                          | Estado   |
+| ----------------------          | -------- |
+| Login                           | Completo |
+| Registro                        | Completo |
+| Verificación Correo             | Completo |
+| JWT                             | Completo |
+| Roles                           | Completo |
+| Productos                       | Completo |
+| Personalización Productos       | Completo |
+| Menú Digital                    | Completo |
+| Carrito                         | Completo |
+| Pedidos                         | Completo |
+| Gestión Pedidos                 | Completo |
+| Reporte Ventas por Día          | Parcial  |
+| Recuperar Contraseña            | Completo |
+| Gestión de Usuarios             | Completo |
+| Gestión de Categorías           | Completo |
+| Configuración de Cafetería      | Completo |
+| Perfil de Usuario               | Completo |
+| Notificaciones READY_FOR_PICKUP | Completo |
 
 Capacidades actuales:
 
@@ -851,7 +855,7 @@ PUT /api/users/me/password
 # 11. Próxima Evolución Recomendada
 
 1. Reportes Frontend
-2. Notificaciones READY_FOR_PICKUP
+2. Notificaciones WhatsApp READY_FOR_PICKUP
 3. Auditoría
 4. Mejoras visuales finales
 5. Multi Cafetería

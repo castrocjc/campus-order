@@ -155,6 +155,8 @@ Funcionalidades:
 * Validación de tiempo mínimo de preparación
 * Reversa automática de stock al cancelar pedidos
 * Cancelación consistente desde Mis Pedidos y Administración de Pedidos
+* Notificación automática por correo al cambiar a READY_FOR_PICKUP.
+* Prevención de envíos duplicados mediante flag de notificación.
 
 Reglas actuales de horario:
 
@@ -267,7 +269,8 @@ Reglas:
 Prioridad Alta:
 
 * Reportes Frontend
-* Notificaciones READY_FOR_PICKUP
+* Notificaciones WhatsApp READY_FOR_PICKUP
+* Notificaciones SMS READY_FOR_PICKUP
 
 Prioridad Media:
 
@@ -290,6 +293,7 @@ Entidades principales:
 * Category
 * Product
 * Order
+    * readyForPickupNotificationSent
 * OrderItem
 
 Relaciones:
@@ -331,6 +335,12 @@ Regla de correo institucional:
 * Los usuarios creados por ADMIN se consideran verificados administrativamente.
 * La administración de usuarios no muestra códigos sensibles de verificación ni recuperación.
 * Los usuarios pendientes pueden recibir un nuevo código mediante la opción Reenviar código.
+
+Notificaciones implementadas:
+
+* Verificación de correo.
+* Recuperación de contraseña.
+* READY_FOR_PICKUP.
 
 ---
 

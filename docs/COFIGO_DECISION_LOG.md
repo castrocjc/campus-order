@@ -1164,4 +1164,56 @@ Consecuencias negativas:
 
 ---
 
+# DEC-026
+
+Fecha: 2026-06
+
+Título:
+Arquitectura centralizada de notificaciones
+
+Estado:
+Aprobada
+
+Contexto:
+
+Se requiere notificar al usuario cuando un pedido cambie al estado READY_FOR_PICKUP.
+
+En versiones futuras se planea incorporar WhatsApp y SMS.
+
+Decisión:
+
+Centralizar toda la lógica de notificaciones en NotificationService.
+
+Arquitectura:
+
+OrderService
+→ NotificationService
+→ EmailService
+
+Justificación:
+
+* Evitar mezclar reglas de negocio de pedidos con canales de comunicación.
+* Facilitar incorporación futura de WhatsApp.
+* Facilitar incorporación futura de SMS.
+* Reducir duplicidad de lógica.
+
+Consecuencias positivas:
+
+* Mejor mantenibilidad.
+* Menor acoplamiento.
+* Arquitectura extensible.
+
+Consecuencias negativas:
+
+* Nuevo servicio adicional.
+
+Evolución futura:
+
+NotificationService
+→ Email
+→ WhatsApp
+→ SMS
+
+---
+
 Fin del documento.
