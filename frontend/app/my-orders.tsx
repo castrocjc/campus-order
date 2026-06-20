@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Stack, useRouter } from "expo-router";
 import {
   FlatList,
+  useWindowDimensions,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -10,8 +11,11 @@ import {
 import SideMenu from "../components/ui/SideMenu";
 import { cancelOrder, getMyOrders } from "../src/services/orderService";
 
+
 export default function MyOrdersScreen() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
@@ -142,7 +146,7 @@ export default function MyOrdersScreen() {
     <>
       <Stack.Screen options={{ headerShown: false }} />
 
-      <View style={styles.container}>
+      <View style={[styles.container, isMobile && styles.containerMobile]}>
         {message && (
           <View style={styles.toastContainer}>
             <Text
@@ -156,7 +160,7 @@ export default function MyOrdersScreen() {
           </View>
         )}
 
-        <View style={styles.header}>
+        <View style={[styles.header, isMobile && styles.headerMobile]}>
           <View>
             <Text style={styles.title}>Menú COFIGO</Text>
 
@@ -170,7 +174,7 @@ export default function MyOrdersScreen() {
           </View>
         </View>
 
-        <View style={styles.shellLayout}>
+        <View style={[styles.shellLayout, isMobile && styles.shellLayoutMobile]}>
           <SideMenu role="USER" onLogout={handleLogout} />
 
           <View style={styles.content}>
@@ -184,7 +188,10 @@ export default function MyOrdersScreen() {
 
               <FlatList
                 style={styles.ordersList}
-                contentContainerStyle={styles.ordersListContent}
+                contentContainerStyle={[
+                  styles.ordersListContent,
+                  isMobile && styles.ordersListContentMobile,
+                ]}
                 data={orders}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
@@ -261,12 +268,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff8f1",
     padding: 20,
   },
+  containerMobile: {
+    padding: 14,
+  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
     gap: 12,
+  },
+  headerMobile: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+    marginBottom: 14,
   },
   title: {
     fontSize: 28,
@@ -296,6 +311,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 16,
     minHeight: 0,
+  },
+  shellLayoutMobile: {
+    flexDirection: "column",
   },
   content: {
     flex: 1,
@@ -336,6 +354,9 @@ const styles = StyleSheet.create({
   ordersListContent: {
     paddingRight: 12,
     paddingBottom: 16,
+  },
+  ordersListContentMobile: {
+    paddingRight: 0,
   },
   card: {
     backgroundColor: "#fff8f1",

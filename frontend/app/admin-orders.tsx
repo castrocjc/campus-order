@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   ScrollView,
+  useWindowDimensions,
 } from "react-native";
 import {
   closeDailyOperation,
@@ -18,6 +19,8 @@ import AdminLayout from "../components/ui/AdminLayout";
 export default function AdminOrdersScreen() {
   const [orders, setOrders] = useState<any[]>([]);
   const [filter, setFilter] = useState<string>("ALL");
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
 
   useEffect(() => {
     loadOrders();
@@ -142,7 +145,7 @@ export default function AdminOrdersScreen() {
       subtitle="Gestión de pedidos"
       allowedRoles={["ADMIN", "WORKER"]}
     >
-      <View style={styles.screen}>
+      <View style={[styles.screen, isMobile && styles.screenMobile]}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -183,9 +186,9 @@ export default function AdminOrdersScreen() {
           </View>
         </ScrollView>
 
-        <View style={styles.ordersLayout}>
-          <View style={styles.ordersListColumn}>
-            <View style={styles.listCard}>
+        <View style={[styles.ordersLayout, isMobile && styles.ordersLayoutMobile]}>
+          <View style={[styles.ordersListColumn, isMobile && styles.ordersListColumnMobile]}>
+            <View style={[styles.listCard, isMobile && styles.listCardMobile]}>
               <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle}>Pedidos registrados</Text>
                 <Text style={styles.cardSubtitle}>
@@ -255,12 +258,17 @@ export default function AdminOrdersScreen() {
                 </View>
               ) : (
                 <FlatList
-                  style={styles.ordersList}
-                  contentContainerStyle={styles.ordersListContent}
+                  style={[styles.ordersList, isMobile && styles.ordersListMobile]}
+                  contentContainerStyle={[
+                    styles.ordersListContent,
+                    isMobile && styles.ordersListContentMobile,
+                  ]}
                   data={filteredOrders}
+                  nestedScrollEnabled
+                  keyboardShouldPersistTaps="handled"
                   keyExtractor={(item) => item.id.toString()}
                   renderItem={({ item }) => (
-                    <View style={styles.card}>
+                    <View style={[styles.card, isMobile && styles.orderCardMobile]}>
                       <Text style={styles.orderId}>Pedido #{item.id}</Text>
 
                       <View
@@ -374,6 +382,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff8f1",
   },
+
+  screenMobile: {
+    width: "100%",
+  },
   ordersLayout: {
     flex: 1,
     flexDirection: "row",
@@ -386,10 +398,22 @@ const styles = StyleSheet.create({
     minHeight: 0,
   },
 
+  ordersLayoutMobile: {
+    flexDirection: "column",
+    paddingHorizontal: 0,
+    paddingBottom: 24,
+    gap: 12,
+  },
+
   ordersListColumn: {
     flex: 2,
     minWidth: 0,
     minHeight: 0,
+  },
+
+  ordersListColumnMobile: {
+    width: "100%",
+    minHeight: 480,
   },
   listCard: {
     flex: 1,
@@ -403,6 +427,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 3,
+  },
+
+  listCardMobile: {
+    width: "100%",
+    flex: 1,
+    minHeight: 480,
   },
 
   cardHeader: {
@@ -463,6 +493,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: "#ead8c8",
+  },
+
+  orderCardMobile: {
+    width: "100%",
   },
   orderId: {
     fontWeight: "900",
@@ -567,8 +601,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
+  ordersListMobile: {
+    flex: 1,
+    minHeight: 360,
+  },
+
   ordersListContent: {
     paddingBottom: 12,
+  },
+
+  ordersListContentMobile: {
+    paddingBottom: 80,
   },
   emptyState: {
     backgroundColor: "#fff8f1",

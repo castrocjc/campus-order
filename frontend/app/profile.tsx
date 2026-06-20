@@ -219,25 +219,21 @@ export default function ProfileScreen() {
 
             <Text style={styles.subtitle}>Gestión de tu perfil</Text>
           </View>
-
-          {isMobile && (
-            <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-              <Text style={styles.logoutBtnText}>Salir</Text>
-            </TouchableOpacity>
-          )}
         </View>
 
         <View
           style={[styles.shellLayout, isMobile && styles.shellLayoutMobile]}
         >
-          {!isMobile && (
-            <SideMenu role={user?.role || "USER"} onLogout={handleLogout} />
-          )}
+          <SideMenu role={user?.role || "USER"} onLogout={handleLogout} />
 
           <ScrollView
-            style={styles.content}
-            contentContainerStyle={styles.contentContainer}
+            style={[styles.content, isMobile ? styles.contentMobile : null]}
+            contentContainerStyle={[
+              styles.contentContainer,
+              isMobile ? styles.contentContainerMobile : null,
+            ]}
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
             <View style={styles.profileCard}>
               <View style={styles.cardHeader}>
@@ -257,7 +253,7 @@ export default function ProfileScreen() {
                     isMobile && styles.cardsLayoutMobile,
                   ]}
                 >
-                  <View style={styles.card}>
+                  <View style={[styles.card, isMobile && styles.cardMobile]}>
                     <Text style={styles.cardTitle}>Información personal</Text>
 
                     <Text style={styles.label}>Nombre *</Text>
@@ -295,9 +291,12 @@ export default function ProfileScreen() {
                       {profile?.emailVerified ? "Sí" : "No"}
                     </Text>
 
-                    <View style={styles.buttonRow}>
+                    <View style={[styles.buttonRow, isMobile && styles.buttonRowMobile]}>
                       <TouchableOpacity
-                        style={styles.secondaryButton}
+                        style={[
+                          styles.secondaryButton,
+                          isMobile && styles.buttonMobile,
+                        ]}
                         onPress={handleCleanProfile}
                       >
                         <Text style={styles.secondaryButtonText}>Limpiar</Text>
@@ -306,8 +305,9 @@ export default function ProfileScreen() {
                       <TouchableOpacity
                         style={[
                           styles.primaryButton,
+                          isMobile && styles.buttonMobile,
                           savingProfile && styles.buttonDisabled,
-                        ]}
+                        ]}                        
                         onPress={handleSaveProfile}
                         disabled={savingProfile}
                       >
@@ -318,7 +318,7 @@ export default function ProfileScreen() {
                     </View>
                   </View>
 
-                  <View style={styles.card}>
+                  <View style={[styles.card, isMobile && styles.cardMobile]}>
                     <Text style={styles.cardTitle}>Seguridad</Text>
 
                     <Text style={styles.label}>Contraseña actual *</Text>
@@ -356,6 +356,7 @@ export default function ProfileScreen() {
                     <TouchableOpacity
                       style={[
                         styles.primaryButton,
+                        styles.passwordButton,
                         savingPassword && styles.buttonDisabled,
                       ]}
                       onPress={handleChangePassword}
@@ -395,10 +396,21 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    minHeight: 0,
+    minWidth: 0,
+  },
+  contentMobile: {
+    width: "100%",
+    flex: 1,
   },
   contentContainer: {
-    paddingBottom: 24,
+    flexGrow: 1,
+    padding: 20,
+  },
+  contentContainerMobile: {
+    width: "100%",
+    paddingHorizontal: 0,
+    paddingTop: 12,
+    paddingBottom: 40,
   },
   header: {
     marginBottom: 16,
@@ -421,28 +433,62 @@ const styles = StyleSheet.create({
     color: "#7a6a61",
     fontWeight: "700",
   },
+  profileCard: {
+    width: "100%",
+    flexShrink: 0,
+    backgroundColor: "#ffffff",
+    borderRadius: 22,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: "#f0dfd1",
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 2,
+  },
+  cardHeader: {
+    marginBottom: 12,
+  },
   cardsLayout: {
     flexDirection: "row",
     gap: 16,
+    width: "100%",
     alignItems: "flex-start",
   },
   cardsLayoutMobile: {
     flexDirection: "column",
+    gap: 20,
+    width: "100%",
   },
   card: {
-    flex: 1,
-    width: "100%",
-    backgroundColor: "#fff8f1",
-    borderRadius: 16,
-    padding: 16,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    minWidth: 0,
+    backgroundColor: "#fff7ef",
     borderWidth: 1,
-    borderColor: "#ead8c8",
+    borderColor: "#f3c9a8",
+    borderRadius: 14,
+    padding: 18,
+  },
+  cardMobile: {
+    width: "100%",
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: "auto",
   },
   cardTitle: {
     fontSize: 18,
     fontWeight: "800",
     color: "#3b2416",
     marginBottom: 2,
+  },
+  cardSubtitle: {
+    fontSize: 12,
+    color: "#8a6a52",
+    marginBottom: 8,
   },
   label: {
     fontSize: 13,
@@ -475,16 +521,29 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: "row",
     gap: 10,
-    marginTop: 18,
+    marginTop: 20,
   },
+buttonRowMobile: {
+  flexDirection: "column",
+  gap: 10,
+},
   primaryButton: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
     backgroundColor: "#f57c00",
     paddingVertical: 13,
     paddingHorizontal: 14,
     borderRadius: 12,
     alignItems: "center",
-    marginTop: 18,
+    minHeight: 44,
+  },
+  passwordButton: {
+    width: "100%",
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: "auto",
+    marginTop: 20,
   },
   primaryButtonText: {
     color: "#fff",
@@ -492,7 +551,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   secondaryButton: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
     backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#ead8c8",
@@ -500,7 +561,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 12,
     alignItems: "center",
-    marginTop: 18,
+    minHeight: 44,
   },
   secondaryButtonText: {
     color: "#3b1f12",
@@ -560,27 +621,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#7a6a61",
   },
-  profileCard: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-    borderRadius: 22,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    borderWidth: 1,
-    borderColor: "#f0dfd1",
-    minHeight: 0,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 2,
-  },
-  cardHeader: {
-    marginBottom: 12,
-  },
-  cardSubtitle: {
-    fontSize: 12,
-    color: "#8a6a52",
-    marginBottom: 8,
-  },
+buttonMobile: {
+  width: "100%",
+  minHeight: 44,
+},  
 });

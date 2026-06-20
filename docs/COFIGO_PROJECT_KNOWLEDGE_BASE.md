@@ -674,6 +674,25 @@ Estado:
 
 Adaptación Móvil Fase 1 completada.
 
+Adaptación Móvil Fase 2:
+
+Pantallas validadas:
+
+* Home
+* Mis Pedidos
+* Perfil
+* Administración de Pedidos
+* Configuración de Cafetería
+* Dashboard
+* Reportes
+
+Pantallas pendientes:
+
+* Administración de Productos
+* Administración de Categorías
+* Administración de Personalizaciones
+* Administración de Usuarios
+
 ### Frontend
 
 ```text
@@ -944,7 +963,7 @@ PUT /api/users/me/password
 
 # Historial del Documento
 
-Versión: v2.1
+Versión: v2.3
 
 Fecha de creación: Junio 2026
 

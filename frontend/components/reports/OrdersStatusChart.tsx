@@ -10,6 +10,7 @@ function formatStatus(status: string) {
     IN_PREPARATION: "En preparación",
     READY_FOR_PICKUP: "Listo para recoger",
     DELIVERED: "Entregado",
+    NOT_ATTENDED: "No entregado",
     CANCELLED: "Cancelado",
   };
 

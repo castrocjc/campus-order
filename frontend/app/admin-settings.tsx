@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  StyleSheet,
   useWindowDimensions,
 } from "react-native";
 
@@ -93,7 +94,8 @@ function normalizeSettings(data: CafeteriaSettings): CafeteriaSettings {
 
 export default function AdminSettingsScreen() {
   const { width } = useWindowDimensions();
-  const isDesktop = width >= 900;
+  const isMobile = width < 768;
+  const isDesktop = !isMobile;
 
   const [settings, setSettings] = useState<CafeteriaSettings>(DEFAULT_SETTINGS);
   const [originalSettings, setOriginalSettings] =
@@ -289,7 +291,7 @@ export default function AdminSettingsScreen() {
 
   return (
     <AdminLayout title="Configuración de Cafetería">
-      <View style={styles.page}>
+      <View style={[styles.page, isMobile && styles.pageMobile]}>
         <View style={styles.headerCard}>
           <View style={styles.headerIconBox}>
             <Text style={styles.headerIcon}>⚙️</Text>
@@ -327,9 +329,13 @@ export default function AdminSettingsScreen() {
         ) : null}
 
         <ScrollView
-          style={styles.scrollArea}
-          contentContainerStyle={styles.scrollContent}
+          style={[styles.scrollArea, isMobile && styles.scrollAreaMobile]}
+          contentContainerStyle={[
+            styles.scrollContent,
+            isMobile ? styles.scrollContentMobile : null,
+          ]}
           showsVerticalScrollIndicator
+          keyboardShouldPersistTaps="handled"
         >
           <View
             style={[
@@ -337,88 +343,96 @@ export default function AdminSettingsScreen() {
               isDesktop ? styles.contentGridDesktop : styles.contentGridMobile,
             ]}
           >
-            <View style={styles.columnLarge}>
+            <View style={isDesktop ? styles.columnLarge : styles.columnMobile}>
               <View
-                style={[styles.card, isDesktop ? styles.topCardHeight : null]}
+                style={isDesktop ? [styles.card, styles.topCardHeight] : [styles.card, styles.cardMobile]}
               >
                 <Text style={styles.sectionTitle}>Horarios de Atención</Text>
                 <Text style={styles.sectionSubtitle}>
                   Usa formato HH:mm. Marca cerrado cuando no haya atención.
                 </Text>
 
-                <View style={styles.scheduleHeader}>
-                  <Text style={[styles.scheduleHeaderText, styles.dayColumn]}>
-                    Día
-                  </Text>
-                  <Text style={styles.scheduleHeaderText}>Apertura</Text>
-                  <Text style={styles.scheduleHeaderText}>Cierre</Text>
-                  <Text style={styles.scheduleHeaderText}>Estado</Text>
-                </View>
-
-                {settings.schedules.map((schedule) => (
-                  <View key={schedule.dayOfWeek} style={styles.scheduleRow}>
-                    <Text style={[styles.dayLabel, styles.dayColumn]}>
-                      {DAY_LABELS[schedule.dayOfWeek]}
-                    </Text>
-
-                    <TextInput
-                      style={[
-                        styles.timeInput,
-                        schedule.closed ? styles.inputDisabled : null,
-                      ]}
-                      value={schedule.closed ? "--" : schedule.openingTime}
-                      editable={!schedule.closed}
-                      placeholder="07:00"
-                      onChangeText={(value) =>
-                        updateSchedule(schedule.dayOfWeek, "openingTime", value)
-                      }
-                    />
-
-                    <TextInput
-                      style={[
-                        styles.timeInput,
-                        schedule.closed ? styles.inputDisabled : null,
-                      ]}
-                      value={schedule.closed ? "--" : schedule.closingTime}
-                      editable={!schedule.closed}
-                      placeholder="21:00"
-                      onChangeText={(value) =>
-                        updateSchedule(schedule.dayOfWeek, "closingTime", value)
-                      }
-                    />
-
-                    <TouchableOpacity
-                      style={[
-                        styles.closedButton,
-                        schedule.closed ? styles.closedButtonSelected : null,
-                      ]}
-                      onPress={() =>
-                        updateSchedule(
-                          schedule.dayOfWeek,
-                          "closed",
-                          !schedule.closed,
-                        )
-                      }
-                    >
-                      <Text
-                        style={[
-                          styles.closedButtonText,
-                          schedule.closed
-                            ? styles.closedButtonTextSelected
-                            : null,
-                        ]}
-                      >
-                        {schedule.closed ? "Cerrado" : "Abierto"}
+                <ScrollView
+                  horizontal={!isDesktop}
+                  showsHorizontalScrollIndicator={!isDesktop}
+                  keyboardShouldPersistTaps="handled"
+                >
+                  <View style={!isDesktop ? styles.scheduleTableMobile : null}>
+                    <View style={styles.scheduleHeader}>
+                      <Text style={[styles.scheduleHeaderText, styles.dayColumn]}>
+                        Día
                       </Text>
-                    </TouchableOpacity>
+                      <Text style={styles.scheduleHeaderText}>Apertura</Text>
+                      <Text style={styles.scheduleHeaderText}>Cierre</Text>
+                      <Text style={styles.scheduleHeaderText}>Estado</Text>
+                    </View>
+
+                    {settings.schedules.map((schedule) => (
+                      <View key={schedule.dayOfWeek} style={styles.scheduleRow}>
+                        <Text style={[styles.dayLabel, styles.dayColumn]}>
+                          {DAY_LABELS[schedule.dayOfWeek]}
+                        </Text>
+
+                        <TextInput
+                          style={[
+                            styles.timeInput,
+                            schedule.closed ? styles.inputDisabled : null,
+                          ]}
+                          value={schedule.closed ? "--" : schedule.openingTime}
+                          editable={!schedule.closed}
+                          placeholder="07:00"
+                          onChangeText={(value) =>
+                            updateSchedule(schedule.dayOfWeek, "openingTime", value)
+                          }
+                        />
+
+                        <TextInput
+                          style={[
+                            styles.timeInput,
+                            schedule.closed ? styles.inputDisabled : null,
+                          ]}
+                          value={schedule.closed ? "--" : schedule.closingTime}
+                          editable={!schedule.closed}
+                          placeholder="21:00"
+                          onChangeText={(value) =>
+                            updateSchedule(schedule.dayOfWeek, "closingTime", value)
+                          }
+                        />
+
+                        <TouchableOpacity
+                          style={[
+                            styles.closedButton,
+                            schedule.closed ? styles.closedButtonSelected : null,
+                          ]}
+                          onPress={() =>
+                            updateSchedule(
+                              schedule.dayOfWeek,
+                              "closed",
+                              !schedule.closed,
+                            )
+                          }
+                        >
+                          <Text
+                            style={[
+                              styles.closedButtonText,
+                              schedule.closed
+                                ? styles.closedButtonTextSelected
+                                : null,
+                            ]}
+                          >
+                            {schedule.closed ? "Cerrado" : "Abierto"}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    ))}
                   </View>
-                ))}
+                </ScrollView>
               </View>
             </View>
 
-            <View style={styles.column}>
+            <View style={isDesktop ? styles.column : styles.columnMobile}>
               <View
-                style={[styles.card, isDesktop ? styles.topCardHeight : null]}
+                style={isDesktop ? [styles.card, styles.topCardHeight] : [styles.card, styles.cardMobile]}
               >
                 <Text style={styles.sectionTitle}>Sistema</Text>
 
@@ -570,12 +584,9 @@ export default function AdminSettingsScreen() {
               isDesktop ? styles.contentGridDesktop : styles.contentGridMobile,
             ]}
           >
-            <View style={styles.column}>
+            <View style={isDesktop ? styles.column : styles.columnMobile}>
               <View
-                style={[
-                  styles.card,
-                  isDesktop ? styles.bottomCardHeight : null,
-                ]}
+                style={isDesktop ? [styles.card, styles.bottomCardHeight] : [styles.card, styles.cardMobile]}
               >
                 <Text style={styles.sectionTitle}>Información General</Text>
 
@@ -598,12 +609,9 @@ export default function AdminSettingsScreen() {
               </View>
             </View>
 
-            <View style={styles.column}>
+            <View style={isDesktop ? styles.column : styles.columnMobile}>
               <View
-                style={[
-                  styles.card,
-                  isDesktop ? styles.bottomCardHeight : null,
-                ]}
+                style={isDesktop ? [styles.card, styles.bottomCardHeight] : [styles.card, styles.cardMobile]}
               >
                 <Text style={styles.sectionTitle}>Ubicación</Text>
 
@@ -638,12 +646,12 @@ export default function AdminSettingsScreen() {
           <View
             style={[
               styles.actionsCard,
-              isDesktop ? styles.actionsCardDesktop : null,
+              isDesktop ? styles.actionsCardDesktop : styles.actionsCardMobile,
             ]}
           >
             <TouchableOpacity
               style={[
-                styles.primaryButton,
+                isDesktop ? styles.primaryButton : styles.primaryButtonMobile,
                 saving ? styles.buttonDisabled : null,
               ]}
               onPress={handleSave}
@@ -655,7 +663,7 @@ export default function AdminSettingsScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.secondaryButton}
+              style={isDesktop ? styles.secondaryButton : styles.secondaryButtonMobile}
               onPress={handleClear}
             >
               <Text style={styles.secondaryButtonText}>↩ Deshacer cambios</Text>
@@ -667,17 +675,28 @@ export default function AdminSettingsScreen() {
   );
 }
 
-const styles = {
+const styles = StyleSheet.create({
   page: {
     flex: 1,
     minHeight: 0,
+  },
+  pageMobile: {
+    flex: 1,
+    width: "100%",
   },
   scrollArea: {
     flex: 1,
     minHeight: 0,
   },
+  scrollAreaMobile: {
+    flex: 1,
+    width: "100%",
+  },
   scrollContent: {
     paddingBottom: 18,
+  },
+  scrollContentMobile: {
+    paddingBottom: 96,
   },
   loadingContainer: {
     flex: 1,
@@ -762,12 +781,20 @@ const styles = {
   },
   contentGridMobile: {
     flexDirection: "column" as const,
+    alignItems: "stretch" as const,
+    gap: 14,
   },
   column: {
     flex: 1,
+    minWidth: 0,
   },
   columnLarge: {
     flex: 1.45,
+    minWidth: 0,
+  },
+  columnMobile: {
+    width: "100%",
+    minWidth: 0,
   },
   card: {
     backgroundColor: "#FFFFFF",
@@ -775,6 +802,11 @@ const styles = {
     padding: 18,
     borderWidth: 1,
     borderColor: "#E7D8C5",
+  },
+  cardMobile: {
+    width: "100%",
+    minHeight: 0,
+    marginBottom: 0,
   },
   topCardHeight: {
     minHeight: 384,
@@ -818,28 +850,31 @@ const styles = {
     minHeight: 70,
     textAlignVertical: "top" as const,
   },
+  scheduleTableMobile: {
+    minWidth: 420,
+  },
   scheduleHeader: {
     flexDirection: "row" as const,
     alignItems: "center" as const,
-    gap: 10,
+    gap: 6,
     paddingBottom: 8,
     marginBottom: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#E7D8C5",
   },
   scheduleHeaderText: {
-    width: 90,
-    fontSize: 12,
+    width: 68,
+    fontSize: 11,
     fontWeight: "800" as const,
     color: "#7A6048",
   },
   dayColumn: {
-    width: 120,
+    width: 76,
   },
   scheduleRow: {
     flexDirection: "row" as const,
     alignItems: "center" as const,
-    gap: 10,
+    gap: 6,
     marginBottom: 9,
   },
   dayLabel: {
@@ -848,7 +883,7 @@ const styles = {
     color: "#5B3A24",
   },
   timeInput: {
-    width: 90,
+    width: 68,
     backgroundColor: "#FFFFFF",
     borderWidth: 1,
     borderColor: "#D9C5AD",
@@ -860,7 +895,7 @@ const styles = {
     textAlign: "center" as const,
   },
   closedButton: {
-    width: 86,
+    width: 68,
     borderRadius: 999,
     paddingVertical: 8,
     paddingHorizontal: 10,
@@ -915,6 +950,9 @@ const styles = {
     flexDirection: "row" as const,
     alignItems: "center" as const,
   },
+  actionsCardMobile: {
+    flexDirection: "column" as const,
+  },
   primaryButton: {
     flex: 1,
     backgroundColor: "#6F4E37",
@@ -940,6 +978,27 @@ const styles = {
     color: "#5B3A24",
     fontSize: 14,
     fontWeight: "800" as const,
+  },
+  primaryButtonMobile: {
+    width: "100%",
+    backgroundColor: "#6F4E37",
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: "center" as const,
+    minHeight: 46,
+  },
+  secondaryButtonMobile: {
+    width: "100%",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 14,
+    paddingVertical: 13,
+    alignItems: "center" as const,
+    borderWidth: 1,
+    borderColor: "#D9C5AD",
+    minHeight: 46,
+  },
+  actionButtonMobile: {
+    width: "100%",
   },
   buttonDisabled: {
     opacity: 0.6,
@@ -1003,4 +1062,4 @@ const styles = {
     fontWeight: "800" as const,
     color: "#3B2416",
   },
-};
+});

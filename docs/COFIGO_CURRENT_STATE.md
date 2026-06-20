@@ -23,7 +23,7 @@ Ambiente Productivo:
 | Ambiente   | Versión  | Estado             |
 |----------- |----------|----------          |
 | Producción | v1.9     | Operativo          |
-| Develop    | v2.2     | Desarrollo estable |
+| Develop    | v2.3     | Desarrollo estable |
 | Main       | v1.9     | Operativo          |
 
 ---
@@ -300,9 +300,13 @@ Funcionalidades:
 * Compatibilidad validada con Safari iPhone físico.
 * Manejo seguro de imágenes inválidas.
 
-Validado en:
-
-* iPhone Simulator (Xcode)
+* Adaptación Móvil Fase 2 iniciada.
+* SideMenu responsive validado.
+* AdminLayout estabilizado.
+* Perfil validado en desktop y mobile.
+* Administración de Pedidos validada en desktop y mobile.
+* Configuración de Cafetería validada en desktop y mobile.
+* Administración de Productos pendiente de cierre en mobile web.
 
 ---
 
@@ -499,6 +503,22 @@ Funcionalidades:
 ---
 
 # Problemas Conocidos
+
+## Administración de Productos Mobile Web
+
+Estado:
+
+🟡 Pendiente
+
+Descripción:
+
+La pantalla admin-products funciona correctamente en desktop web, pero en mobile web aún presenta problemas de superposición entre el listado de productos y el formulario de creación/edición.
+
+Acción futura:
+
+Revisar patrón responsive tomando como referencia Home y Perfil.
+
+---
 
 ## JWT Secret
 

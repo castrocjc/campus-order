@@ -1,6 +1,6 @@
 import { Stack, useRouter } from "expo-router";
 import { ReactNode, useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { getToken, logout } from "../../src/services/authService";
 import SideMenu from "./SideMenu";
 
@@ -21,6 +21,8 @@ export default function AdminLayout({
   allowedRoles = ["ADMIN"],
 }: AdminLayoutProps) {
   const router = useRouter();
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -78,23 +80,24 @@ export default function AdminLayout({
     <>
       <Stack.Screen options={{ headerShown: false }} />
 
-      <View style={styles.container}>
+      <View style={[styles.container, isMobile && styles.containerMobile]}>
         <View style={styles.header}>
           <Text style={styles.title}>
-            {user?.role === "WORKER"
-              ? "Panel operario"
-              : title}
+            {user?.role === "WORKER" ? "Panel operario" : title}
           </Text>
 
           <Text style={styles.subtitle}>
-            {subtitle || `Bienvenido ${user?.name || "Usuario"} (${user?.role || ""})`}
+            {subtitle ||
+              `Bienvenido ${user?.name || "Usuario"} (${user?.role || ""})`}
           </Text>
         </View>
 
-        <View style={styles.shellLayout}>
+        <View
+          style={[styles.shellLayout, isMobile && styles.shellLayoutMobile]}
+        >
           <SideMenu role={user?.role || "ADMIN"} onLogout={handleLogout} />
 
-          <View style={styles.workArea}>{children}</View>
+          <View style={[styles.workArea, isMobile && styles.workAreaMobile]}>{children}</View>
         </View>
       </View>
     </>
@@ -106,6 +109,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff8f1",
     padding: 20,
+  },
+  containerMobile: {
+    padding: 14,
   },
   header: {
     marginBottom: 16,
@@ -120,15 +126,20 @@ const styles = StyleSheet.create({
     color: "#7a6a61",
     fontWeight: "700",
   },
-  shellLayout: {
-    flex: 1,
-    flexDirection: "row",
-    gap: 16,
-    minHeight: 0,
-  },
-  workArea: {
-    flex: 1,
-    minWidth: 0,
-    minHeight: 0,
-  },
+shellLayout: {
+  flex: 1,
+  flexDirection: "row",
+  gap: 16,
+},
+shellLayoutMobile: {
+  flexDirection: "column",
+  width: "100%",
+},
+workArea: {
+  flex: 1,
+  minWidth: 0,
+},
+workAreaMobile: {
+  width: "100%",
+}
 });

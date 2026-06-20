@@ -1923,4 +1923,51 @@ La personalización evoluciona desde una solución hardcodeada hacia una soluci�
 
 ---
 
+# v2.3 - Adaptación Móvil Fase 2 Parcial
+
+Fecha: Junio 2026
+
+## Mejoras
+
+### Navegación y compatibilidad Mobile Web
+
+Se inició la segunda fase de adaptación móvil de CofiGO, enfocada en mejorar la experiencia en navegadores móviles iOS y mantener compatibilidad con desktop web.
+
+Incluye:
+
+* SideMenu responsive con navegación horizontal en móvil.
+* AdminLayout estabilizado para desktop y mobile.
+* Corrección de Perfil de Usuario en mobile web.
+* Corrección de Administración de Pedidos para WORKER y ADMIN en mobile web.
+* Corrección de Configuración de Cafetería en mobile web.
+* Validación en desktop Firefox/Chrome.
+* Validación en iOS Chrome.
+
+## Frontend
+
+Archivos modificados:
+
+* SideMenu.tsx
+* AdminLayout.tsx
+* profile.tsx
+* admin-orders.tsx
+* admin-settings.tsx
+* admin-products.tsx
+
+## Pendiente
+
+* Completar ajuste responsive de admin-products.tsx en mobile web.
+* Continuar con admin-categories.tsx.
+* Continuar con admin-customizations.tsx.
+* Continuar con admin-users.tsx.
+
+## Impacto
+
+* Sin cambios de backend.
+* Sin cambios de base de datos.
+* Sin cambios de API.
+* Mejora progresiva de compatibilidad mobile web.
+
+---
+
 Fin del documento.

@@ -53,6 +53,7 @@ type ProductForm = {
 export default function AdminProducts() {
   const { width } = useWindowDimensions();
   const isWideLayout = width >= 900;
+  const isMobile = width < 768;
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -305,6 +306,98 @@ export default function AdminProducts() {
     ? "Actualizar producto"
     : "Crear producto";
 
+  const FALLBACK_PRODUCT_IMAGE =
+    "https://images.unsplash.com/photo-1546069901-ba9599a7e63c";
+
+  const getSafeImageUrl = (url?: string) => {
+    if (!url || typeof url !== "string") {
+      return FALLBACK_PRODUCT_IMAGE;
+    }
+
+    const trimmedUrl = url.trim();
+
+    if (
+      !trimmedUrl.startsWith("http://") &&
+      !trimmedUrl.startsWith("https://")
+    ) {
+      return FALLBACK_PRODUCT_IMAGE;
+    }
+
+    return trimmedUrl;
+  };
+
+  const renderProductCard = (item: Product, mobile = false) => (
+    <View style={[styles.productCard, mobile && styles.productCardMobile]}>
+      <Image
+        source={{ uri: getSafeImageUrl(item.imageUrl) }}
+        style={[styles.productImage, mobile && styles.productImageMobile]}
+      />
+
+      <View style={styles.productInfo}>
+        <View style={styles.productTitleRow}>
+          <Text style={styles.productName}>{item.name}</Text>
+
+          <View
+            style={[
+              styles.statusBadge,
+              item.active ? styles.statusActive : styles.statusInactive,
+            ]}
+          >
+            <Text
+              style={[
+                styles.statusText,
+                item.active
+                  ? styles.statusTextActive
+                  : styles.statusTextInactive,
+              ]}
+            >
+              {item.active ? "Activo" : "Inactivo"}
+            </Text>
+          </View>
+        </View>
+
+        <Text style={styles.productCategory}>{item.categoryName}</Text>
+
+        <Text style={styles.productDescription} numberOfLines={2}>
+          {item.description}
+        </Text>
+
+        <View style={styles.productMeta}>
+          <Text style={styles.productPrice}>
+            S/ {Number(item.price).toFixed(2)}
+          </Text>
+
+          <View style={[styles.stockBadge, getStockStatus(item.stock).style]}>
+            <Text style={styles.stockBadgeText}>
+              {getStockStatus(item.stock).label} · {item.stock}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.productActions}>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => handleEdit(item)}
+          >
+            <Text style={styles.actionButtonText}>Editar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.toggleButton,
+              item.active ? styles.deactivateButton : styles.activateButton,
+            ]}
+            onPress={() => handleToggleActive(item)}
+          >
+            <Text style={styles.actionButtonText}>
+              {item.active ? "Desactivar" : "Activar"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+
   return (
     <AdminLayout title="Panel administrador" subtitle="Gestión de productos">
       <View style={styles.screen}>
@@ -324,8 +417,11 @@ export default function AdminProducts() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={styles.summaryScroll}
-          contentContainerStyle={styles.summaryContent}
+          style={[styles.summaryScroll, isMobile && styles.summaryScrollMobile]}
+          contentContainerStyle={[
+            styles.summaryContent,
+            isMobile && styles.summaryContentMobile,
+          ]}
         >
           <View style={styles.summaryChip}>
             <Text style={styles.summaryNumber}>{totalProducts}</Text>
@@ -352,10 +448,16 @@ export default function AdminProducts() {
           style={[
             styles.productsLayout,
             !isWideLayout && styles.productsLayoutStacked,
+            isMobile && styles.productsLayoutMobile,
           ]}
         >
-          <View style={styles.productsListColumn}>
-            <View style={styles.listCard}>
+          <View
+            style={[
+              styles.productsListColumn,
+              isMobile && styles.productsListColumnMobile,
+            ]}
+          >
+            <View style={[styles.listCard, isMobile && styles.listCardMobile]}>
               <View style={styles.listHeaderRow}>
                 <View>
                   <Text style={styles.sectionTitle}>Productos registrados</Text>
@@ -454,104 +556,49 @@ export default function AdminProducts() {
                 ))}
               </ScrollView>
 
-              <FlatList
-                data={filteredProducts}
-                keyExtractor={(item) => String(item.id)}
-                style={styles.productsFlatList}
-                contentContainerStyle={styles.productsFlatListContent}
-                showsVerticalScrollIndicator={false}
-                ListEmptyComponent={
-                  <Text style={styles.emptyText}>
-                    No hay productos para el filtro seleccionado.
-                  </Text>
-                }
-                renderItem={({ item }) => (
-                  <View style={styles.productCard}>
-                    <Image
-                      source={{ uri: item.imageUrl }}
-                      style={styles.productImage}
-                    />
-
-                    <View style={styles.productInfo}>
-                      <View style={styles.productTitleRow}>
-                        <Text style={styles.productName}>{item.name}</Text>
-
-                        <View
-                          style={[
-                            styles.statusBadge,
-                            item.active
-                              ? styles.statusActive
-                              : styles.statusInactive,
-                          ]}
-                        >
-                          <Text
-                            style={[
-                              styles.statusText,
-                              item.active
-                                ? styles.statusTextActive
-                                : styles.statusTextInactive,
-                            ]}
-                          >
-                            {item.active ? "Activo" : "Inactivo"}
-                          </Text>
-                        </View>
+              {isMobile ? (
+                <View style={styles.productsMobileList}>
+                  {filteredProducts.length === 0 ? (
+                    <Text style={styles.emptyText}>
+                      No hay productos para el filtro seleccionado.
+                    </Text>
+                  ) : (
+                    filteredProducts.map((item) => (
+                      <View
+                        key={String(item.id)}
+                        style={styles.productMobileItemWrapper}
+                      >
+                        {renderProductCard(item, true)}
                       </View>
-
-                      <Text style={styles.productCategory}>
-                        {item.categoryName}
-                      </Text>
-                      <Text style={styles.productDescription} numberOfLines={2}>
-                        {item.description}
-                      </Text>
-
-                      <View style={styles.productMeta}>
-                        <Text style={styles.productPrice}>
-                          S/ {Number(item.price).toFixed(2)}
-                        </Text>
-
-                        <View
-                          style={[
-                            styles.stockBadge,
-                            getStockStatus(item.stock).style,
-                          ]}
-                        >
-                          <Text style={styles.stockBadgeText}>
-                            {getStockStatus(item.stock).label} · {item.stock}
-                          </Text>
-                        </View>
-                      </View>
-
-                      <View style={styles.productActions}>
-                        <TouchableOpacity
-                          style={styles.editButton}
-                          onPress={() => handleEdit(item)}
-                        >
-                          <Text style={styles.actionButtonText}>Editar</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                          style={[
-                            styles.toggleButton,
-                            item.active
-                              ? styles.deactivateButton
-                              : styles.activateButton,
-                          ]}
-                          onPress={() => handleToggleActive(item)}
-                        >
-                          <Text style={styles.actionButtonText}>
-                            {item.active ? "Desactivar" : "Activar"}
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  </View>
-                )}
-              />
+                    ))
+                  )}
+                </View>
+              ) : (
+                <FlatList
+                  data={filteredProducts}
+                  keyExtractor={(item) => String(item.id)}
+                  style={styles.productsFlatList}
+                  contentContainerStyle={styles.productsFlatListContent}
+                  showsVerticalScrollIndicator={false}
+                  scrollEnabled={true}
+                  ListEmptyComponent={
+                    <Text style={styles.emptyText}>
+                      No hay productos para el filtro seleccionado.
+                    </Text>
+                  }
+                  renderItem={({ item }) => renderProductCard(item, false)}
+                />
+              )}
             </View>
           </View>
 
-          <View style={styles.productFormColumn}>
-            <View style={styles.formCard}>
+          <View
+            style={[
+              styles.productFormColumn,
+              isMobile && styles.productFormColumnMobile,
+            ]}
+          >
+            <View style={[styles.formCard, isMobile && styles.formCardMobile]}>
               <View style={styles.formHeaderRow}>
                 <View>
                   <Text style={styles.sectionTitle}>{formTitle}</Text>
@@ -700,21 +747,32 @@ export default function AdminProducts() {
 
               {form.imageUrl ? (
                 <Image
-                  source={{ uri: form.imageUrl }}
+                  source={{ uri: getSafeImageUrl(form.imageUrl) }}
                   style={styles.previewImage}
                 />
               ) : null}
 
-              <View style={styles.formActions}>
+              <View
+                style={[
+                  styles.formActions,
+                  isMobile && styles.formActionsMobile,
+                ]}
+              >
                 <TouchableOpacity
-                  style={styles.saveButton}
+                  style={[
+                    styles.saveButton,
+                    isMobile && styles.actionButtonMobile,
+                  ]}
                   onPress={handleSubmit}
                 >
                   <Text style={styles.saveButtonText}>{formButtonText}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={styles.cancelButton}
+                  style={[
+                    styles.cancelButton,
+                    isMobile && styles.actionButtonMobile,
+                  ]}
                   onPress={resetForm}
                 >
                   <Text style={styles.cancelButtonText}>
@@ -734,6 +792,12 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: "#fff8f1",
+  },
+  screenContent: {
+    flex: 1,
+  },
+  screenContentMobile: {
+    paddingBottom: 0,
   },
   header: {
     flexDirection: "row",
@@ -780,44 +844,51 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     fontSize: 12,
   },
-summaryScroll: {
-  maxHeight: 54,
-  flexShrink: 0,
-  marginBottom: 12,
-},
+  summaryScroll: {
+    maxHeight: 54,
+    flexShrink: 0,
+    marginBottom: 12,
+  },
+  summaryScrollMobile: {
+    maxHeight: 62,
+    marginBottom: 16,
+  },
 
-summaryContent: {
-  alignItems: "center",
-  paddingVertical: 4,
-  paddingHorizontal: 16,
-},
+  summaryContent: {
+    alignItems: "center",
+    paddingVertical: 4,
+    paddingHorizontal: 16,
+  },
+  summaryContentMobile: {
+    paddingHorizontal: 16,
+  },
 
-summaryChip: {
-  minWidth: 110,
-  height: 52,
-  backgroundColor: "#fff",
-  borderRadius: 12,
-  paddingVertical: 6,
-  paddingHorizontal: 12,
-  marginRight: 8,
-  borderWidth: 1,
-  borderColor: "#ead8c8",
-  justifyContent: "center",
-},
+  summaryChip: {
+    minWidth: 110,
+    height: 52,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: "#ead8c8",
+    justifyContent: "center",
+  },
 
-summaryNumber: {
-  fontSize: 18,
-  fontWeight: "900",
-  color: "#f57c00",
-  lineHeight: 18,
-},
+  summaryNumber: {
+    fontSize: 18,
+    fontWeight: "900",
+    color: "#f57c00",
+    lineHeight: 18,
+  },
 
-summaryLabel: {
-  marginTop: 1,
-  fontSize: 10,
-  fontWeight: "800",
-  color: "#7a6a61",
-},
+  summaryLabel: {
+    marginTop: 1,
+    fontSize: 10,
+    fontWeight: "800",
+    color: "#7a6a61",
+  },
   productsLayout: {
     flex: 1,
     flexDirection: "row",
@@ -826,22 +897,37 @@ summaryLabel: {
     paddingHorizontal: 20,
     paddingTop: 0,
     paddingBottom: 20,
-    zIndex: 1,
-    minHeight: 0,
   },
   productsLayoutStacked: {
     flexDirection: "column",
   },
+  productsLayoutMobile: {
+    width: "100%",
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 120,
+    gap: 32,
+    alignItems: "stretch",
+  },
   productsListColumn: {
     flex: 2,
     minWidth: 0,
-    minHeight: 0,
+  },
+  productsListColumnMobile: {
+    flex: 0,
+    width: "100%",
+    minWidth: 0,
   },
   productFormColumn: {
     flex: 1,
     minWidth: 320,
     alignSelf: "stretch",
-    minHeight: 0,
+  },
+  productFormColumnMobile: {
+    flex: 0,
+    width: "100%",
+    minWidth: 0,
+    alignSelf: "stretch",
   },
   formCard: {
     backgroundColor: "#ffffff",
@@ -861,18 +947,27 @@ summaryLabel: {
         } as any)
       : {}),
   },
+  formCardMobile: {
+    flex: 0,
+    width: "100%",
+    marginTop: 32,
+    marginBottom: 120,
+  },
   listCard: {
     flex: 1,
     backgroundColor: "#ffffff",
     borderRadius: 22,
     paddingVertical: 12,
     paddingHorizontal: 14,
-    zIndex: 1,
-    minHeight: 0,
     shadowColor: "#000",
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 3,
+  },
+  listCardMobile: {
+    flex: 0,
+    width: "100%",
+    marginBottom: 40,
   },
   sectionTitle: {
     fontSize: 18,
@@ -1023,6 +1118,14 @@ summaryLabel: {
         } as any)
       : {}),
   },
+  formActionsMobile: {
+    flexDirection: "column",
+    ...(Platform.OS === "web"
+      ? ({
+          position: "static",
+        } as any)
+      : {}),
+  },
   saveButton: {
     flex: 1,
     backgroundColor: "#6f4e37",
@@ -1033,6 +1136,11 @@ summaryLabel: {
   saveButtonText: {
     color: "#ffffff",
     fontWeight: "800",
+  },
+  actionButtonMobile: {
+    width: "100%",
+    minHeight: 44,
+    flex: 0,
   },
   cancelButton: {
     backgroundColor: "#f1e4d8",
@@ -1077,10 +1185,12 @@ summaryLabel: {
   },
   productsFlatList: {
     flex: 1,
-    minHeight: 0,
   },
   productsFlatListContent: {
     paddingBottom: 18,
+  },
+  productsFlatListContentMobile: {
+    paddingBottom: 16,
   },
   productCard: {
     flexDirection: "row",
@@ -1235,5 +1345,26 @@ summaryLabel: {
     fontSize: 12,
     fontWeight: "800",
     color: "#3b2416",
+  },
+  productsMobileList: {
+    width: "100%",
+    gap: 16,
+    paddingBottom: 80,
+    flexGrow: 0,
+  },
+  productCardMobile: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    width: "100%",
+    marginBottom: 16,
+  },
+  productImageMobile: {
+    width: "100%",
+    height: 120,
+    marginBottom: 12,
+  },
+  productMobileItemWrapper: {
+    width: "100%",
+    marginBottom: 16,
   },
 });

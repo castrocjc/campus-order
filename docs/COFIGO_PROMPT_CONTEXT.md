@@ -21,6 +21,18 @@ Los módulos principales se encuentran implementados y operativos.
 
 La pantalla principal Home cuenta con soporte responsive validado mediante iPhone Simulator como parte de la Adaptación Móvil Fase 1.
 
+La Adaptación Móvil Fase 2 se encuentra en progreso.
+
+Ya fueron estabilizadas las pantallas:
+
+* Perfil
+* Administración de Pedidos
+* Configuración de Cafetería
+
+Pendiente principal:
+
+* Administración de Productos en mobile web.
+
 ---
 
 # Tecnologías

@@ -513,11 +513,6 @@ export default function HomeScreen() {
             <Text style={styles.subtitle}>Pide hoy, recoge sin esperas</Text>
           </View>
 
-          {isMobile && (
-            <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-              <Text style={styles.logoutBtnText}>Salir</Text>
-            </TouchableOpacity>
-          )}
         </View>
 
         {message && (
@@ -536,9 +531,7 @@ export default function HomeScreen() {
         <View
           style={[styles.shellLayout, isMobile && styles.shellLayoutMobile]}
         >
-          {!isMobile && (
-            <SideMenu role={user?.role || "USER"} onLogout={handleLogout} />
-          )}
+          <SideMenu role={user?.role || "USER"} onLogout={handleLogout} />
 
           <View
             style={[styles.mainLayout, isMobile && styles.mainLayoutMobile]}
