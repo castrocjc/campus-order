@@ -2,21 +2,39 @@ import { useEffect, useState } from "react";
 import { Stack, useRouter } from "expo-router";
 import {
   FlatList,
+  useWindowDimensions,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import SideMenu from "../components/ui/SideMenu";
 import { cancelOrder, getMyOrders } from "../src/services/orderService";
+
 
 export default function MyOrdersScreen() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
-  const [messageType, setMessageType] = useState<"success" | "error">("success");  
+  const [messageType, setMessageType] = useState<"success" | "error">(
+    "success",
+  );
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch {
+        setUser(null);
+      }
+    }
+
     loadOrders();
 
     const interval = setInterval(() => {
@@ -32,10 +50,12 @@ export default function MyOrdersScreen() {
 
       data.sort(
         (a: any, b: any) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
 
-      const readyOrder = data.find((order: any) => order.status === "READY_FOR_PICKUP");
+      const readyOrder = data.find(
+        (order: any) => order.status === "READY_FOR_PICKUP",
+      );
 
       if (readyOrder) {
         setMessageType("success");
@@ -64,7 +84,7 @@ export default function MyOrdersScreen() {
       await cancelOrder(orderId);
       showMessage("Pedido cancelado correctamente", "success");
       loadOrders();
-    } catch (error: any) {
+    } catch {
       showMessage("No se pudo cancelar el pedido", "error");
     }
   };
@@ -72,6 +92,7 @@ export default function MyOrdersScreen() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
+    localStorage.removeItem("cart");
     router.replace("/");
   };
 
@@ -79,19 +100,16 @@ export default function MyOrdersScreen() {
     switch (status) {
       case "RECEIVED":
         return { backgroundColor: "#F59E0B" };
-
       case "IN_PREPARATION":
         return { backgroundColor: "#2563EB" };
-
       case "READY_FOR_PICKUP":
         return { backgroundColor: "#16A34A" };
-
       case "DELIVERED":
         return { backgroundColor: "#64748B" };
-
+      case "NOT_ATTENDED":
+        return { backgroundColor: "#7C3AED" };
       case "CANCELLED":
         return { backgroundColor: "#DC2626" };
-
       default:
         return { backgroundColor: "#6B7280" };
     }
@@ -107,6 +125,8 @@ export default function MyOrdersScreen() {
         return "Listo para recoger";
       case "DELIVERED":
         return "Entregado";
+      case "NOT_ATTENDED":
+        return "No atendido";
       case "CANCELLED":
         return "Cancelado";
       default:
@@ -122,110 +142,134 @@ export default function MyOrdersScreen() {
     );
   }
 
-return (
-  <>
-    <Stack.Screen options={{ headerShown: false }} />
-    <View style={styles.container}>
-      {message && (
-        <View style={styles.toastContainer}>
-          <Text
-            style={[
-              styles.toast,
-              messageType === "error" && styles.toastError,
-            ]}
-          >
-            {message}
-          </Text>
-        </View>
-      )}    
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>Mis pedidos</Text>
-          <Text style={styles.subtitle}>Seguimiento de tus pedidos</Text>
-        </View>
+  return (
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
 
-        <View style={styles.headerActions}>
-          <TouchableOpacity
-            style={styles.backBtn}
-            onPress={() => router.replace("/home")}
-          >
-            <Text style={styles.backBtnText}>Volver</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.logoutBtn}
-            onPress={handleLogout}
-          >
-            <Text style={styles.logoutBtnText}>Salir</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <FlatList
-        data={orders}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.orderId}>Pedido #{item.id}</Text>
-
-            <View style={[styles.statusBadge, getStatusStyle(item.status)]}>
-              <Text style={styles.statusText}>
-                {formatStatus(item.status)}
-              </Text>              
-            </View>
-
-            <Text style={styles.text}>
-              Recojo: {new Date(item.pickupTime).toLocaleTimeString()}
+      <View style={[styles.container, isMobile && styles.containerMobile]}>
+        {message && (
+          <View style={styles.toastContainer}>
+            <Text
+              style={[
+                styles.toast,
+                messageType === "error" && styles.toastError,
+              ]}
+            >
+              {message}
             </Text>
-
-            <Text style={styles.text}>
-              Total: S/ {item.totalAmount}
-            </Text>
-
-            <View style={styles.itemsBox}>
-              {item.items.map((prod: any) => (
-              <View
-                key={`${prod.productId}-${prod.customizationNotes || ""}`}
-              >
-                <Text style={styles.itemText}>
-                  {prod.productName} x{prod.quantity}
-                </Text>
-
-                {prod.customizationNotes ? (
-                  <Text style={styles.customizationText}>
-                    Personalización: {prod.customizationNotes}
-                  </Text>
-                ) : null}
-
-                <Text style={styles.itemSub}>
-                  S/ {prod.subtotal}
-                </Text>
-              </View>
-              ))}
-            </View>
-
-            {item.status === "RECEIVED" ? (
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={() => handleCancelOrder(item.id)}
-              >
-                <Text style={styles.cancelButtonText}>Cancelar pedido</Text>
-              </TouchableOpacity>
-            ) : null}
-
           </View>
         )}
-      />
 
-    </View>
-  </>
-);}
+        <View style={[styles.header, isMobile && styles.headerMobile]}>
+          <View>
+            <Text style={styles.title}>Menú COFIGO</Text>
+
+            <Text style={styles.welcomeText}>
+              Bienvenido {user?.name || "Usuario"}
+            </Text>
+
+            <Text style={styles.roleText}>Rol: {user?.role || "USER"}</Text>
+
+            <Text style={styles.subtitle}>Seguimiento de tus pedidos</Text>
+          </View>
+        </View>
+
+        <View style={[styles.shellLayout, isMobile && styles.shellLayoutMobile]}>
+          <SideMenu role="USER" onLogout={handleLogout} />
+
+          <View style={styles.content}>
+            <View style={styles.listCard}>
+              <View style={styles.cardHeader}>
+                <Text style={styles.cardTitle}>Pedidos registrados</Text>
+                <Text style={styles.cardSubtitle}>
+                  {orders.length} pedidos en vista
+                </Text>
+              </View>
+
+              <FlatList
+                style={styles.ordersList}
+                contentContainerStyle={[
+                  styles.ordersListContent,
+                  isMobile && styles.ordersListContentMobile,
+                ]}
+                data={orders}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                  <View style={styles.card}>
+                    <Text style={styles.orderId}>Pedido #{item.id}</Text>
+
+                    <View
+                      style={[styles.statusBadge, getStatusStyle(item.status)]}
+                    >
+                      <Text style={styles.statusText}>
+                        {formatStatus(item.status)}
+                      </Text>
+                    </View>
+
+                    <Text style={styles.text}>
+                      Recojo: {new Date(item.pickupTime).toLocaleTimeString()}
+                    </Text>
+
+                    <Text style={styles.text}>
+                      Total: S/ {item.totalAmount}
+                    </Text>
+
+                    <View style={styles.itemsBox}>
+                      {item.items.map((prod: any) => (
+                        <View
+                          key={`${prod.productId}-${prod.customizationNotes || ""}`}
+                        >
+                          <Text style={styles.itemText}>
+                            {prod.productName} x{prod.quantity}
+                          </Text>
+
+                          {prod.customizationNotes ? (
+                            <Text style={styles.customizationText}>
+                              Personalización: {prod.customizationNotes}
+                            </Text>
+                          ) : null}
+
+                          <Text style={styles.itemSub}>S/ {prod.subtotal}</Text>
+                        </View>
+                      ))}
+                    </View>
+
+                    {item.status === "NOT_ATTENDED" ? (
+                      <Text style={styles.notAttendedText}>
+                        El pedido no fue recogido antes del cierre operativo de
+                        la cafetería.
+                      </Text>
+                    ) : null}
+
+                    {item.status === "RECEIVED" ? (
+                      <TouchableOpacity
+                        style={styles.cancelButton}
+                        onPress={() => handleCancelOrder(item.id)}
+                      >
+                        <Text style={styles.cancelButtonText}>
+                          Cancelar pedido
+                        </Text>
+                      </TouchableOpacity>
+                    ) : null}
+                  </View>
+                )}
+              />
+            </View>
+          </View>
+        </View>
+      </View>
+    </>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff8f1",
     padding: 20,
+  },
+  containerMobile: {
+    padding: 14,
   },
   header: {
     flexDirection: "row",
@@ -234,65 +278,97 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     gap: 12,
   },
-
-  subtitle: {
-    marginTop: 2,
-    color: "#7a6a61",
-    fontWeight: "700",
+  headerMobile: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+    marginBottom: 14,
   },
-
-  headerActions: {
-    flexDirection: "row",
-    gap: 8,
-  },
-
-  backBtn: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#ead8c8",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-  },
-
-  backBtnText: {
-    color: "#3b1f12",
-    fontWeight: "900",
-    fontSize: 12,
-  },
-
-  logoutBtn: {
-    backgroundColor: "#b42318",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-  },
-
-  logoutBtnText: {
-    color: "#fff",
-    fontWeight: "900",
-    fontSize: 12,
-  },  
   title: {
     fontSize: 28,
     fontWeight: "900",
     color: "#3b1f12",
     marginBottom: 0,
   },
+  welcomeText: {
+    marginTop: 4,
+    fontSize: 14,
+    fontWeight: "900",
+    color: "#3b1f12",
+  },
+  roleText: {
+    marginTop: 2,
+    fontSize: 12,
+    fontWeight: "800",
+    color: "#7a6a61",
+  },
+  subtitle: {
+    marginTop: 2,
+    color: "#7a6a61",
+    fontWeight: "700",
+  },
+  shellLayout: {
+    flex: 1,
+    flexDirection: "row",
+    gap: 16,
+    minHeight: 0,
+  },
+  shellLayoutMobile: {
+    flexDirection: "column",
+  },
+  content: {
+    flex: 1,
+    minHeight: 0,
+  },
+  listCard: {
+    flex: 1,
+    backgroundColor: "#ffffff",
+    borderRadius: 22,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: "#f0dfd1",
+    minHeight: 0,
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 2,
+  },
+  cardHeader: {
+    marginBottom: 8,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: "800",
+    color: "#3b2416",
+    marginBottom: 2,
+  },
+  cardSubtitle: {
+    fontSize: 12,
+    color: "#8a6a52",
+    marginBottom: 8,
+  },
+  ordersList: {
+    flex: 1,
+  },
+  ordersListContent: {
+    paddingRight: 12,
+    paddingBottom: 16,
+  },
+  ordersListContentMobile: {
+    paddingRight: 0,
+  },
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: "#fff8f1",
     padding: 16,
     borderRadius: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#ead8c8",
   },
   orderId: {
     fontWeight: "900",
     fontSize: 18,
-  },
-  status: {
-    color: "#f57c00",
-    fontWeight: "800",
-    marginTop: 4,
   },
   text: {
     marginTop: 4,
@@ -308,31 +384,12 @@ const styles = StyleSheet.create({
     color: "#7a6a61",
     marginBottom: 6,
   },
-  button: {
-    marginTop: 20,
-    backgroundColor: "#3b1f12",
-    padding: 14,
-    borderRadius: 12,
-    alignItems: "center",
+  customizationText: {
+    fontSize: 12,
+    color: "#666",
+    fontStyle: "italic",
+    marginBottom: 4,
   },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "800",
-  },
-
-  cancelButton: {
-    marginTop: 12,
-    backgroundColor: "#b42318",
-    padding: 12,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-
-  cancelButtonText: {
-    color: "#fff",
-    fontWeight: "800",
-  },
-
   statusBadge: {
     marginTop: 6,
     paddingVertical: 7,
@@ -340,11 +397,21 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     alignSelf: "flex-start",
   },
-
   statusText: {
     color: "#FFFFFF",
     fontWeight: "900",
     fontSize: 12,
+  },
+  cancelButton: {
+    marginTop: 12,
+    backgroundColor: "#b42318",
+    padding: 12,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  cancelButtonText: {
+    color: "#fff",
+    fontWeight: "800",
   },
   toastContainer: {
     position: "absolute",
@@ -354,7 +421,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     zIndex: 1000,
   },
-
   toast: {
     backgroundColor: "#e7f7ed",
     color: "#1f7a3f",
@@ -364,15 +430,14 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 13,
   },
-
   toastError: {
     backgroundColor: "#fdecea",
     color: "#b71c1c",
   },
-  customizationText: {
+  notAttendedText: {
+    marginTop: 8,
+    color: "#7C3AED",
+    fontWeight: "800",
     fontSize: 12,
-    color: "#666",
-    fontStyle: "italic",
-    marginBottom: 4,
-  },  
+  },
 });

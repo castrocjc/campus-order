@@ -18,13 +18,13 @@ Ambiente Productivo:
 
 # Versión Actual
 
-Versión funcional:
+# Control de Versiones
 
-v1.5.12
-
-Estado:
-
-MVP Operativo
+| Ambiente   | Versión  | Estado             |
+|----------- |----------|----------          |
+| Producción | v1.9     | Operativo          |
+| Develop    | v2.3     | Desarrollo estable |
+| Main       | v1.9     | Operativo          |
 
 ---
 
@@ -115,12 +115,16 @@ Estado:
 Funcionalidades:
 
 * Productos configurables mediante flag customizable
-* Selección de salsas
+* Opciones de personalización administrables
 * Persistencia histórica en OrderItem
 * Visualización en carrito
 * Visualización en Mis Pedidos
 * Visualización en Administración de Pedidos
 * Modal visual mejorado para selección de personalización
+* Gestión administrativa de opciones de personalización
+* Activación y desactivación de opciones
+* Carga dinámica desde backend
+* Campo libre de observaciones
 
 ---
 
@@ -182,14 +186,15 @@ Funcionalidades:
 * Validación horaria basada en zona oficial America/Lima.
 * Reversa automática de stock al cancelar pedidos.
 * Cancelación consistente desde Mis Pedidos y Administración de Pedidos.
-- Cancelación disponible únicamente para pedidos en estado RECEIVED.
+* Cancelación disponible únicamente para pedidos en estado RECEIVED.
+* Navegación persistente mediante menú lateral.
+* Título dinámico por rol:
+  * Panel administrador (ADMIN)
+  * Panel operario (WORKER)
 
 Reglas actuales de horario:
 
-* Horario de atención: 07:00 a 21:00
-* Tiempo mínimo de preparación: 20 minutos
-* Intervalo de recojo: 30 minutos
-* Los parámetros se encuentran centralizados en código como solución MVP
+* Las reglas operativas se obtienen dinámicamente desde Configuración de Cafetería.
 
 Estados soportados:
 
@@ -197,10 +202,20 @@ Estados soportados:
 * IN_PREPARATION
 * READY_FOR_PICKUP
 * DELIVERED
+* NOT_ATTENDED
 * CANCELLED
 
 - Generación dinámica de horarios basada en PICKUP_INTERVAL_MINUTES.
 - Corrección de límite de horario de cierre.
+
+---
+
+## Gestión Administrativa
+
+* AdminLayout implementado como layout estándar.
+* SideMenu administrativo persistente.
+* Navegación unificada entre módulos administrativos.
+* Consistencia visual entre Dashboard, Productos, Categorías, Usuarios y Pedidos.
 
 ---
 
@@ -216,6 +231,50 @@ Funcionalidades:
 * Cambio de estado
 * Refresco automático
 * Indicador de ventas excluye pedidos cancelados.
+* Visualización exclusiva de pedidos del día operativo.
+* Filtrado utilizando pickupTime.
+* Exclusión automática de pedidos históricos.
+* Exclusión automática de pedidos futuros.
+* Ordenamiento por hora de recojo descendente.
+* Mensaje informativo cuando no existen pedidos para el día.
+* Cierre operativo diario manual.
+* Conversión automática de pedidos pendientes a NOT_ATTENDED.
+* Protección de pedidos DELIVERED y CANCELLED.
+
+---
+
+## Navegación por Roles
+
+Estado:
+
+🟢 Completo
+
+ADMIN
+
+* Dashboard
+* Productos
+* Categorías
+* Personalizaciones
+* Usuarios
+* Pedidos
+* Reportes
+
+WORKER
+
+* Pedidos
+
+USER
+
+* Menú
+* Mis Pedidos
+* Perfil
+
+Características:
+
+* Menú lateral persistente.
+* Navegación consistente.
+* Sin botones Volver.
+* Logout centralizado.
 
 ---
 
@@ -241,9 +300,13 @@ Funcionalidades:
 * Compatibilidad validada con Safari iPhone físico.
 * Manejo seguro de imágenes inválidas.
 
-Validado en:
-
-* iPhone Simulator (Xcode)
+* Adaptación Móvil Fase 2 iniciada.
+* SideMenu responsive validado.
+* AdminLayout estabilizado.
+* Perfil validado en desktop y mobile.
+* Administración de Pedidos validada en desktop y mobile.
+* Configuración de Cafetería validada en desktop y mobile.
+* Administración de Productos pendiente de cierre en mobile web.
 
 ---
 
@@ -273,35 +336,56 @@ Funcionalidades:
 
 ---
 
+## Gestión de Personalizaciones
+
+Estado:
+
+🟢 Completo
+
+Funcionalidades:
+
+* Consulta administrativa.
+* Creación.
+* Edición.
+* Activación.
+* Desactivación.
+* Búsqueda.
+* Dashboard administrativo.
+* Consumo dinámico desde Home.
+
+---
+
 ## Reportes
 
 Estado:
 
-🟡 Parcial
+🟢 Completo
 
-Backend:
+Funcionalidades:
 
-* Ventas por día
+* Dashboard Analítico.
+* Indicadores ejecutivos.
+* Ventas por día.
+* Pedidos por estado.
+* Top productos vendidos.
+* Horas pico.
+* Filtros por rango de fechas.
+* Validación de fechas.
+* Dashboard visual.
+* Integración con AdminLayout.
+* Integración con SideMenu.
 
-Frontend:
+Reglas:
 
-* No implementado
-
-Pendiente:
-
-* Dashboard visual
-* Exportación
-* Filtros
+* Ventas consideran únicamente pedidos DELIVERED.
+* Ticket promedio considera únicamente pedidos DELIVERED.
+* Pedidos CANCELLED participan en distribución de estados.
 
 ---
 
 # Funcionalidades No Implementadas
 
-## Dashboard Administrativo
 
-Estado:
-
-🔴 Pendiente
 
 ---
 
@@ -328,7 +412,27 @@ Funcionalidades:
 
 Estado:
 
-🔴 Pendiente
+🟢 Completo
+
+Funcionalidades:
+
+* Consulta de perfil autenticado.
+* Edición de nombre.
+* Edición de celular.
+* Visualización de correo institucional en modo solo lectura.
+* Visualización de rol en modo solo lectura.
+* Visualización de estado de cuenta en modo solo lectura.
+* Visualización de estado de verificación de correo en modo solo lectura.
+* Cambio seguro de contraseña.
+* Sincronización del nombre actualizado en sesión activa.
+
+Reglas:
+
+* El usuario no puede modificar su correo institucional.
+* El usuario no puede modificar su rol.
+* El usuario no puede modificar su estado de cuenta.
+* El usuario no puede modificar el estado de verificación de correo.
+* El celular queda disponible para futuras notificaciones SMS o WhatsApp.
 
 ---
 
@@ -336,15 +440,20 @@ Estado:
 
 Estado:
 
-🟡 Parcial
+🟢 Completo (Fase Email)
 
 Funcionalidades:
 
-- Notificación visual al usuario cuando un pedido está listo para recoger.
+* Notificación visual al usuario cuando un pedido está listo para recoger.
+* Notificación automática por correo al cambiar a READY_FOR_PICKUP.
+* Integración SendGrid.
+* Prevención de notificaciones duplicadas.
+* Registro de envío mediante flag en base de datos.
 
 Pendiente:
 
-- Notificación por correo cuando el pedido cambie a READY_FOR_PICKUP.
+* WhatsApp READY_FOR_PICKUP.
+* SMS READY_FOR_PICKUP.
 
 ---
 
@@ -376,19 +485,40 @@ Estado:
 
 Estado:
 
-🔴 Pendiente
+🟢 Completo
 
-Descripción:
+Funcionalidades:
 
-Funcionalidad futura para administrar desde pantalla los parámetros operativos de la cafetería, como hora de apertura, hora de cierre, tiempo mínimo de preparación e intervalo de recojo.
-
-Objetivo:
-
-Evitar modificar código cuando cambien los horarios de atención o reglas operativas.
+* Gestión de datos generales de cafetería.
+* Gestión de ubicación.
+* Gestión de zona horaria.
+* Gestión de moneda.
+* Gestión de tiempo mínimo de preparación.
+* Gestión de intervalo de recojo.
+* Gestión de horarios por día.
+* Gestión de días cerrados.
+* Configuración dinámica consumida por Home.
+* Configuración dinámica consumida por OrderService.
 
 ---
 
 # Problemas Conocidos
+
+## Administración de Productos Mobile Web
+
+Estado:
+
+🟡 Pendiente
+
+Descripción:
+
+La pantalla admin-products funciona correctamente en desktop web, pero en mobile web aún presenta problemas de superposición entre el listado de productos y el formulario de creación/edición.
+
+Acción futura:
+
+Revisar patrón responsive tomando como referencia Home y Perfil.
+
+---
 
 ## JWT Secret
 
@@ -440,10 +570,9 @@ Las siguientes funcionalidades se consideran estables y no deben modificarse sin
 
 Prioridad Alta:
 
-1. Dashboard Administrativo
-2. Reportes Frontend
-3. Gestión de Configuración de Cafetería
-4. Perfil de Usuario
+1. Notificaciones WhatsApp READY_FOR_PICKUP
+2. Notificaciones SMS READY_FOR_PICKUP
+3. Auditoría
 
 ---
 

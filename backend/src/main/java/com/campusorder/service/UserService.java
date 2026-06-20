@@ -4,6 +4,8 @@ import com.campusorder.dto.UserRequestDTO;
 import com.campusorder.dto.UserResponseDTO;
 import com.campusorder.dto.VerifyEmailRequestDTO;
 import com.campusorder.dto.UserUpdateRequestDTO;
+import com.campusorder.dto.UserProfileUpdateRequestDTO;
+import com.campusorder.dto.ChangePasswordRequestDTO;
 import com.campusorder.entity.User;
 import com.campusorder.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -47,6 +49,7 @@ public class UserService {
                 User user = new User();
                 user.setName(dto.getName());
                 user.setEmail(email);
+                user.setPhone(null);
                 user.setPassword(passwordEncoder.encode(dto.getPassword()));
                 user.setRole(dto.getRole() != null ? dto.getRole() : "USER");
 
@@ -59,7 +62,7 @@ public class UserService {
 
                 User savedUser = userRepository.save(user);
 
-                emailService.sendVerificationCode(email, code);
+                emailService.sendVerificationCode(email, user.getName(), code);
 
                 return mapToResponseDTO(savedUser);
         }
@@ -136,8 +139,9 @@ public class UserService {
                 userRepository.save(user);
 
                 emailService.sendVerificationCode(
-                                user.getEmail(),
-                                code);
+                        user.getEmail(),
+                        user.getName(),
+                        code);
         }
 
         public UserResponseDTO getUserById(Long id) {
@@ -160,6 +164,7 @@ public class UserService {
                 User user = new User();
                 user.setName(dto.getName());
                 user.setEmail(email);
+                user.setPhone(null);
                 user.setPassword(passwordEncoder.encode(dto.getPassword()));
                 user.setRole(role);
                 user.setActive(true);
@@ -223,6 +228,95 @@ public class UserService {
                 return temporaryPassword;
         }
 
+        public UserResponseDTO getMyProfile(String email) {
+
+                User user = findUserByEmail(email);
+
+                return mapToResponseDTO(user);
+        }
+
+        public UserResponseDTO updateMyProfile(String email, UserProfileUpdateRequestDTO dto) {
+
+                User user = findUserByEmail(email);
+
+                if (dto.getName() == null || dto.getName().isBlank()) {
+                        throw new ResponseStatusException(
+                                        HttpStatus.BAD_REQUEST,
+                                        "El nombre es obligatorio.");
+                }
+
+                String normalizedName = dto.getName().trim();
+
+                if (normalizedName.length() < 3 || normalizedName.length() > 100) {
+                        throw new ResponseStatusException(
+                                        HttpStatus.BAD_REQUEST,
+                                        "El nombre debe tener entre 3 y 100 caracteres.");
+                }
+
+                String normalizedPhone = null;
+
+                if (dto.getPhone() != null && !dto.getPhone().isBlank()) {
+                        normalizedPhone = dto.getPhone().trim();
+
+                        if (normalizedPhone.length() > 20) {
+                                throw new ResponseStatusException(
+                                                HttpStatus.BAD_REQUEST,
+                                                "El celular no debe superar los 20 caracteres.");
+                        }
+
+                        if (!normalizedPhone.matches("^[0-9+()\\-\\s]{7,20}$")) {
+                                throw new ResponseStatusException(
+                                                HttpStatus.BAD_REQUEST,
+                                                "El celular solo puede contener números, espacios, +, guiones o paréntesis.");
+                        }
+                }
+
+                user.setName(normalizedName);
+                user.setPhone(normalizedPhone);
+
+                User savedUser = userRepository.save(user);
+
+                return mapToResponseDTO(savedUser);
+        }
+
+        public void changeMyPassword(String email, ChangePasswordRequestDTO dto) {
+
+                User user = findUserByEmail(email);
+
+                if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+                        throw new ResponseStatusException(
+                                        HttpStatus.BAD_REQUEST,
+                                        "La contraseña actual no es correcta.");
+                }
+
+                if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+                        throw new ResponseStatusException(
+                                        HttpStatus.BAD_REQUEST,
+                                        "La nueva contraseña y la confirmación no coinciden.");
+                }
+
+                String newPassword = dto.getNewPassword();
+
+                if (newPassword.length() < 8) {
+                        throw new ResponseStatusException(
+                                        HttpStatus.BAD_REQUEST,
+                                        "La nueva contraseña debe tener al menos 8 caracteres.");
+                }
+
+                user.setPassword(passwordEncoder.encode(newPassword));
+                user.setPasswordResetCode(null);
+                user.setPasswordResetCodeExpiresAt(null);
+
+                userRepository.save(user);
+        }
+
+        private User findUserByEmail(String email) {
+                return userRepository.findByEmail(email)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND,
+                                                "Usuario no encontrado."));
+        }
+
         private User findUserById(Long id) {
                 return userRepository.findById(id)
                                 .orElseThrow(() -> new ResponseStatusException(
@@ -274,13 +368,14 @@ public class UserService {
 
         private UserResponseDTO mapToResponseDTO(User user) {
                 return new UserResponseDTO(
-                                user.getId(),
-                                user.getName(),
-                                user.getEmail(),
-                                user.getRole(),
-                                user.getActive(),
-                                user.getEmailVerified(),
-                                user.getVerificationCode(),
-                                user.getPasswordResetCode());
+                        user.getId(),
+                        user.getName(),
+                        user.getEmail(),
+                        user.getPhone(),
+                        user.getRole(),
+                        user.getActive(),
+                        user.getEmailVerified(),
+                        user.getVerificationCode(),
+                        user.getPasswordResetCode());
         }
 }

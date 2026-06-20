@@ -17,26 +17,19 @@ import org.hibernate.annotations.UpdateTimestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Long userId;
-
     @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.RECEIVED;
-
     private LocalDateTime pickupTime;
-
     private BigDecimal totalAmount;
-
+    private Boolean readyForPickupNotificationSent = false;
     @CreationTimestamp
     private LocalDateTime createdAt;
-
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items;
 }

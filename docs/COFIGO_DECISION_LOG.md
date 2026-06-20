@@ -953,4 +953,471 @@ Consecuencias negativas:
 
 ---
 
+# DEC-022
+
+Fecha: 2026-06
+
+Título:
+Arquitectura de navegación basada en SideMenu y Layouts por Rol
+
+Estado:
+Aprobada
+
+Contexto:
+
+El crecimiento de módulos administrativos y operativos generaba navegación inconsistente mediante botones Volver y accesos independientes.
+
+Decisión:
+
+Implementar navegación persistente mediante SideMenu y layouts reutilizables.
+
+Componentes:
+
+* AdminLayout
+* SideMenu
+
+Roles:
+
+ADMIN
+
+* Dashboard
+* Productos
+* Categorías
+* Usuarios
+* Pedidos
+
+WORKER
+
+* Pedidos
+
+USER
+
+* Catálogo
+* Mis Pedidos
+* Perfil
+
+Justificación:
+
+* Mejor experiencia de usuario.
+* Menor duplicidad de navegación.
+* Consistencia visual.
+* Escalabilidad futura.
+
+Consecuencias positivas:
+
+* Navegación uniforme.
+* Menor mantenimiento.
+* Incorporación sencilla de nuevos módulos.
+
+Consecuencias negativas:
+
+* Mayor dependencia de componentes compartidos.
+
+Observación:
+
+La pantalla de pedidos utiliza título dinámico:
+
+* Panel administrador para ADMIN.
+* Panel operario para WORKER.
+
+---
+
+# DEC-023
+
+Fecha: 2026-06
+
+Título:
+Configuración dinámica de cafetería mediante entidad CafeteriaSettings
+
+Estado:
+Aprobada
+
+Contexto:
+
+Los horarios de atención, tiempo mínimo de preparación, intervalo de recojo y zona horaria se encontraban definidos en código tanto en frontend como en backend.
+
+Decisión:
+
+Crear las entidades:
+
+* CafeteriaSettings
+* CafeteriaSchedule
+
+y trasladar la configuración operativa a base de datos.
+
+Alcance:
+
+* Home consume configuración dinámica.
+* OrderService consume configuración dinámica.
+* Administración mediante pantalla.
+* Soporte para horarios diferentes por día.
+* Soporte para días cerrados.
+
+Justificación:
+
+* Evitar despliegues por cambios operativos.
+* Reducir hardcodeo.
+* Mejorar escalabilidad.
+* Preparar el camino hacia Multi Cafetería.
+
+Consecuencias positivas:
+
+* Configuración administrable.
+* Menor dependencia de desarrolladores.
+* Arquitectura más flexible.
+
+Consecuencias negativas:
+
+* Mayor complejidad del modelo de datos.
+
+Observación:
+
+La zona horaria deja de estar fija en America/Lima y pasa a ser configurable.
+
+---
+
+# DEC-024
+
+Fecha: 2026-06
+
+Título:
+Perfil de Usuario con edición restringida
+
+Estado:
+Aprobada
+
+Contexto:
+
+Se requería habilitar la opción Perfil disponible en la navegación USER, permitiendo que el usuario gestione información personal sin afectar reglas sensibles de seguridad.
+
+Decisión:
+
+Permitir que el usuario edite únicamente:
+
+* Nombre
+* Celular
+
+Mantener como solo lectura:
+
+* Correo institucional
+* Rol
+* Estado de cuenta
+* Estado de verificación de correo
+
+Justificación:
+
+* Reduce riesgos de seguridad.
+* Evita complejidad por revalidación de correo institucional.
+* Evita cambios no autorizados de rol o estado.
+* Mantiene la administración de usuarios como fuente de control operativo.
+* Permite una experiencia simple para el usuario final.
+
+Consecuencias positivas:
+
+* Perfil funcional con bajo riesgo de regresión.
+* Separación clara entre autogestión y administración.
+* Mayor control sobre datos sensibles.
+* Preparación para futuras notificaciones.
+
+Consecuencias negativas:
+
+* El usuario no puede actualizar su correo desde Perfil.
+* Si requiere cambio de correo, deberá gestionarse mediante administración.
+
+---
+
+# DEC-025
+
+Fecha: 2026-06
+
+Título:
+Incorporación de celular para futuras notificaciones
+
+Estado:
+Aprobada
+
+Contexto:
+
+Se evaluó la posibilidad de notificar al usuario por SMS o WhatsApp cuando un pedido cambie al estado READY_FOR_PICKUP.
+
+Decisión:
+
+Agregar el atributo phone a la entidad User y permitir su gestión desde Perfil.
+
+Justificación:
+
+* Prepara el modelo de datos para futuras notificaciones.
+* Evita modificar nuevamente la estructura User cuando se implemente SMS o WhatsApp.
+* Permite capturar información de contacto sin obligarla en el registro inicial.
+* Mantiene bajo impacto en el onboarding del usuario.
+
+Consecuencias positivas:
+
+* Base preparada para notificaciones móviles.
+* Mejor información de contacto del usuario.
+* Evolución compatible con SMS, WhatsApp o ambos.
+
+Consecuencias negativas:
+
+* El celular requiere validaciones adicionales.
+* En una versión futura se deberá definir consentimiento explícito de notificaciones.
+
+---
+
+# DEC-026
+
+Fecha: 2026-06
+
+Título:
+Arquitectura centralizada de notificaciones
+
+Estado:
+Aprobada
+
+Contexto:
+
+Se requiere notificar al usuario cuando un pedido cambie al estado READY_FOR_PICKUP.
+
+En versiones futuras se planea incorporar WhatsApp y SMS.
+
+Decisión:
+
+Centralizar toda la lógica de notificaciones en NotificationService.
+
+Arquitectura:
+
+OrderService
+→ NotificationService
+→ EmailService
+
+Justificación:
+
+* Evitar mezclar reglas de negocio de pedidos con canales de comunicación.
+* Facilitar incorporación futura de WhatsApp.
+* Facilitar incorporación futura de SMS.
+* Reducir duplicidad de lógica.
+
+Consecuencias positivas:
+
+* Mejor mantenibilidad.
+* Menor acoplamiento.
+* Arquitectura extensible.
+
+Consecuencias negativas:
+
+* Nuevo servicio adicional.
+
+Evolución futura:
+
+NotificationService
+→ Email
+→ WhatsApp
+→ SMS
+
+---
+
+# DEC-027
+
+Fecha: 2026-06
+
+Título:
+Arquitectura independiente para Reportes y Analítica Operativa
+
+Estado:
+Aprobada
+
+Contexto:
+
+El crecimiento de necesidades analíticas requería evitar agregar responsabilidades de reportes dentro de OrderController y OrderService.
+
+Decisión:
+
+Crear un módulo independiente de reportes compuesto por:
+
+* ReportsController
+* ReportsService
+
+La analítica se separa de la operación transaccional.
+
+Reglas oficiales:
+
+* Ventas consideran únicamente pedidos DELIVERED.
+* Ticket promedio = Ventas entregadas / Pedidos entregados.
+* Productos vendidos consideran únicamente pedidos DELIVERED.
+* CANCELLED participa únicamente en análisis de estados.
+* CANCELLED no participa en ventas.
+
+Justificación:
+
+* Separación de responsabilidades.
+* Escalabilidad futura.
+* Mejor mantenibilidad.
+* Preparación para exportación y BI.
+
+Consecuencias positivas:
+
+* Menor acoplamiento.
+* Mejor organización arquitectónica.
+* Facilidad para incorporar nuevos reportes.
+
+Consecuencias negativas:
+
+* Nueva capa funcional.
+* Más endpoints que mantener.
+
+---
+
+# DEC-028
+
+Fecha: 2026-06
+
+Título:
+Administración de Pedidos enfocada en operación diaria
+
+Estado:
+Aprobada
+
+Contexto:
+
+La pantalla administrativa mostraba simultáneamente pedidos históricos y pedidos vigentes, generando ruido operativo para ADMIN y WORKER.
+
+Decisión:
+
+La pantalla administrativa de pedidos mostrará únicamente pedidos cuya fecha de recojo (pickupTime) corresponda al día operativo actual.
+
+El filtrado se realiza en backend.
+
+La fecha operativa utiliza la zona horaria configurada en CafeteriaSettings.
+
+Justificación:
+
+* Reducir ruido visual.
+* Facilitar la operación diaria.
+* Mantener backend como fuente de verdad.
+* Mejorar escalabilidad futura.
+
+Consecuencias positivas:
+
+* Operación más limpia.
+* Menor volumen de información.
+* Mejor experiencia para ADMIN y WORKER.
+
+Consecuencias negativas:
+
+* Los pedidos históricos dejan de ser visibles desde la pantalla operativa.
+
+Evolución futura:
+
+* Consulta histórica de pedidos.
+* Cierre operativo diario.
+* Estado NOT_ATTENDED para pedidos no atendidos.
+
+---
+
+# DEC-029
+
+Fecha: 2026-06
+
+Título:
+Cierre Operativo Diario y Estado NOT_ATTENDED
+
+Estado:
+Aprobada
+
+Contexto:
+
+La pantalla operativa de pedidos fue diseñada para mostrar únicamente pedidos correspondientes al día operativo actual. Era necesario definir el tratamiento de pedidos que permanecieran pendientes al finalizar la jornada.
+
+Decisión:
+
+Incorporar el estado NOT_ATTENDED y un proceso de cierre operativo diario ejecutado manualmente por ADMIN.
+
+Reglas:
+
+* RECEIVED → NOT_ATTENDED
+* IN_PREPARATION → NOT_ATTENDED
+* READY_FOR_PICKUP → NOT_ATTENDED
+
+Estados protegidos:
+
+* DELIVERED
+* CANCELLED
+* NOT_ATTENDED
+
+Inventario:
+
+* El cierre operativo no revierte stock.
+* La reversa continúa siendo exclusiva de CANCELLED.
+
+Justificación:
+
+* Mantener trazabilidad histórica.
+* Diferenciar cancelaciones de pedidos abandonados.
+* Mantener simplicidad operativa para el MVP.
+* Preparar futuras capacidades de auditoría.
+
+Consecuencias positivas:
+
+* Mayor control operativo.
+* Histórico más preciso.
+* Preparación para auditoría.
+
+Consecuencias negativas:
+
+* Requiere ejecución manual por parte de ADMIN.
+
+Evolución futura:
+
+* OperationalCloseLog.
+* Auditoría de cierres.
+* Automatización mediante job programado.
+
+---
+
+# DEC-030
+
+Fecha: 2026-06
+
+Título:
+Administración dinámica de opciones de personalización
+
+Estado:
+Aprobada
+
+Contexto:
+
+La personalización inicial utilizaba opciones definidas en código (Mayonesa, Ketchup y Mostaza), lo que obligaba a realizar despliegues ante cualquier cambio operativo.
+
+Decisión:
+
+Crear la entidad CustomizationOption y permitir su administración desde pantalla.
+
+La selección continúa almacenándose como snapshot histórico dentro de OrderItem.customizationNotes.
+
+Justificación:
+
+* Eliminar hardcodeo.
+* Permitir autonomía operativa.
+* Mantener compatibilidad con pedidos históricos.
+* Evitar modificar la estructura de OrderItem.
+
+Consecuencias positivas:
+
+* Configuración administrable.
+* Menor dependencia de desarrollo.
+* Compatibilidad total con histórico.
+
+Consecuencias negativas:
+
+* Las opciones son globales para todos los productos.
+* No existen grupos de personalización por producto.
+
+Evolución futura:
+
+* ProductCustomizationGroup
+* Relación Product ↔ CustomizationOption
+* Reglas específicas por categoría o producto.
+
+---
+
 Fin del documento.

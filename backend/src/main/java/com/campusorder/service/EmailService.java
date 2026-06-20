@@ -23,7 +23,7 @@ public class EmailService {
     @Value("${sendgrid.test-bcc-email:}")
     private String testBccEmail;    
 
-    public void sendVerificationCode(String to, String code) {
+    public void sendVerificationCode(String to, String customerName, String code) {
 
         Email from = new Email(fromEmail, fromName);
         Email recipient = new Email(to);
@@ -41,7 +41,7 @@ public class EmailService {
                     ☕ CofiGO
                 </h2>
 
-                <p>Hola,</p>
+                <p>Hola %s,</p>
 
                 <p>Gracias por registrarte en CofiGO.</p>
 
@@ -73,7 +73,7 @@ public class EmailService {
                 </div>
             </body>
             </html>
-            """.formatted(code)
+            """.formatted(customerName, code)
         );
 
         Content plainTextContent = new Content(
@@ -124,7 +124,7 @@ public class EmailService {
         }
     }
 
-    public void sendPasswordResetCode(String to, String code) {
+    public void sendPasswordResetCode(String to, String customerName, String code) {
 
         Email from = new Email(fromEmail, fromName);
         Email recipient = new Email(to);
@@ -142,7 +142,7 @@ public class EmailService {
                     ☕ CofiGO
                 </h2>
 
-                <p>Hola,</p>
+                <p>Hola %s,</p>
 
                 <p>Has solicitado recuperar tu contraseña.</p>
 
@@ -174,7 +174,7 @@ public class EmailService {
                 </div>
             </body>
             </html>
-            """.formatted(code)
+            """.formatted(customerName, code)
         );
 
         Content plainTextContent = new Content(
@@ -222,6 +222,126 @@ public class EmailService {
 
         } catch (Exception e) {
             throw new RuntimeException("Error enviando correo: " + e.getMessage(), e);
+        }
+    }
+
+    public void sendOrderReadyForPickupEmail(
+            String to,
+            String customerName,
+            Long orderId,
+            java.time.LocalDateTime pickupTime,
+            java.math.BigDecimal totalAmount) {
+
+        Email from = new Email(fromEmail, fromName);
+        Email recipient = new Email(to);
+
+        String subject = "☕ Tu pedido está listo para recoger";
+
+        String pickupTimeText =
+                pickupTime.format(
+                        java.time.format.DateTimeFormatter.ofPattern(
+                                "dd/MM/yyyy HH:mm"));
+
+        Content content = new Content(
+                "text/html",
+                """
+                <html>
+                <body style="font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 20px;">
+                    <div style="max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 12px; border: 1px solid #e5e5e5;">
+
+                    <h2 style="color: #f57c00; text-align: center;">
+                        ☕ CofiGO
+                    </h2>
+
+                    <p>Hola %s,</p>
+
+                    <p>Tu pedido <strong>#%s</strong> ya está listo para recoger.</p>
+
+                    <p>
+                        <strong>Hora de recojo:</strong><br>
+                        %s
+                    </p>
+
+                    <p>
+                        <strong>Total:</strong><br>
+                        S/ %s
+                    </p>
+
+                    <p>Gracias por utilizar CofiGO.</p>
+
+                    <hr>
+
+                    <p style="font-size:12px;color:#777;">
+                        Equipo CofiGO
+                    </p>
+
+                    </div>
+                </body>
+                </html>
+                """
+                .formatted(
+                        customerName,
+                        orderId,
+                        pickupTimeText,
+                        totalAmount
+                )
+        );
+
+        Content plainTextContent = new Content(
+                "text/plain",
+                "Tu pedido #" + orderId
+                        + " ya está listo para recoger. "
+                        + "Hora de recojo: "
+                        + pickupTimeText
+                        + ". Total: S/ "
+                        + totalAmount
+        );
+
+        Mail mail = new Mail();
+        mail.setFrom(from);
+        mail.setSubject(subject);
+
+        Personalization personalization = new Personalization();
+        personalization.addTo(recipient);
+
+        if (testBccEmail != null && !testBccEmail.isBlank()) {
+            personalization.addBcc(new Email(testBccEmail));
+        }
+
+        mail.addPersonalization(personalization);
+
+        mail.addContent(plainTextContent);
+        mail.addContent(content);
+
+        Request request = new Request();
+
+        try {
+
+            SendGrid sg = new SendGrid(apiKey);
+
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+
+            Response response = sg.api(request);
+
+            if (response.getStatusCode() >= 400) {
+
+                throw new RuntimeException(
+                        "Error SendGrid: "
+                                + response.getStatusCode()
+                                + " - "
+                                + response.getBody()
+                );
+            }
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(
+                    "Error enviando correo READY_FOR_PICKUP: "
+                            + e.getMessage(),
+                    e
+            );
         }
     }    
 }

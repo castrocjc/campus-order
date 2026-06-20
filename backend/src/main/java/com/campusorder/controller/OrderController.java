@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -29,8 +28,12 @@ public class OrderController {
     }
 
     @GetMapping
-    public ApiResponse<List<OrderResponseDTO>> getAllOrders() {
-        return new ApiResponse<>(true, "Lista de pedidos", orderService.getAllOrders());
+    public ApiResponse<List<OrderResponseDTO>> getTodayOrders() {
+        return new ApiResponse<>(
+                true,
+                "Lista de pedidos del día",
+                orderService.getTodayOrders()
+        );
     }
 
     @GetMapping("/user/{userId}")
@@ -71,14 +74,16 @@ public class OrderController {
                 "Estado actualizado",
                 orderService.updateOrderStatus(orderId, status)
         );
-    }    
+    }
 
-    @GetMapping("/reports/sales-by-day")
-    public ApiResponse<List<Map<String, Object>>> getSalesByDay() {
+    @PutMapping("/operational-close")
+    public ApiResponse<Integer> closeDailyOperation() {
+        int closedOrders = orderService.closeDailyOperation();
+
         return new ApiResponse<>(
                 true,
-                "Ventas por día",
-                orderService.getSalesByDay()
+                "Cierre operativo diario ejecutado correctamente",
+                closedOrders
         );
     }
 }

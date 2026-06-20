@@ -10,20 +10,28 @@ import {
   Modal,
   Platform,
   Dimensions,
+  TextInput,
 } from "react-native";
 import { getToken, logout } from "../src/services/authService";
 import { getMenu } from "../src/services/productService";
 import { createOrder } from "../src/services/orderService";
+import { getCafeteriaSettings } from "../src/services/cafeteriaSettingsService";
+import { getActiveCustomizationOptions } from "../src/services/customizationService";
+import SideMenu from "../components/ui/SideMenu";
 
 const productPlaceholder = require("../assets/product-placeholder.png");
 
-const CAFETERIA_OPEN_HOUR = 7;
-const CAFETERIA_CLOSE_HOUR = 21;
-
-const PICKUP_INTERVAL_MINUTES = 30;
-const MIN_PREPARATION_MINUTES = 20;
-
 const isMobile = Dimensions.get("window").width < 768;
+
+const DAY_NAMES = [
+  "SUNDAY",
+  "MONDAY",
+  "TUESDAY",
+  "WEDNESDAY",
+  "THURSDAY",
+  "FRIDAY",
+  "SATURDAY",
+];
 
 const getProductImageSource = (product: any, forcePlaceholder = false) => {
   if (forcePlaceholder) {
@@ -45,7 +53,8 @@ const getProductImageSource = (product: any, forcePlaceholder = false) => {
   try {
     const parsedUrl = new URL(cleanUrl);
 
-    const isHttp = parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
+    const isHttp =
+      parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
     const hasValidHost = parsedUrl.hostname.includes(".");
 
     if (isHttp && hasValidHost) {
@@ -69,6 +78,8 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [pickupTime, setPickupTime] = useState("");
+  const [cafeteriaSettings, setCafeteriaSettings] = useState<any>(null);
+  const [loadingSettings, setLoadingSettings] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<"success" | "error">(
@@ -78,6 +89,9 @@ export default function HomeScreen() {
   const [showCustomizationModal, setShowCustomizationModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [selectedSauces, setSelectedSauces] = useState<string[]>([]);
+
+  const [customizationOptions, setCustomizationOptions] = useState<any[]>([]);
+  const [customizationNote, setCustomizationNote] = useState("");
 
   const [cart, setCart] = useState<any[]>(() => {
     try {
@@ -104,51 +118,105 @@ export default function HomeScreen() {
       : products.filter((item) => item?.category === selectedCategory);
 
   const generatePickupOptions = () => {
+    if (!cafeteriaSettings) {
+      return {
+        options: [],
+        message: loadingSettings
+          ? "Cargando horarios de atención..."
+          : "No se pudo cargar la configuración de horarios.",
+      };
+    }
+
     const options: string[] = [];
 
-    const peruNow = new Date(
+    const timezone = cafeteriaSettings.timezone || "America/Lima";
+    const interval = cafeteriaSettings.pickupIntervalMinutes || 30;
+    const minPreparation = cafeteriaSettings.minPreparationMinutes || 20;
+
+    const now = new Date(
       new Date().toLocaleString("en-US", {
-        timeZone: "America/Lima",
+        timeZone: timezone,
       }),
     );
 
-    const now = peruNow;
+    const todayDay = DAY_NAMES[now.getDay()];
 
-    /*
-      Líneas para simular diferentes horas y probar la lógica de horarios de recojo:
-      now.setHours(20);
-      now.setMinutes(20);
-    */
-
-    const minimumTime = new Date(
-      now.getTime() + MIN_PREPARATION_MINUTES * 60000,
+    const schedule = cafeteriaSettings.schedules?.find(
+      (item: any) => item.dayOfWeek === todayDay,
     );
 
-    const openingTime = new Date();
-    openingTime.setHours(CAFETERIA_OPEN_HOUR, 0, 0, 0);
-
-    const closingTime = new Date();
-    closingTime.setHours(CAFETERIA_CLOSE_HOUR, 0, 0, 0);
-
-    let slot = new Date(openingTime);
-
-    while (slot <= closingTime) {
-      if (slot >= minimumTime) {
-        const hour = slot.getHours();
-        const minute = slot.getMinutes();
-
-        options.push(
-          `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`,
-        );
-      }
-
-      slot = new Date(slot.getTime() + PICKUP_INTERVAL_MINUTES * 60000);
+    if (!schedule) {
+      return {
+        options: [],
+        message: "No existe horario configurado para el día de hoy.",
+      };
     }
 
-    return options;
+    if (schedule.closed) {
+      return {
+        options: [],
+        message: "La cafetería se encuentra cerrada el día de hoy.",
+      };
+    }
+
+    const minimumTime = new Date(now.getTime() + minPreparation * 60000);
+
+    const openingParts = schedule.openingTime.substring(0, 5).split(":");
+    const closingParts = schedule.closingTime.substring(0, 5).split(":");
+
+    const openingTime = new Date(now);
+    openingTime.setHours(
+      Number(openingParts[0]),
+      Number(openingParts[1]),
+      0,
+      0,
+    );
+
+    const closingTime = new Date(now);
+    closingTime.setHours(
+      Number(closingParts[0]),
+      Number(closingParts[1]),
+      0,
+      0,
+    );
+
+    const firstPickupTime = new Date(
+      Math.max(openingTime.getTime(), minimumTime.getTime()),
+    );
+
+    const remainder = firstPickupTime.getMinutes() % interval;
+
+    if (remainder !== 0) {
+      firstPickupTime.setMinutes(
+        firstPickupTime.getMinutes() + (interval - remainder),
+      );
+    }
+
+    firstPickupTime.setSeconds(0, 0);
+
+    let slot = new Date(firstPickupTime);
+
+    while (slot <= closingTime) {
+      options.push(
+        `${String(slot.getHours()).padStart(2, "0")}:${String(
+          slot.getMinutes(),
+        ).padStart(2, "0")}`,
+      );
+
+      slot = new Date(slot.getTime() + interval * 60000);
+    }
+
+    return {
+      options,
+      message:
+        options.length === 0
+          ? "Ya no hay horarios disponibles para hoy."
+          : null,
+    };
   };
 
-  const pickupOptions = generatePickupOptions();
+  const pickupAvailability = generatePickupOptions();
+  const pickupOptions = pickupAvailability.options;
 
   useEffect(() => {
     const token = getToken();
@@ -181,6 +249,8 @@ export default function HomeScreen() {
     }
 
     loadProducts();
+    loadCafeteriaSettings();
+    loadCustomizationOptions();
   }, []);
 
   useEffect(() => {
@@ -189,7 +259,6 @@ export default function HomeScreen() {
 
   const loadProducts = async () => {
     try {
-
       const response = await getMenu();
 
       const rawMenuList = Array.isArray(response)
@@ -205,11 +274,24 @@ export default function HomeScreen() {
         .filter((item: any) => item.products.length > 0);
 
       setProducts(menuList);
-
     } catch (error) {
       console.error("Error cargando menú", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadCafeteriaSettings = async () => {
+    try {
+      setLoadingSettings(true);
+
+      const settings = await getCafeteriaSettings();
+      setCafeteriaSettings(settings);
+    } catch (error) {
+      console.error("Error cargando configuración de cafetería", error);
+      setCafeteriaSettings(null);
+    } finally {
+      setLoadingSettings(false);
     }
   };
 
@@ -222,9 +304,19 @@ export default function HomeScreen() {
     }, 1200);
   };
 
+  const loadCustomizationOptions = async () => {
+    try {
+      const options = await getActiveCustomizationOptions();
+      setCustomizationOptions(options || []);
+    } catch (error) {
+      console.error("Error cargando opciones de personalización", error);
+    }
+  };
+
   const openCustomizationModal = (product: any) => {
     setSelectedProduct(product);
     setSelectedSauces([]);
+    setCustomizationNote("");
     setShowCustomizationModal(true);
   };
 
@@ -233,13 +325,23 @@ export default function HomeScreen() {
       return;
     }
 
-    const customizationNotes = selectedSauces.join(", ");
+    const selectedOptionsText =
+      selectedSauces.length > 0
+        ? `Opciones:\n• ${selectedSauces.join("\n• ")}`
+        : "";
+
+    const noteText = customizationNote.trim()
+      ? `\n\nNota:\n${customizationNote.trim()}`
+      : "";
+
+    const customizationNotes = `${selectedOptionsText}${noteText}`.trim();
 
     addToCartDirect(selectedProduct, customizationNotes);
 
     setShowCustomizationModal(false);
     setSelectedProduct(null);
     setSelectedSauces([]);
+    setCustomizationNote("");
   };
 
   const addToCartDirect = (product: any, customizationNotes: string = "") => {
@@ -285,7 +387,6 @@ export default function HomeScreen() {
   };
 
   const addToCart = (product: any) => {
-
     if (product.customizable) {
       openCustomizationModal(product);
       return;
@@ -336,7 +437,10 @@ export default function HomeScreen() {
     }
 
     if (pickupOptions.length === 0) {
-      showMessage("No hay horarios disponibles para hoy", "error");
+      showMessage(
+        pickupAvailability.message || "No hay horarios disponibles para hoy",
+        "error",
+      );
       return;
     }
 
@@ -374,6 +478,16 @@ export default function HomeScreen() {
     router.replace("/");
   };
 
+  useEffect(() => {
+    if (user?.role === "WORKER") {
+      router.replace("/admin-orders");
+    }
+
+    if (user?.role === "ADMIN") {
+      router.replace("/admin-dashboard");
+    }
+  }, [user?.role, router]);
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -399,53 +513,6 @@ export default function HomeScreen() {
             <Text style={styles.subtitle}>Pide hoy, recoge sin esperas</Text>
           </View>
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={isMobile && styles.headerActionsScrollMobile}
-            contentContainerStyle={[
-              styles.headerActions,
-              isMobile && styles.headerActionsMobile,
-            ]}
-          >
-            {user?.role === "ADMIN" && (
-              <>
-                <TouchableOpacity
-                  style={styles.backBtn}
-                  onPress={() => router.push("/admin-orders")}
-                >
-                  <Text style={styles.backBtnText}>Pedidos</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.backBtn}
-                  onPress={() => router.push("/admin-products")}
-                >
-                  <Text style={styles.backBtnText}>Productos</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.backBtn}
-                  onPress={() => router.push("/admin-users")}
-                >
-                  <Text style={styles.backBtnText}>Usuarios</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.backBtn}
-                  onPress={() => router.push("/admin-categories")}
-                >
-                  <Text style={styles.backBtnText}>
-                    Categorías
-                  </Text>
-                </TouchableOpacity>                
-              </>
-            )}
-
-            <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-              <Text style={styles.logoutBtnText}>Salir</Text>
-            </TouchableOpacity>
-          </ScrollView>
         </View>
 
         {message && (
@@ -461,260 +528,286 @@ export default function HomeScreen() {
           </View>
         )}
 
-        <View style={[styles.mainLayout, isMobile && styles.mainLayoutMobile]}>
+        <View
+          style={[styles.shellLayout, isMobile && styles.shellLayoutMobile]}
+        >
+          <SideMenu role={user?.role || "USER"} onLogout={handleLogout} />
+
           <View
-            style={[
-              styles.productsPanel,
-              isMobile && styles.productsPanelMobile,
-            ]}
+            style={[styles.mainLayout, isMobile && styles.mainLayoutMobile]}
           >
-            <View style={styles.categoryFilterBox}>
-              <Text style={styles.filterTitle}>Categorías</Text>
+            <View
+              style={[
+                styles.productsPanel,
+                isMobile && styles.productsPanelMobile,
+              ]}
+            >
+              <View style={styles.categoryFilterBox}>
+                <Text style={styles.filterTitle}>Categorías</Text>
+
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={[
+                    styles.categoryFilterContent,
+                    isMobile && styles.categoryFilterContentMobile,
+                  ]}
+                >
+                  {categories.map((category) => (
+                    <TouchableOpacity
+                      key={category}
+                      style={[
+                        styles.categoryFilterButton,
+                        selectedCategory === category &&
+                          styles.categoryFilterButtonActive,
+                      ]}
+                      onPress={() => setSelectedCategory(category)}
+                    >
+                      <Text
+                        style={[
+                          styles.categoryFilterText,
+                          selectedCategory === category &&
+                            styles.categoryFilterTextActive,
+                        ]}
+                      >
+                        {category}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
 
               <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={[
-                  styles.categoryFilterContent,
-                  isMobile && styles.categoryFilterContentMobile,
-                ]}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.productsListContent}
               >
-                {categories.map((category) => (
-                  <TouchableOpacity
-                    key={category}
-                    style={[
-                      styles.categoryFilterButton,
-                      selectedCategory === category &&
-                        styles.categoryFilterButtonActive,
-                    ]}
-                    onPress={() => setSelectedCategory(category)}
-                  >
-                    <Text
-                      style={[
-                        styles.categoryFilterText,
-                        selectedCategory === category &&
-                          styles.categoryFilterTextActive,
-                      ]}
-                    >
-                      {category}
-                    </Text>
-                  </TouchableOpacity>
+                {filteredProducts.map((item) => (
+                  <View key={item.category} style={styles.categorySection}>
+                    <Text style={styles.categoryTitle}>{item.category}</Text>
+
+                    {Array.isArray(item.products) && (
+                      <View style={styles.productsGrid}>
+                        {item.products.map((product: any) => (
+                          <View
+                            key={product.id}
+                            style={[
+                              styles.productCard,
+                              isMobile && styles.productCardMobile,
+                            ]}
+                          >
+                            <Image
+                              source={getProductImageSource(product, isMobile)}
+                              style={styles.productImage}
+                              resizeMode="cover"
+                            />
+
+                            <View style={styles.productInfo}>
+                              <Text style={styles.productName}>
+                                {product.name}
+                              </Text>
+                              <Text
+                                style={styles.productDescription}
+                                numberOfLines={2}
+                              >
+                                {product.description}
+                              </Text>
+
+                              <View style={styles.productMetaRow}>
+                                <Text style={styles.productPrice}>
+                                  S/ {product.price}
+                                </Text>
+                                <Text style={styles.productStock}>
+                                  Stock: {product.stock}
+                                </Text>
+                              </View>
+
+                              <TouchableOpacity
+                                style={[
+                                  styles.addButton,
+                                  (product.stock === 0 ||
+                                    pickupOptions.length === 0) &&
+                                    styles.addButtonDisabled,
+                                ]}
+                                disabled={
+                                  product.stock === 0 ||
+                                  pickupOptions.length === 0
+                                }
+                                onPress={() => addToCart(product)}
+                              >
+                                <Text style={styles.addButtonText}>
+                                  {product.stock === 0
+                                    ? "Sin stock"
+                                    : pickupOptions.length === 0
+                                      ? "Fuera de horario"
+                                      : "+ Agregar"}
+                                </Text>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        ))}
+                      </View>
+                    )}
+                  </View>
                 ))}
               </ScrollView>
             </View>
 
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.productsListContent}
+            <View
+              style={[styles.sidePanel, isMobile && styles.sidePanelMobile]}
             >
-              {filteredProducts.map((item) => (
-                <View key={item.category} style={styles.categorySection}>
-                  <Text style={styles.categoryTitle}>{item.category}</Text>
+              <View style={styles.cartBox}>
+                <Text style={styles.cartTitle}>Carrito</Text>
+                <Text style={styles.cartSubtitle}>Resumen</Text>
 
-                  {Array.isArray(item.products) && (
-                    <View style={styles.productsGrid}>
-                      {item.products.map((product: any) => (
-                        <View
-                          key={product.id}
+                <View style={styles.pickupBox}>
+                  <Text style={styles.pickupTitle}>Hora de recojo</Text>
+
+                  <View style={styles.pickupOptions}>
+                    {pickupOptions.length === 0 ? (
+                      <Text style={styles.noPickupOptions}>
+                        {pickupAvailability.message ||
+                          "No hay horarios disponibles para hoy"}
+                      </Text>
+                    ) : (
+                      pickupOptions.map((time) => (
+                        <TouchableOpacity
+                          key={time}
                           style={[
-                            styles.productCard,
-                            isMobile && styles.productCardMobile,
+                            styles.pickupButton,
+                            pickupTime === time && styles.pickupButtonActive,
                           ]}
+                          onPress={() => setPickupTime(time)}
                         >
-                          <Image
-                            source={getProductImageSource(product, isMobile)}
-                            style={styles.productImage}
-                            resizeMode="cover"
-                          />
-
-                          <View style={styles.productInfo}>
-                            <Text style={styles.productName}>{product.name}</Text>
-                            <Text style={styles.productDescription} numberOfLines={2}>
-                              {product.description}
-                            </Text>
-
-                            <View style={styles.productMetaRow}>
-                              <Text style={styles.productPrice}>S/ {product.price}</Text>
-                              <Text style={styles.productStock}>Stock: {product.stock}</Text>
-                            </View>
-
-                            <TouchableOpacity
-                              style={[
-                                styles.addButton,
-                                (product.stock === 0 || pickupOptions.length === 0) &&
-                                  styles.addButtonDisabled,
-                              ]}
-                              disabled={product.stock === 0 || pickupOptions.length === 0}
-                              onPress={() => addToCart(product)}
-                            >
-                              <Text style={styles.addButtonText}>
-                                {product.stock === 0
-                                  ? "Sin stock"
-                                  : pickupOptions.length === 0
-                                  ? "Fuera de horario"
-                                  : "+ Agregar"}
-                              </Text>
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      ))}
-                    </View>
-                  )}
-                </View>
-              ))}
-            </ScrollView>
-
-          </View>
-
-          <View style={[styles.sidePanel, isMobile && styles.sidePanelMobile]}>
-            <View style={styles.cartBox}>
-              <Text style={styles.cartTitle}>Carrito</Text>
-              <Text style={styles.cartSubtitle}>Resumen</Text>
-
-              <View style={styles.pickupBox}>
-                <Text style={styles.pickupTitle}>Hora de recojo</Text>
-
-                <View style={styles.pickupOptions}>
-                  {pickupOptions.length === 0 ? (
-                    <Text style={styles.noPickupOptions}>
-                      No hay horarios disponibles para hoy
-                    </Text>
-                  ) : (
-                    pickupOptions.map((time) => (
-                      <TouchableOpacity
-                        key={time}
-                        style={[
-                          styles.pickupButton,
-                          pickupTime === time && styles.pickupButtonActive,
-                        ]}
-                        onPress={() => setPickupTime(time)}
-                      >
-                        <Text
-                          style={[
-                            styles.pickupButtonText,
-                            pickupTime === time &&
-                              styles.pickupButtonTextActive,
-                          ]}
-                        >
-                          {time}
-                        </Text>
-                      </TouchableOpacity>
-                    ))
-                  )}
-                </View>
-              </View>
-
-              {cart.length === 0 ? (
-                <Text style={styles.emptyCart}>Tu carrito está vacío</Text>
-              ) : (
-                <ScrollView
-                  style={styles.cartItemsScroll}
-                  showsVerticalScrollIndicator={false}
-                >
-                  {cart.map((item) => (
-                    <View
-                      key={`${item.id}-${item.customizationNotes || ""}`}
-                      style={styles.cartItem}
-                    >
-                      <View style={styles.cartItemInfo}>
-                        <Text style={styles.cartItemName}>{item.name}</Text>
-
-                        {item.customizationNotes ? (
-                          <Text style={styles.customizationText}>
-                            Personalización: {item.customizationNotes}
+                          <Text
+                            style={[
+                              styles.pickupButtonText,
+                              pickupTime === time &&
+                                styles.pickupButtonTextActive,
+                            ]}
+                          >
+                            {time}
                           </Text>
-                        ) : null}
+                        </TouchableOpacity>
+                      ))
+                    )}
+                  </View>
+                </View>
 
-                        <Text style={styles.cartItemPrice}>
-                          S/ {(item.price * item.quantity).toFixed(2)}
-                        </Text>
+                {cart.length === 0 ? (
+                  <Text style={styles.emptyCart}>Tu carrito está vacío</Text>
+                ) : (
+                  <ScrollView
+                    style={styles.cartItemsScroll}
+                    showsVerticalScrollIndicator={false}
+                  >
+                    {cart.map((item) => (
+                      <View
+                        key={`${item.id}-${item.customizationNotes || ""}`}
+                        style={styles.cartItem}
+                      >
+                        <View style={styles.cartItemInfo}>
+                          <Text style={styles.cartItemName}>{item.name}</Text>
+
+                          {item.customizationNotes ? (
+                            <Text style={styles.customizationText}>
+                              Personalización: {item.customizationNotes}
+                            </Text>
+                          ) : null}
+
+                          <Text style={styles.cartItemPrice}>
+                            S/ {(item.price * item.quantity).toFixed(2)}
+                          </Text>
+                        </View>
+
+                        <View style={styles.quantityControls}>
+                          <TouchableOpacity
+                            style={styles.quantityButton}
+                            onPress={() => decreaseQuantity(item.id)}
+                          >
+                            <Text style={styles.quantityButtonText}>-</Text>
+                          </TouchableOpacity>
+
+                          <Text style={styles.quantityText}>
+                            {item.quantity}
+                          </Text>
+
+                          <TouchableOpacity
+                            style={[
+                              styles.quantityButton,
+                              pickupOptions.length === 0 &&
+                                styles.disabledButton,
+                            ]}
+                            onPress={() => addToCart(item)}
+                            disabled={pickupOptions.length === 0}
+                          >
+                            <Text style={styles.quantityButtonText}>+</Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            style={styles.removeButton}
+                            onPress={() =>
+                              removeFromCart(
+                                item.id,
+                                item.customizationNotes || "",
+                              )
+                            }
+                          >
+                            <Text style={styles.removeButtonText}>x</Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
+                    ))}
+                  </ScrollView>
+                )}
 
-                      <View style={styles.quantityControls}>
-                        <TouchableOpacity
-                          style={styles.quantityButton}
-                          onPress={() => decreaseQuantity(item.id)}
-                        >
-                          <Text style={styles.quantityButtonText}>-</Text>
-                        </TouchableOpacity>
+                <View style={styles.totalRow}>
+                  <Text style={styles.cartTotalLabel}>Total:</Text>
+                  <Text style={styles.cartTotalAmount}>
+                    S/{" "}
+                    {cart
+                      .reduce((t, i) => t + i.price * i.quantity, 0)
+                      .toFixed(2)}
+                  </Text>
+                </View>
 
-                        <Text style={styles.quantityText}>{item.quantity}</Text>
-
-                        <TouchableOpacity
-                          style={[
-                            styles.quantityButton,
-                            pickupOptions.length === 0 && styles.disabledButton,
-                          ]}
-                          onPress={() => addToCart(item)}
-                          disabled={pickupOptions.length === 0}
-                        >
-                          <Text style={styles.quantityButtonText}>+</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                          style={styles.removeButton}
-                          onPress={() =>
-                            removeFromCart(
-                              item.id,
-                              item.customizationNotes || "",
-                            )
-                          }
-                        >
-                          <Text style={styles.removeButtonText}>x</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  ))}
-                </ScrollView>
-              )}
-
-              <View style={styles.totalRow}>
-                <Text style={styles.cartTotalLabel}>Total:</Text>
-                <Text style={styles.cartTotalAmount}>
-                  S/{" "}
-                  {cart
-                    .reduce((t, i) => t + i.price * i.quantity, 0)
-                    .toFixed(2)}
-                </Text>
+                <TouchableOpacity
+                  style={styles.clearButton}
+                  onPress={() => setCart([])}
+                >
+                  <Text style={styles.clearButtonText}>Vaciar carrito</Text>
+                </TouchableOpacity>
               </View>
 
-              <TouchableOpacity
-                style={styles.clearButton}
-                onPress={() => setCart([])}
-              >
-                <Text style={styles.clearButtonText}>Vaciar carrito</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.sideActions}>
-              {isMobile && message && (
-                <Text
+              <View style={styles.sideActions}>
+                {isMobile && message && (
+                  <Text
+                    style={[
+                      styles.mobileCartMessage,
+                      messageType === "error" && styles.mobileCartMessageError,
+                    ]}
+                  >
+                    {message}
+                  </Text>
+                )}
+                <TouchableOpacity
                   style={[
-                    styles.mobileCartMessage,
-                    messageType === "error" && styles.mobileCartMessageError,
+                    styles.mainButton,
+                    (cart.length === 0 || pickupOptions.length === 0) &&
+                      styles.mainButtonDisabled,
                   ]}
+                  onPress={handleCreateOrder}
+                  disabled={cart.length === 0 || pickupOptions.length === 0}
                 >
-                  {message}
-                </Text>
-              )}
-              <TouchableOpacity
-                style={[
-                  styles.mainButton,
-                  (cart.length === 0 || pickupOptions.length === 0) &&
-                    styles.mainButtonDisabled,
-                ]}
-                onPress={handleCreateOrder}
-                disabled={cart.length === 0 || pickupOptions.length === 0}
-              >
-                <Text style={styles.mainButtonText}>Realizar pedido</Text>
-              </TouchableOpacity>
+                  <Text style={styles.mainButtonText}>Realizar pedido</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.mainButton}
-                onPress={() => router.push("/my-orders")}
-              >
-                <Text style={styles.mainButtonText}>Ver mis pedidos</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.mainButton}
+                  onPress={() => router.push("/my-orders")}
+                >
+                  <Text style={styles.mainButtonText}>Ver mis pedidos</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
@@ -732,29 +825,52 @@ export default function HomeScreen() {
             </Text>
 
             <View style={styles.saucesContainer}>
-              {[
-                { name: "Mayonesa", icon: "🥪" },
-                { name: "Ketchup", icon: "🍅" },
-                { name: "Mostaza", icon: "🌭" },
-              ].map((sauce) => {
-                const selected = selectedSauces.includes(sauce.name);
+              {customizationOptions.length === 0 ? (
+                <Text style={styles.emptyCustomizationText}>
+                  No hay opciones de personalización disponibles.
+                </Text>
+              ) : (
+                customizationOptions.map((option) => {
+                  const selected = selectedSauces.includes(option.name);
 
-                return (
-                  <TouchableOpacity
-                    key={sauce.name}
-                    style={[
-                      styles.sauceChip,
-                      selected && styles.sauceChipSelected,
-                    ]}
-                    onPress={() => toggleSauce(sauce.name)}
-                  >
-                    <Text style={styles.sauceChipText}>
-                      {selected ? "✓ " : ""}
-                      {sauce.icon} {sauce.name}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
+                  return (
+                    <TouchableOpacity
+                      key={option.id}
+                      style={[
+                        styles.sauceChip,
+                        selected && styles.sauceChipSelected,
+                      ]}
+                      onPress={() => toggleSauce(option.name)}
+                    >
+                      <Text
+                        style={[
+                          styles.sauceChipText,
+                          selected && styles.sauceChipTextSelected,
+                        ]}
+                      >
+                        {selected ? "✓ " : ""}
+                        {option.name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })
+              )}
+            </View>
+
+            <View style={styles.notesContainer}>
+              <Text style={styles.notesLabel}>
+                Notas adicionales (opcional)
+              </Text>
+
+              <TextInput
+                style={styles.notesInput}
+                value={customizationNote}
+                onChangeText={setCustomizationNote}
+                placeholder="Ejemplo: Sin papas por favor"
+                multiline
+                numberOfLines={3}
+                maxLength={250}
+              />
             </View>
 
             <Text style={styles.selectedCount}>
@@ -781,7 +897,6 @@ export default function HomeScreen() {
       </Modal>
     </>
   );
-
 }
 
 const styles = StyleSheet.create({
@@ -789,6 +904,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff8f1",
     padding: isMobile ? 14 : 20,
+  },
+  shellLayout: {
+    flex: 1,
+    flexDirection: "row",
+    gap: 16,
+    minHeight: 0,
+  },
+
+  shellLayoutMobile: {
+    flexDirection: "column",
   },
   header: {
     flexDirection: "row",
@@ -975,6 +1100,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 10,
     alignItems: "center",
+  },
+  addButtonDisabled: {
+    opacity: 0.5,
   },
   addButtonText: {
     color: "#fff",
@@ -1343,5 +1471,36 @@ const styles = StyleSheet.create({
   mobileCartMessageError: {
     backgroundColor: "#fdecea",
     color: "#b71c1c",
+  },
+
+  emptyCustomizationText: {
+    color: "#7a6a61",
+    fontWeight: "700",
+    fontSize: 13,
+  },
+
+  sauceChipTextSelected: {
+    color: "#f57c00",
+  },
+
+  notesContainer: {
+    marginTop: 16,
+  },
+
+  notesLabel: {
+    fontWeight: "700",
+    marginBottom: 8,
+    color: "#3b1f12",
+  },
+
+  notesInput: {
+    borderWidth: 1,
+    borderColor: "#ead8c8",
+    borderRadius: 10,
+    padding: 10,
+    minHeight: 80,
+    textAlignVertical: "top",
+    backgroundColor: "#fff",
+    color: "#3b1f12",
   },
 });

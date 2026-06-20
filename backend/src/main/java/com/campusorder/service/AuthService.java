@@ -78,7 +78,10 @@ public class AuthService {
 
             userRepository.save(user);
 
-            emailService.sendPasswordResetCode(user.getEmail(), code);
+            emailService.sendPasswordResetCode(
+                    user.getEmail(),
+                    user.getName(),
+                    code);            
         });
     }
 

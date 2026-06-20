@@ -21,6 +21,18 @@ Los módulos principales se encuentran implementados y operativos.
 
 La pantalla principal Home cuenta con soporte responsive validado mediante iPhone Simulator como parte de la Adaptación Móvil Fase 1.
 
+La Adaptación Móvil Fase 2 se encuentra en progreso.
+
+Ya fueron estabilizadas las pantallas:
+
+* Perfil
+* Administración de Pedidos
+* Configuración de Cafetería
+
+Pendiente principal:
+
+* Administración de Productos en mobile web.
+
 ---
 
 # Tecnologías
@@ -104,11 +116,14 @@ Estado: Completo
 Funcionalidades:
 
 * Productos configurables mediante flag customizable
-* Selección de salsas desde modal visual
+* Opciones de personalización administrables
 * Persistencia histórica en OrderItem
 * Visualización en carrito
 * Visualización en Mis Pedidos
 * Visualización en Administración de Pedidos
+* Gestión administrativa de personalizaciones
+* Carga dinámica desde backend
+* Campo libre de observaciones
 
 Observación:
 
@@ -155,14 +170,23 @@ Funcionalidades:
 * Validación de tiempo mínimo de preparación
 * Reversa automática de stock al cancelar pedidos
 * Cancelación consistente desde Mis Pedidos y Administración de Pedidos
+* Notificación automática por correo al cambiar a READY_FOR_PICKUP.
+* Prevención de envíos duplicados mediante flag de notificación.
+
+Administración de Pedidos:
+
+* La pantalla operativa muestra únicamente pedidos del día.
+* El filtrado se realiza utilizando pickupTime.
+* Los pedidos históricos quedan fuera de la operación diaria.
+* Los pedidos futuros quedan fuera de la operación diaria.
+* Los pedidos se ordenan por hora de recojo descendente.
+* Existe cierre operativo diario manual.
+* Los pedidos pendientes pueden pasar a NOT_ATTENDED.
+* El cierre operativo no revierte stock.
 
 Reglas actuales de horario:
 
-* Zona horaria oficial: America/Lima
-* Horario de atención: 07:00 a 21:00
-* Tiempo mínimo de preparación: 20 minutos
-* Intervalo de recojo: 30 minutos
-* Configuración centralizada en código para el MVP
+* Las reglas operativas son obtenidas dinámicamente desde Configuración de Cafetería.
 
 Estados:
 
@@ -170,6 +194,7 @@ Estados:
 * IN_PREPARATION
 * READY_FOR_PICKUP
 * DELIVERED
+* NOT_ATTENDED
 * CANCELLED
 
 ---
@@ -184,7 +209,8 @@ Pantallas:
 * admin-products
 * admin-users
 * admin-categories
-- Las pantallas administrativas de Productos, Categorías y Usuarios comparten el estándar visual oficial CofiGO.
+* admin-customizations
+* Las pantallas administrativas de Dashboard, Productos, Categorías, Usuarios y Pedidos comparten el estándar visual oficial CofiGO mediante AdminLayout y SideMenu.
 
 ---
 
@@ -205,17 +231,69 @@ Funcionalidades:
 
 ---
 
+## Configuración de Cafetería
+
+Estado: Completo
+
+Funcionalidades:
+
+* Datos generales.
+* Ubicación.
+* Zona horaria.
+* Moneda.
+* Tiempo mínimo de preparación.
+* Intervalo de recojo.
+* Horarios por día.
+* Días cerrados.
+
+Integraciones:
+
+* Home
+* OrderService
+
+---
+
 ## Reportes
 
-Estado: Parcial
+Estado: Completo
 
-Backend:
+Funcionalidades:
 
-* Ventas por día
+* Dashboard Analítico.
+* Indicadores ejecutivos.
+* Ventas por día.
+* Pedidos por estado.
+* Top productos vendidos.
+* Horas pico.
+* Filtros por fecha.
+* Dashboard visual.
+* Integración con AdminLayout.
+* Integración con SideMenu.
 
-Frontend:
+---
 
-* No implementado
+## Perfil de Usuario
+
+Estado: Completo
+
+Funcionalidades:
+
+* Consulta de perfil autenticado.
+* Edición de nombre.
+* Edición de celular.
+* Cambio seguro de contraseña.
+* Visualización de correo institucional en solo lectura.
+* Visualización de rol en solo lectura.
+* Visualización de estado en solo lectura.
+* Visualización de verificación de correo en solo lectura.
+
+Reglas:
+
+* El usuario no puede modificar correo institucional.
+* El usuario no puede modificar rol.
+* El usuario no puede modificar estado.
+* El usuario no puede modificar verificación de correo.
+* El celular queda disponible para futuras notificaciones SMS o WhatsApp.
 
 ---
 
@@ -223,13 +301,13 @@ Frontend:
 
 Prioridad Alta:
 
-* Dashboard Administrativo
 * Reportes Frontend
+* Notificaciones WhatsApp READY_FOR_PICKUP
+* Notificaciones SMS READY_FOR_PICKUP
 
 Prioridad Media:
 
-* Gestión de Configuración de Cafetería
-* Perfil de Usuario
+* Dashboard Administrativo Avanzado
 * Auditoría
 * Notificaciones
 
@@ -244,10 +322,11 @@ Prioridad Baja:
 
 Entidades principales:
 
-* User
+* User, incluye phone para perfil y futuras notificaciones
 * Category
 * Product
 * Order
+    * readyForPickupNotificationSent
 * OrderItem
 
 Relaciones:
@@ -289,6 +368,12 @@ Regla de correo institucional:
 * Los usuarios creados por ADMIN se consideran verificados administrativamente.
 * La administración de usuarios no muestra códigos sensibles de verificación ni recuperación.
 * Los usuarios pendientes pueden recibir un nuevo código mediante la opción Reenviar código.
+
+Notificaciones implementadas:
+
+* Verificación de correo.
+* Recuperación de contraseña.
+* READY_FOR_PICKUP.
 
 ---
 
@@ -335,6 +420,39 @@ Antes de modificar debe realizarse análisis de impacto sobre:
 * Configuración Vercel
 
 Estas funcionalidades se consideran estables.
+
+---
+
+# Navegación por Roles
+
+ADMIN
+
+* Dashboard
+* Productos
+* Categorías
+* Personalizaciones
+* Usuarios
+* Pedidos
+* Reportes
+
+WORKER
+
+* Pedidos
+
+USER
+
+* Menú
+* Mis Pedidos
+* Perfil
+
+Componentes base:
+
+* AdminLayout
+* SideMenu
+
+Regla:
+
+Toda nueva pantalla debe integrarse al layout correspondiente y evitar navegación basada en botones Volver.
 
 ---
 

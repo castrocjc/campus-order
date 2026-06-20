@@ -182,8 +182,8 @@ Implementación de flujo administrativo de pedidos.
 Estados:
 
 * RECEIVED
-* PREPARING
-* READY
+* IN_PREPARATION
+* READY_FOR_PICKUP
 * DELIVERED
 * CANCELLED
 
@@ -1282,6 +1282,691 @@ Archivos modificados:
 * Sin cambios de API.
 * Sin cambios de base de datos.
 * Consistencia visual completa del Panel Administrativo.
+
+---
+
+# v1.6 - Dashboard Administrativo, Navegación por Roles y Estandarización Visual
+
+Fecha: Junio 2026
+
+## Mejoras
+
+Esta versión marca la consolidación del Panel Administrativo de CofiGO.
+
+Incluye:
+
+* Dashboard Administrativo.
+* Gestión de Productos.
+* Gestión de Categorías.
+* Gestión de Usuarios.
+* Gestión de Pedidos.
+* Navegación por roles.
+* SideMenu persistente.
+* AdminLayout.
+* Experiencia WORKER.
+* Sincronización visual completa del sistema.
+
+### Navegación persistente por rol
+
+Se implementó una arquitectura de navegación unificada basada en SideMenu para todos los perfiles del sistema.
+
+Roles soportados:
+
+* ADMIN
+* WORKER
+* USER
+
+### Panel Administrativo
+
+Se consolidó la navegación administrativa mediante AdminLayout.
+
+Incluye:
+
+* Dashboard
+* Productos
+* Categorías
+* Usuarios
+* Pedidos
+
+### Panel Operativo
+
+Se habilitó navegación específica para WORKER.
+
+Incluye:
+
+* Pedidos
+* Salir
+
+La pantalla de pedidos muestra:
+
+* Panel administrador para ADMIN.
+* Panel operario para WORKER.
+
+### Experiencia Usuario
+
+Se unificó la navegación de usuario final.
+
+Incluye:
+
+* Catálogo
+* Mis Pedidos
+* Perfil
+* Salir
+
+### Armonización Visual
+
+Se alinearon visualmente las siguientes pantallas:
+
+* Dashboard
+* Productos
+* Categorías
+* Usuarios
+* Pedidos
+* Home
+* Mis Pedidos
+
+## Frontend
+
+Archivos modificados:
+
+* AdminLayout.tsx
+* SideMenu.tsx
+* admin-orders.tsx
+* admin-products.tsx
+* admin-categories.tsx
+* admin-users.tsx
+* home.tsx
+* my-orders.tsx
+
+## Validaciones realizadas
+
+* Navegación ADMIN.
+* Navegación WORKER.
+* Navegación USER.
+* Persistencia de menú lateral.
+* Responsive Desktop.
+* Responsive Mobile Web.
+* Validación funcional completa.
+
+## Impacto
+
+Se establece una arquitectura visual consistente para todos los perfiles del sistema.
+
+---
+
+# v1.7 - Configuración de Cafetería
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Configuración Operativa de Cafetería
+
+Se implementó un módulo completo para administrar los parámetros operativos de la cafetería sin necesidad de modificar código fuente.
+
+Incluye:
+
+* Nombre de cafetería.
+* Descripción.
+* Estado activa/inactiva.
+* Dirección.
+* Referencia.
+* Teléfono.
+* Zona horaria.
+* Moneda.
+* Tiempo mínimo de preparación.
+* Intervalo de recojo.
+* Horarios de atención por día de la semana.
+* Días cerrados.
+
+## Backend
+
+Archivos creados:
+
+* CafeteriaSettings.java
+* CafeteriaSchedule.java
+* CafeteriaSettingsController.java
+* CafeteriaSettingsService.java
+* CafeteriaSettingsRepository.java
+* CafeteriaScheduleRepository.java
+* CafeteriaSettingsRequestDTO.java
+* CafeteriaSettingsResponseDTO.java
+
+Archivos modificados:
+
+* OrderService.java
+* SecurityConfig.java
+
+## Frontend
+
+Archivos creados:
+
+* admin-settings.tsx
+* cafeteriaSettingsService.ts
+
+Archivos modificados:
+
+* home.tsx
+* orderService.ts
+* SideMenu.tsx
+
+## Arquitectura
+
+Se eliminaron los parámetros operativos hardcodeados del sistema:
+
+* Hora de apertura.
+* Hora de cierre.
+* Tiempo mínimo de preparación.
+* Intervalo de recojo.
+* Zona horaria.
+
+OrderService y Home ahora consumen la configuración desde CafeteriaSettings.
+
+## Validaciones realizadas
+
+* Cafetería activa.
+* Cafetería inactiva.
+* Domingo cerrado.
+* Horario especial de sábado.
+* Tiempo mínimo de preparación configurable.
+* Intervalo de recojo configurable.
+* Generación dinámica de horarios.
+* Consumo de configuración desde Home.
+* Validación backend mediante Postman.
+
+## Impacto
+
+CofiGO evoluciona de una configuración basada en código a una configuración administrable desde pantalla.
+
+---
+
+# v1.8 - Perfil de Usuario
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Perfil de Usuario
+
+Se implementó la pantalla Mi Perfil para usuarios finales.
+
+Incluye:
+
+* Consulta de información personal.
+* Edición de nombre.
+* Edición de celular.
+* Visualización de correo institucional en modo solo lectura.
+* Visualización de rol en modo solo lectura.
+* Visualización de estado de cuenta en modo solo lectura.
+* Visualización de estado de verificación de correo en modo solo lectura.
+* Cambio seguro de contraseña desde Perfil.
+* Sincronización del nombre actualizado en la sesión activa.
+* Integración de Perfil en SideMenu USER.
+
+## Backend
+
+Archivos modificados:
+
+* User.java
+* UserController.java
+* UserService.java
+* UserResponseDTO.java
+* SecurityConfig.java
+
+Archivos creados:
+
+* UserProfileUpdateRequestDTO.java
+* ChangePasswordRequestDTO.java
+
+## Frontend
+
+Archivos modificados:
+
+* SideMenu.tsx
+* userService.ts
+
+Archivos creados:
+
+* profile.tsx
+
+## Base de datos
+
+Nueva columna:
+
+* users.phone
+
+## Endpoints nuevos
+
+* GET /api/users/me
+* PUT /api/users/me/profile
+* PUT /api/users/me/password
+
+## Validaciones realizadas
+
+* Consulta de perfil autenticado.
+* Actualización de nombre.
+* Actualización de celular.
+* Cambio de contraseña.
+* Validación de contraseña actual.
+* Validación de longitud mínima de contraseña.
+* Validación de confirmación de contraseña.
+* Login posterior al cambio de contraseña.
+* Navegación USER hacia Perfil.
+* Validación visual Desktop.
+
+## Impacto
+
+CofiGO incorpora gestión de perfil personal para usuarios finales y queda preparado para futuras notificaciones por SMS o WhatsApp usando el celular registrado.
+
+---
+
+# v1.9 - Notificaciones READY_FOR_PICKUP
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Notificación automática de pedido listo para recoger
+
+Se implementó el envío automático de correo electrónico cuando un pedido cambia por primera vez al estado READY_FOR_PICKUP.
+
+Incluye:
+
+* Envío automático mediante SendGrid.
+* Plantilla HTML personalizada.
+* Inclusión de nombre del usuario.
+* Inclusión de número de pedido.
+* Inclusión de hora de recojo.
+* Inclusión del monto total.
+* Prevención de envíos duplicados.
+* Registro de estado de notificación en base de datos.
+
+## Backend
+
+Archivos modificados:
+
+* Order.java
+* OrderService.java
+* EmailService.java
+
+Archivos creados:
+
+* NotificationService.java
+
+## Base de datos
+
+Nueva columna:
+
+* orders.ready_for_pickup_notification_sent
+
+## Arquitectura
+
+Nuevo flujo:
+
+OrderService
+→ NotificationService
+→ EmailService
+→ SendGrid
+
+## Validaciones realizadas
+
+* Cambio RECEIVED → IN_PREPARATION.
+* Cambio IN_PREPARATION → READY_FOR_PICKUP.
+* Validación de correo enviado.
+* Validación de contenido dinámico.
+* Prevención de reenvío.
+* Validación de flag en base de datos.
+
+## Impacto
+
+CofiGO incorpora notificaciones automáticas para mejorar la experiencia de recojo y queda preparado para futuras integraciones SMS y WhatsApp.
+
+---
+
+# v2.0 - Dashboard de Reportes y Analítica Operativa
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Dashboard Analítico
+
+Se implementó un módulo independiente de reportes para administración.
+
+Incluye:
+
+* Indicadores ejecutivos.
+* Ventas totales.
+* Pedidos totales.
+* Ticket promedio.
+* Productos vendidos.
+* Usuarios registrados.
+* Usuarios activos.
+* Ventas por día.
+* Pedidos por estado.
+* Top productos vendidos.
+* Horas pico.
+* Filtros por rango de fechas.
+* Validación de fechas.
+* Dashboard visual integrado al Panel Administrativo.
+
+## Backend
+
+Archivos creados:
+
+* ReportsController.java
+* ReportsService.java
+
+Archivos modificados:
+
+* OrderRepository.java
+* UserRepository.java
+* ProductRepository.java
+
+## Frontend
+
+Archivos creados:
+
+* admin-reports.tsx
+* reportService.ts
+* SalesByDayChart.tsx
+* OrdersStatusChart.tsx
+* PeakHoursChart.tsx
+
+Archivos modificados:
+
+* SideMenu.tsx
+
+## Arquitectura
+
+Se separa la analítica operativa de la gestión transaccional.
+
+Nueva capa:
+
+ReportsController
+→ ReportsService
+→ Repository
+
+## Reglas de negocio
+
+* Ventas consideran únicamente pedidos DELIVERED.
+* Ticket promedio = Ventas entregadas / Pedidos entregados.
+* Productos vendidos consideran únicamente pedidos DELIVERED.
+* Pedidos CANCELLED aparecen en distribución de estados.
+* Ventas excluyen CANCELLED.
+
+## Validaciones realizadas
+
+* Endpoints mediante Postman.
+* Dashboard Desktop.
+* Dashboard Mobile Web.
+* Filtros por fecha.
+* Gráfico de estados.
+* Gráfico de horas pico.
+
+## Impacto
+
+CofiGO incorpora capacidades analíticas para soporte de decisiones operativas.
+
+---
+
+# v2.0.1 - Operación Diaria de Pedidos
+
+Fecha: Junio 2026
+
+## Mejoras
+
+### Administración de Pedidos
+
+Se ajustó la pantalla administrativa de pedidos para enfocarse exclusivamente en la operación diaria de la cafetería.
+
+Incluye:
+
+* Visualización únicamente de pedidos correspondientes al día operativo actual.
+* Filtrado utilizando pickupTime.
+* Exclusión automática de pedidos históricos.
+* Exclusión automática de pedidos futuros.
+* Ordenamiento por hora de recojo descendente.
+* Mensaje informativo cuando no existen pedidos para el día.
+* Compatibilidad con el mecanismo de refresco automático existente.
+
+## Backend
+
+Archivos modificados:
+
+* OrderController.java
+* OrderService.java
+* OrderRepository.java
+
+## Frontend
+
+Archivos modificados:
+
+* admin-orders.tsx
+
+## Validaciones realizadas
+
+* Visualización de pedidos del día.
+* Exclusión de pedidos históricos.
+* Exclusión de pedidos futuros.
+* Refresco automático.
+* Cambio de estados.
+* Cancelación de pedidos.
+* Actualización de indicadores.
+* Ordenamiento por hora de recojo.
+
+## Impacto
+
+La pantalla de pedidos queda alineada con la operación diaria de la cafetería y preparada para una futura funcionalidad de cierre operativo.
+
+---
+
+# v2.1 - Cierre Operativo Diario
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Cierre Operativo Diario
+
+Se implementó un mecanismo administrativo para cerrar la operación diaria de pedidos al finalizar la jornada de atención.
+
+Incluye:
+
+* Nuevo estado NOT_ATTENDED.
+* Cierre manual desde Administración de Pedidos.
+* Conversión automática de pedidos pendientes a NOT_ATTENDED.
+* Protección de pedidos DELIVERED.
+* Protección de pedidos CANCELLED.
+* Exclusión de NOT_ATTENDED del indicador de ventas operativas.
+* Visualización de pedidos no atendidos para usuarios y administradores.
+* Operación idempotente.
+
+## Backend
+
+Archivos modificados:
+
+* OrderStatus.java
+* OrderRepository.java
+* OrderService.java
+* OrderController.java
+
+## Frontend
+
+Archivos modificados:
+
+* orderService.ts
+* admin-orders.tsx
+* my-orders.tsx
+
+## Reglas de negocio
+
+Transiciones permitidas:
+
+* RECEIVED → NOT_ATTENDED
+* IN_PREPARATION → NOT_ATTENDED
+* READY_FOR_PICKUP → NOT_ATTENDED
+
+Estados protegidos:
+
+* DELIVERED
+* CANCELLED
+* NOT_ATTENDED
+
+Inventario:
+
+* El cierre operativo NO restaura stock.
+* La reversa de stock continúa siendo exclusiva de CANCELLED.
+
+## Validaciones realizadas
+
+* Cierre de pedidos RECEIVED.
+* Cierre de pedidos IN_PREPARATION.
+* Cierre de pedidos READY_FOR_PICKUP.
+* Protección de DELIVERED.
+* Protección de CANCELLED.
+* Validación de stock.
+* Validación de interfaz administrativa.
+* Validación de Mis Pedidos.
+
+## Impacto
+
+CofiGO incorpora el cierre formal de la jornada operativa y gestión de pedidos no atendidos.
+
+---
+
+# v2.2 - Personalización Dinámica de Productos
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Administración de Opciones de Personalización
+
+Se implementó un módulo administrativo para gestionar dinámicamente las opciones de personalización disponibles para productos configurables.
+
+Incluye:
+
+* Creación de opciones de personalización.
+* Edición de opciones.
+* Activación.
+* Desactivación.
+* Búsqueda.
+* Dashboard administrativo.
+* Integración con SideMenu.
+* Integración con AdminLayout.
+
+### Evolución del Modal de Personalización
+
+El modal de personalización dejó de utilizar opciones hardcodeadas y ahora consume opciones activas desde backend.
+
+Incluye:
+
+* Carga dinámica de opciones.
+* Selección múltiple mediante chips.
+* Campo libre de observaciones.
+* Persistencia histórica en OrderItem.customizationNotes.
+* Compatibilidad con pedidos históricos.
+
+## Backend
+
+Archivos creados:
+
+* CustomizationOption.java
+* CustomizationOptionController.java
+* CustomizationOptionService.java
+* CustomizationOptionRepository.java
+* CustomizationOptionRequestDTO.java
+* CustomizationOptionResponseDTO.java
+
+## Frontend
+
+Archivos creados:
+
+* admin-customizations.tsx
+* customizationService.ts
+
+Archivos modificados:
+
+* home.tsx
+* SideMenu.tsx
+
+## Base de datos
+
+Nueva tabla:
+
+* customization_options
+
+Campos:
+
+* id
+* name
+* description
+* active
+
+## Validaciones realizadas
+
+* Crear opción.
+* Editar opción.
+* Activar opción.
+* Desactivar opción.
+* Visualización dinámica en Home.
+* Selección múltiple.
+* Nota libre.
+* Persistencia en carrito.
+* Persistencia en pedidos.
+* Visualización administrativa.
+
+## Impacto
+
+La personalización evoluciona desde una solución hardcodeada hacia una solución administrable sin afectar la estructura de pedidos ni el histórico de ventas.
+
+---
+
+# v2.3 - Adaptación Móvil Fase 2 Parcial
+
+Fecha: Junio 2026
+
+## Mejoras
+
+### Navegación y compatibilidad Mobile Web
+
+Se inició la segunda fase de adaptación móvil de CofiGO, enfocada en mejorar la experiencia en navegadores móviles iOS y mantener compatibilidad con desktop web.
+
+Incluye:
+
+* SideMenu responsive con navegación horizontal en móvil.
+* AdminLayout estabilizado para desktop y mobile.
+* Corrección de Perfil de Usuario en mobile web.
+* Corrección de Administración de Pedidos para WORKER y ADMIN en mobile web.
+* Corrección de Configuración de Cafetería en mobile web.
+* Validación en desktop Firefox/Chrome.
+* Validación en iOS Chrome.
+
+## Frontend
+
+Archivos modificados:
+
+* SideMenu.tsx
+* AdminLayout.tsx
+* profile.tsx
+* admin-orders.tsx
+* admin-settings.tsx
+* admin-products.tsx
+
+## Pendiente
+
+* Completar ajuste responsive de admin-products.tsx en mobile web.
+* Continuar con admin-categories.tsx.
+* Continuar con admin-customizations.tsx.
+* Continuar con admin-users.tsx.
+
+## Impacto
+
+* Sin cambios de backend.
+* Sin cambios de base de datos.
+* Sin cambios de API.
+* Mejora progresiva de compatibilidad mobile web.
 
 ---
 

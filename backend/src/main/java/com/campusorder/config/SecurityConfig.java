@@ -35,16 +35,27 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/forgot-password").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/reset-password").permitAll()                        
+                        .requestMatchers(HttpMethod.POST, "/api/auth/reset-password").permitAll()        
+
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/verify-email").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/resend-code").permitAll()
-
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/users/me").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/users/me/profile").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/users/me/password").authenticated()
+
+                        .requestMatchers(HttpMethod.GET, "/api/cafeteria-settings").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/cafeteria-settings").hasRole("ADMIN")                        
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
+
                         .requestMatchers("/api/products/menu").permitAll()
                         .requestMatchers("/api/products").permitAll()
                         .requestMatchers("/api/products/**").authenticated()
+
+                        .requestMatchers(HttpMethod.GET, "/api/customization-options/active").authenticated()
+                        .requestMatchers("/api/customization-options/**").hasRole("ADMIN")
+
                         .requestMatchers("/api/orders/**").authenticated()
                         .anyRequest().authenticated()
                 )

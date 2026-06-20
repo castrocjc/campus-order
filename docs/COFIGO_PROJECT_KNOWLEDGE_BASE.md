@@ -55,6 +55,10 @@ app/
 ├── admin-products.tsx
 ├── admin-orders.tsx
 └── _layout.tsx
+components/
+└── ui
+    ├── AdminLayout.tsx
+    └── SideMenu.tsx
 ```
 
 ### Servicios
@@ -103,6 +107,8 @@ UserController
 ProductController
 CategoryController
 OrderController
+CafeteriaSettingsController
+ReportsController
 ```
 
 ### Services
@@ -112,8 +118,11 @@ AuthService
 UserService
 ProductService
 OrderService
+NotificationService
 EmailService
 CategoryService
+CafeteriaSettingsService
+ReportsService
 ```
 
 ### Repositories
@@ -123,6 +132,8 @@ UserRepository
 ProductRepository
 CategoryRepository
 OrderRepository
+CafeteriaSettingsRepository
+CafeteriaScheduleRepository
 ```
 
 ### Seguridad
@@ -144,6 +155,7 @@ JwtService
 | id                         | Long          |
 | name                       | String        |
 | email                      | String        |
+| phone                      | String        |
 | password                   | String        |
 | role                       | String        |
 | active                     | Boolean       |
@@ -214,17 +226,29 @@ Mejora la calidad del catálogo, reduce errores operativos y facilita el control
 
 ---
 
+## CustomizationOption
+
+| Campo       | Tipo    |
+| ----------- | ------- |
+| id          | Long    |
+| name        | String  |
+| description | String  |
+| active      | Boolean |
+
+---
+
 ## Order
 
-| Campo       | Tipo          |
-| ----------- | ------------- |
-| id          | Long          |
-| userId      | Long          |
-| status      | OrderStatus   |
-| pickupTime  | LocalDateTime |
-| totalAmount | BigDecimal    |
-| createdAt   | LocalDateTime |
-| updatedAt   | LocalDateTime |
+| Campo                          | Tipo          |
+| -----------                    | ------------- |
+| id                             | Long          |
+| userId                         | Long          |
+| status                         | OrderStatus   |
+| pickupTime                     | LocalDateTime |
+| totalAmount                    | BigDecimal    |
+| readyForPickupNotificationSent | Boolean       |
+| createdAt                      | LocalDateTime |
+| updatedAt                      | LocalDateTime |
 
 Estados oficiales del pedido:
 
@@ -232,6 +256,7 @@ Estados oficiales del pedido:
 * IN_PREPARATION
 * READY_FOR_PICKUP
 * DELIVERED
+* NOT_ATTENDED
 * CANCELLED
 
 ### Relación
@@ -257,6 +282,35 @@ Order 1 : N OrderItem
 
 ---
 
+## CafeteriaSettings
+
+| Campo                 | Tipo    |
+|--------               |------   |
+| id                    | Long    |
+| name                  | String  |
+| description           | String  |
+| active                | Boolean |
+| address               | String  |
+| reference             | String  |
+| contactPhone          | String  |
+| timezone              | String  |
+| currency              | String  |
+| minPreparationMinutes | Integer |
+| pickupIntervalMinutes | Integer |
+
+## CafeteriaSchedule
+
+| Campo               | Tipo      |
+|--------             |------     |
+| id                  | Long      |
+| cafeteriaSettingsId | Long      |
+| dayOfWeek           | String    |
+| openingTime         | LocalTime |
+| closingTime         | LocalTime |
+| closed              | Boolean.  |
+
+---
+
 # 4. Seguridad
 
 ## Método de Autenticación
@@ -271,8 +325,12 @@ JWT (JSON Web Token)
 
 Permisos:
 
-* Gestionar pedidos
-* Cambiar estados de pedidos
+* Gestionar pedidos.
+* Cambiar estados de pedidos.
+
+Pantallas:
+
+* Pedidos
 
 ### USER
 
@@ -283,6 +341,12 @@ Permisos:
 * Consultar pedidos propios
 * Cancelar pedidos
 
+Pantallas:
+
+* Home
+* Mis Pedidos
+* Perfil
+
 ### ADMIN
 
 Permisos:
@@ -291,6 +355,16 @@ Permisos:
 * Administrar pedidos
 * Consultar información administrativa
 * Cambiar estados de pedidos
+
+Pantallas:
+
+* Dashboard
+* Productos
+* Categorías
+* Personalizaciones
+* Usuarios
+* Pedidos
+* Reportes
 
 ---
 
@@ -306,6 +380,7 @@ Funcionalidades:
 * Reenvío de código
 * Recuperación de contraseña
 * Reenvío de código de recuperación
+* Notificación READY_FOR_PICKUP
 
 ---
 
@@ -375,6 +450,12 @@ POST /api/users/verify-email
 POST /api/users/resend-code
 
 GET /api/users
+
+GET /api/users/me
+
+PUT /api/users/me/profile
+
+PUT /api/users/me/password
 ```
 
 ---
@@ -419,6 +500,19 @@ GET    /api/products/paged
 
 ---
 
+## Customizations
+
+```
+GET    /api/customization-options
+GET    /api/customization-options/active
+POST   /api/customization-options
+PUT    /api/customization-options/{id}
+PATCH  /api/customization-options/{id}/activate
+PATCH  /api/customization-options/{id}/deactivate
+```
+
+---
+
 ## Pedidos
 
 ```http
@@ -435,29 +529,60 @@ PUT /api/orders/{orderId}/cancel
 PUT /api/orders/{orderId}/status
 
 GET /api/orders/reports/sales-by-day
+
+PUT /api/orders/operational-close
+```
+
+---
+
+## Cafeteria Settings
+
+```http
+GET /api/cafeteria-settings
+
+PUT /api/cafeteria-settings
+```
+
+---
+
+## Reportes
+
+```http
+GET /api/reports/summary
+
+GET /api/reports/sales-by-day
+
+GET /api/reports/orders-by-status
+
+GET /api/reports/top-products
+
+GET /api/reports/peak-hours
 ```
 
 ---
 
 # 6. Módulos Implementados
 
-| Módulo                    | Estado   |
-| ----------------------    | -------- |
-| Login                     | Completo |
-| Registro                  | Completo |
-| Verificación Correo       | Completo |
-| JWT                       | Completo |
-| Roles                     | Completo |
-| Productos                 | Completo |
-| Personalización Productos | Completo |
-| Menú Digital              | Completo |
-| Carrito                   | Completo |
-| Pedidos                   | Completo |
-| Gestión Pedidos           | Completo |
-| Reporte Ventas por Día    | Parcial  |
-| Recuperar Contraseña      | Completo |
-| Gestión de Usuarios       | Completo |
-| Gestión de Categorías     | Completo |
+| Módulo                          | Estado   |
+| ----------------------          | -------- |
+| Login                           | Completo |
+| Registro                        | Completo |
+| Verificación Correo             | Completo |
+| JWT                             | Completo |
+| Roles                           | Completo |
+| Productos                       | Completo |
+| Personalización Productos       | Completo |
+| Menú Digital                    | Completo |
+| Carrito                         | Completo |
+| Pedidos                         | Completo |
+| Gestión Pedidos                 | Completo |
+| Dashboard Analítico             | Completo |
+| Recuperar Contraseña            | Completo |
+| Gestión de Usuarios             | Completo |
+| Gestión de Categorías           | Completo |
+| Configuración de Cafetería      | Completo |
+| Perfil de Usuario               | Completo |
+| Notificaciones READY_FOR_PICKUP | Completo |
 
 Capacidades actuales:
 
@@ -477,18 +602,32 @@ Gestión de Usuarios:
 * Placeholders de ayuda para captura.
 * Botones Limpiar y Cancelar en mantenimiento.
 
+### Arquitectura de Navegación
+
+Estado: Completo
+
+Componentes:
+
+* AdminLayout
+* SideMenu
+
+Características:
+
+* Menú persistente.
+* Navegación por rol.
+* Logout centralizado.
+* Consistencia visual.
+
 ---
 
 # 7. Módulos Pendientes
 
 ## Prioridad Alta
 
-* Dashboard Administrativo
 * Reportes Frontend
 
 ## Prioridad Media
 
-* Perfil de Usuario
 * Auditoría
 * Notificaciones
 
@@ -534,6 +673,25 @@ Validaciones adicionales:
 Estado:
 
 Adaptación Móvil Fase 1 completada.
+
+Adaptación Móvil Fase 2:
+
+Pantallas validadas:
+
+* Home
+* Mis Pedidos
+* Perfil
+* Administración de Pedidos
+* Configuración de Cafetería
+* Dashboard
+* Reportes
+
+Pantallas pendientes:
+
+* Administración de Productos
+* Administración de Categorías
+* Administración de Personalizaciones
+* Administración de Usuarios
 
 ### Frontend
 
@@ -609,11 +767,7 @@ No persiste entre sesiones.
 
 ## Configuración fija de zona horaria
 
-Actualmente la zona horaria America/Lima está definida en código como parte del MVP.
-
-Evolución futura:
-
-Gestionarla desde Configuración de Cafetería.
+Actualmente la zona horaria se gestiona desde Configuración de Cafetería.
 
 ## Calidad de URLs de Imágenes
 
@@ -657,9 +811,29 @@ Validaciones implementadas:
 
 Cancelación de pedidos:
 
-- Solo se permite cancelar pedidos en estado RECEIVED.
-- Pedidos en preparación, listos para recoger, entregados o cancelados no pueden ser cancelados.
-- El backend actúa como fuente de verdad de esta regla.
+* Solo se permite cancelar pedidos en estado RECEIVED.
+* Pedidos en preparación, listos para recoger, entregados o cancelados no pueden ser cancelados.
+* El backend actúa como fuente de verdad de esta regla.
+
+Operación diaria:
+
+* La pantalla administrativa muestra únicamente pedidos correspondientes al día operativo actual.
+* El filtrado se realiza utilizando pickupTime.
+* Los pedidos históricos no aparecen en la vista operativa.
+* Los pedidos futuros no aparecen en la vista operativa.
+* Los pedidos se muestran ordenados por hora de recojo descendente.
+* Cuando no existen pedidos para el día se muestra un mensaje informativo.
+
+Cierre operativo diario:
+
+* Existe un cierre manual ejecutado desde Administración de Pedidos.
+* Los pedidos RECEIVED pasan a NOT_ATTENDED.
+* Los pedidos IN_PREPARATION pasan a NOT_ATTENDED.
+* Los pedidos READY_FOR_PICKUP pasan a NOT_ATTENDED.
+* DELIVERED no es modificado.
+* CANCELLED no es modificado.
+* NOT_ATTENDED no participa en ventas.
+* El cierre operativo no revierte stock.
 
 Indicadores administrativos:
 
@@ -688,11 +862,28 @@ OrderItem:
 
 * customizationNotes
 
-Opciones actuales:
+Implementación actual:
 
-* Mayonesa
-* Ketchup
-* Mostaza
+Entidad:
+
+* CustomizationOption
+
+Persistencia:
+
+* OrderItem.customizationNotes
+
+Capacidades:
+
+* Opciones administrables desde pantalla.
+* Activación y desactivación.
+* Consumo dinámico desde Home.
+* Selección múltiple.
+* Campo libre de observaciones.
+
+Observaciones:
+
+* Las opciones son globales para todos los productos configurables.
+* La personalización continúa almacenándose como snapshot histórico.
 
 Administración actual:
 
@@ -720,19 +911,59 @@ Evolución futura:
 
 ---
 
+# Perfil de Usuario
+
+Estado:
+
+Completo
+
+Implementación actual:
+
+Frontend:
+
+* profile.tsx
+* userService.ts
+* SideMenu.tsx
+
+Backend:
+
+* UserController
+* UserService
+* User
+* UserResponseDTO
+* UserProfileUpdateRequestDTO
+* ChangePasswordRequestDTO
+* SecurityConfig
+
+Base de datos:
+
+* users.phone
+
+Endpoints:
+
+```http
+GET /api/users/me
+
+PUT /api/users/me/profile
+
+PUT /api/users/me/password
+```
+
+---
+
 # 11. Próxima Evolución Recomendada
 
-1. Dashboard Administrativo
-2. Gestión de Categorías
-3. Reportes Frontend
-4. Gestión de Configuración de Cafetería
-5. Perfil de Usuario
+1. Reportes Frontend
+2. Notificaciones WhatsApp READY_FOR_PICKUP
+3. Auditoría
+4. Mejoras visuales finales
+5. Multi Cafetería
 
 ---
 
 # Historial del Documento
 
-Versión: v1.5.12
+Versión: v2.3
 
 Fecha de creación: Junio 2026
 
