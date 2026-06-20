@@ -23,7 +23,7 @@ Ambiente Productivo:
 | Ambiente   | Versión  | Estado             |
 |----------- |----------|----------          |
 | Producción | v1.9     | Operativo          |
-| Develop    | v2.1     | Desarrollo estable |
+| Develop    | v2.2     | Desarrollo estable |
 | Main       | v1.9     | Operativo          |
 
 ---
@@ -115,12 +115,16 @@ Estado:
 Funcionalidades:
 
 * Productos configurables mediante flag customizable
-* Selección de salsas
+* Opciones de personalización administrables
 * Persistencia histórica en OrderItem
 * Visualización en carrito
 * Visualización en Mis Pedidos
 * Visualización en Administración de Pedidos
 * Modal visual mejorado para selección de personalización
+* Gestión administrativa de opciones de personalización
+* Activación y desactivación de opciones
+* Carga dinámica desde backend
+* Campo libre de observaciones
 
 ---
 
@@ -250,6 +254,7 @@ ADMIN
 * Dashboard
 * Productos
 * Categorías
+* Personalizaciones
 * Usuarios
 * Pedidos
 * Reportes
@@ -324,6 +329,25 @@ Funcionalidades:
 * Validación de longitud de descripción.
 * Bloqueo de desactivación con productos activos.
 * Exclusión automática de categorías inactivas en el menú digital.
+
+---
+
+## Gestión de Personalizaciones
+
+Estado:
+
+🟢 Completo
+
+Funcionalidades:
+
+* Consulta administrativa.
+* Creación.
+* Edición.
+* Activación.
+* Desactivación.
+* Búsqueda.
+* Dashboard administrativo.
+* Consumo dinámico desde Home.
 
 ---
 

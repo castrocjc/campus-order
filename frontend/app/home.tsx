@@ -10,11 +10,13 @@ import {
   Modal,
   Platform,
   Dimensions,
+  TextInput,
 } from "react-native";
 import { getToken, logout } from "../src/services/authService";
 import { getMenu } from "../src/services/productService";
 import { createOrder } from "../src/services/orderService";
 import { getCafeteriaSettings } from "../src/services/cafeteriaSettingsService";
+import { getActiveCustomizationOptions } from "../src/services/customizationService";
 import SideMenu from "../components/ui/SideMenu";
 
 const productPlaceholder = require("../assets/product-placeholder.png");
@@ -88,6 +90,9 @@ export default function HomeScreen() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [selectedSauces, setSelectedSauces] = useState<string[]>([]);
 
+  const [customizationOptions, setCustomizationOptions] = useState<any[]>([]);
+  const [customizationNote, setCustomizationNote] = useState("");
+
   const [cart, setCart] = useState<any[]>(() => {
     try {
       const savedCart = localStorage.getItem("cart");
@@ -160,10 +165,20 @@ export default function HomeScreen() {
     const closingParts = schedule.closingTime.substring(0, 5).split(":");
 
     const openingTime = new Date(now);
-    openingTime.setHours(Number(openingParts[0]), Number(openingParts[1]), 0, 0);
+    openingTime.setHours(
+      Number(openingParts[0]),
+      Number(openingParts[1]),
+      0,
+      0,
+    );
 
     const closingTime = new Date(now);
-    closingTime.setHours(Number(closingParts[0]), Number(closingParts[1]), 0, 0);
+    closingTime.setHours(
+      Number(closingParts[0]),
+      Number(closingParts[1]),
+      0,
+      0,
+    );
 
     const firstPickupTime = new Date(
       Math.max(openingTime.getTime(), minimumTime.getTime()),
@@ -235,6 +250,7 @@ export default function HomeScreen() {
 
     loadProducts();
     loadCafeteriaSettings();
+    loadCustomizationOptions();
   }, []);
 
   useEffect(() => {
@@ -288,9 +304,19 @@ export default function HomeScreen() {
     }, 1200);
   };
 
+  const loadCustomizationOptions = async () => {
+    try {
+      const options = await getActiveCustomizationOptions();
+      setCustomizationOptions(options || []);
+    } catch (error) {
+      console.error("Error cargando opciones de personalización", error);
+    }
+  };
+
   const openCustomizationModal = (product: any) => {
     setSelectedProduct(product);
     setSelectedSauces([]);
+    setCustomizationNote("");
     setShowCustomizationModal(true);
   };
 
@@ -299,13 +325,23 @@ export default function HomeScreen() {
       return;
     }
 
-    const customizationNotes = selectedSauces.join(", ");
+    const selectedOptionsText =
+      selectedSauces.length > 0
+        ? `Opciones:\n• ${selectedSauces.join("\n• ")}`
+        : "";
+
+    const noteText = customizationNote.trim()
+      ? `\n\nNota:\n${customizationNote.trim()}`
+      : "";
+
+    const customizationNotes = `${selectedOptionsText}${noteText}`.trim();
 
     addToCartDirect(selectedProduct, customizationNotes);
 
     setShowCustomizationModal(false);
     setSelectedProduct(null);
     setSelectedSauces([]);
+    setCustomizationNote("");
   };
 
   const addToCartDirect = (product: any, customizationNotes: string = "") => {
@@ -403,7 +439,7 @@ export default function HomeScreen() {
     if (pickupOptions.length === 0) {
       showMessage(
         pickupAvailability.message || "No hay horarios disponibles para hoy",
-        "error"
+        "error",
       );
       return;
     }
@@ -636,7 +672,8 @@ export default function HomeScreen() {
                   <View style={styles.pickupOptions}>
                     {pickupOptions.length === 0 ? (
                       <Text style={styles.noPickupOptions}>
-                        {pickupAvailability.message || "No hay horarios disponibles para hoy"}
+                        {pickupAvailability.message ||
+                          "No hay horarios disponibles para hoy"}
                       </Text>
                     ) : (
                       pickupOptions.map((time) => (
@@ -795,29 +832,52 @@ export default function HomeScreen() {
             </Text>
 
             <View style={styles.saucesContainer}>
-              {[
-                { name: "Mayonesa", icon: "🥪" },
-                { name: "Ketchup", icon: "🍅" },
-                { name: "Mostaza", icon: "🌭" },
-              ].map((sauce) => {
-                const selected = selectedSauces.includes(sauce.name);
+              {customizationOptions.length === 0 ? (
+                <Text style={styles.emptyCustomizationText}>
+                  No hay opciones de personalización disponibles.
+                </Text>
+              ) : (
+                customizationOptions.map((option) => {
+                  const selected = selectedSauces.includes(option.name);
 
-                return (
-                  <TouchableOpacity
-                    key={sauce.name}
-                    style={[
-                      styles.sauceChip,
-                      selected && styles.sauceChipSelected,
-                    ]}
-                    onPress={() => toggleSauce(sauce.name)}
-                  >
-                    <Text style={styles.sauceChipText}>
-                      {selected ? "✓ " : ""}
-                      {sauce.icon} {sauce.name}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
+                  return (
+                    <TouchableOpacity
+                      key={option.id}
+                      style={[
+                        styles.sauceChip,
+                        selected && styles.sauceChipSelected,
+                      ]}
+                      onPress={() => toggleSauce(option.name)}
+                    >
+                      <Text
+                        style={[
+                          styles.sauceChipText,
+                          selected && styles.sauceChipTextSelected,
+                        ]}
+                      >
+                        {selected ? "✓ " : ""}
+                        {option.name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })
+              )}
+            </View>
+
+            <View style={styles.notesContainer}>
+              <Text style={styles.notesLabel}>
+                Notas adicionales (opcional)
+              </Text>
+
+              <TextInput
+                style={styles.notesInput}
+                value={customizationNote}
+                onChangeText={setCustomizationNote}
+                placeholder="Ejemplo: Sin papas por favor"
+                multiline
+                numberOfLines={3}
+                maxLength={250}
+              />
             </View>
 
             <Text style={styles.selectedCount}>
@@ -1049,7 +1109,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   addButtonDisabled: {
-  opacity: 0.5,
+    opacity: 0.5,
   },
   addButtonText: {
     color: "#fff",
@@ -1418,5 +1478,36 @@ const styles = StyleSheet.create({
   mobileCartMessageError: {
     backgroundColor: "#fdecea",
     color: "#b71c1c",
+  },
+
+  emptyCustomizationText: {
+    color: "#7a6a61",
+    fontWeight: "700",
+    fontSize: 13,
+  },
+
+  sauceChipTextSelected: {
+    color: "#f57c00",
+  },
+
+  notesContainer: {
+    marginTop: 16,
+  },
+
+  notesLabel: {
+    fontWeight: "700",
+    marginBottom: 8,
+    color: "#3b1f12",
+  },
+
+  notesInput: {
+    borderWidth: 1,
+    borderColor: "#ead8c8",
+    borderRadius: 10,
+    padding: 10,
+    minHeight: 80,
+    textAlignVertical: "top",
+    backgroundColor: "#fff",
+    color: "#3b1f12",
   },
 });

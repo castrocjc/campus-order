@@ -35,6 +35,18 @@ VALUES
 (true, false, 'Bebida natural de maíz morado.', 'https://images.pexels.com/photos/28490837/pexels-photo-28490837.jpeg', 'Chicha morada', 5.5, 60, 2),
 (true, false, 'Producto usado para validar filtros de disponibilidad.', NULL, 'Producto sin stock demo', 99, 0, 4);
 
+-- Customizations
+INSERT INTO customization_options (name, description, active) VALUES
+('Mayonesa', 'Salsa de mayonesa', TRUE),
+('Ketchup', 'Salsa de ketchup', TRUE),
+('Mostaza', 'Salsa de mostaza', TRUE),
+('Ají', 'Salsa de ají', TRUE),
+('Sin cebolla', 'Sin cebolla', TRUE),
+('Sin tomate', 'Sin tomate', TRUE),
+('Sin papas', 'Sin papas', TRUE),
+('Extra arroz', 'Porción adicional de arroz', TRUE),
+('Extra queso', 'Porción adicional de queso', TRUE);
+
 -- Users
 INSERT INTO users
 (name, email, phone, password, role, active, email_verified)

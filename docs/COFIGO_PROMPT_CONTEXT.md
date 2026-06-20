@@ -104,11 +104,14 @@ Estado: Completo
 Funcionalidades:
 
 * Productos configurables mediante flag customizable
-* Selección de salsas desde modal visual
+* Opciones de personalización administrables
 * Persistencia histórica en OrderItem
 * Visualización en carrito
 * Visualización en Mis Pedidos
 * Visualización en Administración de Pedidos
+* Gestión administrativa de personalizaciones
+* Carga dinámica desde backend
+* Campo libre de observaciones
 
 Observación:
 
@@ -194,6 +197,7 @@ Pantallas:
 * admin-products
 * admin-users
 * admin-categories
+* admin-customizations
 * Las pantallas administrativas de Dashboard, Productos, Categorías, Usuarios y Pedidos comparten el estándar visual oficial CofiGO mediante AdminLayout y SideMenu.
 
 ---
@@ -414,8 +418,10 @@ ADMIN
 * Dashboard
 * Productos
 * Categorías
+* Personalizaciones
 * Usuarios
 * Pedidos
+* Reportes
 
 WORKER
 

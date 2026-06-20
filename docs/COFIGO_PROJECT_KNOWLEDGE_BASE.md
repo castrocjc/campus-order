@@ -226,6 +226,17 @@ Mejora la calidad del catálogo, reduce errores operativos y facilita el control
 
 ---
 
+## CustomizationOption
+
+| Campo       | Tipo    |
+| ----------- | ------- |
+| id          | Long    |
+| name        | String  |
+| description | String  |
+| active      | Boolean |
+
+---
+
 ## Order
 
 | Campo                          | Tipo          |
@@ -350,6 +361,7 @@ Pantallas:
 * Dashboard
 * Productos
 * Categorías
+* Personalizaciones
 * Usuarios
 * Pedidos
 * Reportes
@@ -484,6 +496,19 @@ GET    /api/products/admin
 GET    /api/products/search
 
 GET    /api/products/paged
+```
+
+---
+
+## Customizations
+
+```
+GET    /api/customization-options
+GET    /api/customization-options/active
+POST   /api/customization-options
+PUT    /api/customization-options/{id}
+PATCH  /api/customization-options/{id}/activate
+PATCH  /api/customization-options/{id}/deactivate
 ```
 
 ---
@@ -818,11 +843,28 @@ OrderItem:
 
 * customizationNotes
 
-Opciones actuales:
+Implementación actual:
 
-* Mayonesa
-* Ketchup
-* Mostaza
+Entidad:
+
+* CustomizationOption
+
+Persistencia:
+
+* OrderItem.customizationNotes
+
+Capacidades:
+
+* Opciones administrables desde pantalla.
+* Activación y desactivación.
+* Consumo dinámico desde Home.
+* Selección múltiple.
+* Campo libre de observaciones.
+
+Observaciones:
+
+* Las opciones son globales para todos los productos configurables.
+* La personalización continúa almacenándose como snapshot histórico.
 
 Administración actual:
 

@@ -1835,4 +1835,92 @@ CofiGO incorpora el cierre formal de la jornada operativa y gestión de pedidos 
 
 ---
 
+# v2.2 - Personalización Dinámica de Productos
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Administración de Opciones de Personalización
+
+Se implementó un módulo administrativo para gestionar dinámicamente las opciones de personalización disponibles para productos configurables.
+
+Incluye:
+
+* Creación de opciones de personalización.
+* Edición de opciones.
+* Activación.
+* Desactivación.
+* Búsqueda.
+* Dashboard administrativo.
+* Integración con SideMenu.
+* Integración con AdminLayout.
+
+### Evolución del Modal de Personalización
+
+El modal de personalización dejó de utilizar opciones hardcodeadas y ahora consume opciones activas desde backend.
+
+Incluye:
+
+* Carga dinámica de opciones.
+* Selección múltiple mediante chips.
+* Campo libre de observaciones.
+* Persistencia histórica en OrderItem.customizationNotes.
+* Compatibilidad con pedidos históricos.
+
+## Backend
+
+Archivos creados:
+
+* CustomizationOption.java
+* CustomizationOptionController.java
+* CustomizationOptionService.java
+* CustomizationOptionRepository.java
+* CustomizationOptionRequestDTO.java
+* CustomizationOptionResponseDTO.java
+
+## Frontend
+
+Archivos creados:
+
+* admin-customizations.tsx
+* customizationService.ts
+
+Archivos modificados:
+
+* home.tsx
+* SideMenu.tsx
+
+## Base de datos
+
+Nueva tabla:
+
+* customization_options
+
+Campos:
+
+* id
+* name
+* description
+* active
+
+## Validaciones realizadas
+
+* Crear opción.
+* Editar opción.
+* Activar opción.
+* Desactivar opción.
+* Visualización dinámica en Home.
+* Selección múltiple.
+* Nota libre.
+* Persistencia en carrito.
+* Persistencia en pedidos.
+* Visualización administrativa.
+
+## Impacto
+
+La personalización evoluciona desde una solución hardcodeada hacia una solución administrable sin afectar la estructura de pedidos ni el histórico de ventas.
+
+---
+
 Fin del documento.

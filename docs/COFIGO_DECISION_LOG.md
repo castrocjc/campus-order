@@ -1374,4 +1374,50 @@ Evolución futura:
 
 ---
 
+# DEC-030
+
+Fecha: 2026-06
+
+Título:
+Administración dinámica de opciones de personalización
+
+Estado:
+Aprobada
+
+Contexto:
+
+La personalización inicial utilizaba opciones definidas en código (Mayonesa, Ketchup y Mostaza), lo que obligaba a realizar despliegues ante cualquier cambio operativo.
+
+Decisión:
+
+Crear la entidad CustomizationOption y permitir su administración desde pantalla.
+
+La selección continúa almacenándose como snapshot histórico dentro de OrderItem.customizationNotes.
+
+Justificación:
+
+* Eliminar hardcodeo.
+* Permitir autonomía operativa.
+* Mantener compatibilidad con pedidos históricos.
+* Evitar modificar la estructura de OrderItem.
+
+Consecuencias positivas:
+
+* Configuración administrable.
+* Menor dependencia de desarrollo.
+* Compatibilidad total con histórico.
+
+Consecuencias negativas:
+
+* Las opciones son globales para todos los productos.
+* No existen grupos de personalización por producto.
+
+Evolución futura:
+
+* ProductCustomizationGroup
+* Relación Product ↔ CustomizationOption
+* Reglas específicas por categoría o producto.
+
+---
+
 Fin del documento.
