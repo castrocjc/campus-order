@@ -622,19 +622,11 @@ Características:
 
 # 7. Módulos Pendientes
 
-## Prioridad Alta
+Gestionados mediante Product Backlog.
 
-* Reportes Frontend
+Ver sección:
 
-## Prioridad Media
-
-* Auditoría
-* Notificaciones
-
-## Prioridad Baja
-
-* Pagos Online
-* Multi Cafetería
+# 11. Product Backlog
 
 ---
 
@@ -786,17 +778,18 @@ Evolución futura:
 
 # Reglas Operativas de Pedidos
 
-Horario de atención:
+Valores de referencia actuales:
 
+Horario de atención:
 07:00 - 21:00
 
 Tiempo mínimo de preparación:
-
 20 minutos
 
 Intervalo de recojo:
-
 30 minutos
+
+Estos parámetros son administrables desde Configuración de Cafetería y pueden variar sin requerir despliegue.
 
 Validaciones implementadas:
 
@@ -900,9 +893,9 @@ Experiencia actual:
 
 Observaciones:
 
-* Las opciones se encuentran definidas en frontend.
+* Las opciones son administradas dinámicamente desde backend.
 * La personalización se almacena como snapshot histórico.
-* No existe administración dinámica de opciones.
+* Las opciones actualmente son globales para todos los productos configurables.
 
 Evolución futura:
 
@@ -951,19 +944,109 @@ PUT /api/users/me/password
 
 ---
 
-# 11. Próxima Evolución Recomendada
+# 11. Product Backlog
 
-1. Reportes Frontend
-2. Notificaciones WhatsApp READY_FOR_PICKUP
-3. Auditoría
-4. Mejoras visuales finales
-5. Multi Cafetería
+## EPIC 01 – Experiencia de Usuario
+
+### Historia 1.1 – Repetir Pedido
+Prioridad: Alta
+Estado: Pendiente
+
+Permitir recrear un pedido histórico desde Mis Pedidos con un solo clic.
+
+### Historia 1.2 – Productos Favoritos
+Prioridad: Media
+Estado: Pendiente
+
+Permitir marcar productos favoritos y acceder rápidamente a ellos.
+
+---
+
+## EPIC 02 – Operación y Administración
+
+### Historia 2.1 – Dashboard Administrativo Avanzado
+Prioridad: Alta
+Estado: Pendiente
+
+Consolidar indicadores operativos en una sola pantalla.
+
+Incluye:
+- Ventas del día
+- Pedidos pendientes
+- Pedidos listos para recoger
+- Productos más vendidos
+- Estado de cierre operativo
+
+### Historia 2.2 – Exportación de Reportes
+Prioridad: Alta
+Estado: Pendiente
+
+Exportación a Excel y CSV.
+
+### Historia 2.3 – Gestión de Inventario Simple
+Prioridad: Media
+Estado: Pendiente
+
+Alertas de stock bajo e indicadores operativos.
+
+---
+
+## EPIC 03 – Gobierno y Trazabilidad
+
+### Historia 3.1 – Auditoría Administrativa
+Prioridad: Alta
+Estado: Pendiente
+
+Registrar:
+- Quién
+- Qué
+- Cuándo
+
+para:
+- Usuarios
+- Categorías
+- Productos
+- Personalizaciones
+- Pedidos
+- Configuración de cafetería
+
+---
+
+## EPIC 04 – Comunicaciones
+
+### Historia 4.1 – WhatsApp READY_FOR_PICKUP
+Prioridad: Media
+Estado: En espera
+
+Observación:
+Requiere proveedor externo y costos operativos.
+
+---
+
+## EPIC 05 – Pagos Digitales
+
+### Historia 5.1 – Integración con Pasarela de Pago
+Prioridad: Baja
+Estado: Backlog futuro
+
+### Historia 5.2 – Monedero Universitario
+Prioridad: Baja
+Estado: Visión futura
+
+---
+
+## EPIC 06 – Escalabilidad
+
+### Historia 6.1 – Multi Cafetería
+Prioridad: Baja
+Estado: Visión futura
 
 ---
 
 # Historial del Documento
 
-Versión: v2.3
+Versión actual: v2.3
+Estado: Operativo en Producción
 
 Fecha de creación: Junio 2026
 

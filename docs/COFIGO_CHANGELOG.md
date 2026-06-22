@@ -10,7 +10,8 @@ CofiGO (Campus Order)
 
 Fecha: Junio 2026
 
-Estado:
+Versión actual: v2.3
+Estado: Operativo en Producción
 
 Primera versión documentada del proyecto.
 
@@ -1967,6 +1968,41 @@ Archivos modificados:
 * Sin cambios de base de datos.
 * Sin cambios de API.
 * Mejora progresiva de compatibilidad mobile web.
+
+---
+
+# v2.3.1 - Gobierno de Producto y Product Backlog
+
+Fecha: Junio 2026
+
+## Mejoras
+
+### Formalización del Product Backlog
+
+Se incorporó un backlog oficial del producto para gestionar futuras iteraciones.
+
+Incluye:
+
+* Priorización funcional.
+* Roadmap de evolución.
+* Clasificación por EPICs.
+* Registro formal de funcionalidades futuras.
+
+### Funcionalidades priorizadas
+
+1. Repetir Pedido
+2. Dashboard Administrativo Avanzado
+3. Exportación de Reportes
+4. Auditoría Administrativa
+5. Gestión de Inventario Simple
+6. WhatsApp READY_FOR_PICKUP
+7. Pagos Online
+8. Monedero Universitario
+9. Multi Cafetería
+
+Impacto:
+
+CofiGO evoluciona desde un enfoque basado en funcionalidades individuales hacia una gestión formal de producto basada en backlog.
 
 ---
 

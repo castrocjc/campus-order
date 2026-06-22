@@ -1420,4 +1420,53 @@ Evolución futura:
 
 ---
 
+# DEC-031
+
+Fecha: 2026-06
+
+Título:
+Gestión del producto mediante Product Backlog priorizado
+
+Estado:
+Aprobada
+
+Contexto:
+
+Después de la liberación de la versión v2.3, CofiGO alcanzó un nivel de madurez funcional suficiente para comenzar a gestionar su evolución mediante un backlog formal de producto.
+
+Decisión:
+
+Toda nueva funcionalidad deberá evaluarse y priorizarse dentro del Product Backlog oficial del proyecto.
+
+Prioridad actual:
+
+1. Repetir Pedido
+2. Dashboard Administrativo Avanzado
+3. Exportación de Reportes
+4. Auditoría Administrativa
+5. Gestión de Inventario Simple
+6. WhatsApp READY_FOR_PICKUP
+7. Pagos Online
+8. Monedero Universitario
+9. Multi Cafetería
+
+Justificación:
+
+* Permitir evolución controlada del producto.
+* Evitar desarrollo reactivo.
+* Facilitar planificación de iteraciones.
+* Mantener alineación entre negocio y tecnología.
+
+Consecuencias positivas:
+
+* Roadmap visible.
+* Priorización clara.
+* Menor riesgo de desviaciones funcionales.
+
+Consecuencias negativas:
+
+* Requiere mantenimiento periódico del backlog.
+
+---
+
 Fin del documento.
