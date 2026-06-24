@@ -2006,4 +2006,65 @@ CofiGO evoluciona desde un enfoque basado en funcionalidades individuales hacia 
 
 ---
 
+# v2.3.2 - Corrección de Regla de Preparación desde Apertura
+
+Fecha: Junio 2026
+
+## Correcciones
+
+### Generación y validación de horarios de recojo
+
+Se corrigió la lógica de cálculo de la primera hora disponible para recojo.
+
+Regla anterior:
+
+MAX(hora actual + preparación, hora apertura)
+
+Nueva regla:
+
+MAX(hora actual, hora apertura) + preparación
+
+Incluye:
+
+* Corrección en frontend para generación de horarios.
+* Corrección en backend para validación de pedidos.
+* Alineación completa entre Home y OrderService.
+* Validación utilizando zona horaria configurada de cafetería.
+* Protección para pedidos registrados antes de la apertura.
+
+### Seguridad
+
+Se habilitó acceso público a:
+
+GET /api/cafeteria-settings
+
+Motivación:
+
+* Permitir que Login y Home consuman configuración operativa antes de autenticarse.
+
+## Backend
+
+Archivos modificados:
+
+* OrderService.java
+* SecurityConfig.java
+
+## Frontend
+
+Archivos modificados:
+
+* home.tsx
+
+## Validaciones realizadas
+
+* Simulación 06:00 AM Perú.
+* Primer horario disponible 07:30.
+* Validación backend mediante Postman.
+* Rechazo de horarios inválidos.
+* Validación Login.
+* Validación Home.
+* Validación Mobile Web.
+
+---
+
 Fin del documento.

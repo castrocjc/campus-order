@@ -1469,4 +1469,47 @@ Consecuencias negativas:
 
 ---
 
+# DEC-032
+
+Fecha: 2026-06
+
+Título:
+Preparación mínima calculada desde apertura operativa
+
+Estado:
+Aprobada
+
+Contexto:
+
+Se detectó que un usuario podía visualizar horarios de recojo demasiado cercanos a la apertura de la cafetería, permitiendo escenarios donde el pedido podía entregarse exactamente al inicio de la jornada operativa.
+
+Decisión:
+
+La hora mínima de recojo se calcula utilizando:
+
+MAX(hora actual, hora apertura) + tiempo mínimo de preparación
+
+Justificación:
+
+* La cafetería requiere tiempo para preparar pedidos.
+* Un pedido no puede entregarse exactamente a la hora de apertura.
+* Mantiene consistencia entre frontend y backend.
+* Refleja correctamente la operación real del negocio.
+
+Consecuencias positivas:
+
+* Mayor coherencia operativa.
+* Horarios válidos más realistas.
+* Menor riesgo de incumplimiento de tiempos.
+
+Consecuencias negativas:
+
+* Menor cantidad de horarios disponibles al inicio de la jornada.
+
+Observación:
+
+Con apertura 07:00 y preparación mínima 20 minutos, el primer horario disponible será 07:30 cuando el intervalo sea de 30 minutos.
+
+---
+
 Fin del documento.

@@ -22,9 +22,9 @@ Ambiente Productivo:
 
 | Ambiente   | Versión    | Estado     |
 |------------|----------  |------------|
-| Producción | v2.3       | Operativo  |
-| Develop    | v2.3.1     | Operativo  |
-| Main       | v2.3       | Operativo  |
+| Producción | v2.3.2     | Operativo  |
+| Develop    | v2.3.2     | Operativo  |
+| Main       | v2.3.2     | Operativo  |
 
 ---
 
@@ -195,6 +195,11 @@ Funcionalidades:
 Reglas actuales de horario:
 
 * Las reglas operativas se obtienen dinámicamente desde Configuración de Cafetería.
+* La hora mínima de recojo se calcula usando:
+
+  MAX(hora actual, hora apertura) + tiempo mínimo de preparación.
+
+* Si el usuario realiza un pedido antes de la apertura, la preparación inicia desde la hora de apertura.
 
 Estados soportados:
 
@@ -492,6 +497,8 @@ Funcionalidades:
 * Gestión de días cerrados.
 * Configuración dinámica consumida por Home.
 * Configuración dinámica consumida por OrderService.
+* GET /api/cafeteria-settings es público para permitir consumo desde Login y Home.
+* PUT /api/cafeteria-settings continúa restringido a ADMIN.
 
 ---
 

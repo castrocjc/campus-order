@@ -139,6 +139,9 @@ export default function HomeScreen() {
       }),
     );
 
+    // SIMULACIÓN TEMPORAL 06:00 AM
+    //now.setHours(6, 0, 0, 0);
+
     const todayDay = DAY_NAMES[now.getDay()];
 
     const schedule = cafeteriaSettings.schedules?.find(
@@ -159,8 +162,6 @@ export default function HomeScreen() {
       };
     }
 
-    const minimumTime = new Date(now.getTime() + minPreparation * 60000);
-
     const openingParts = schedule.openingTime.substring(0, 5).split(":");
     const closingParts = schedule.closingTime.substring(0, 5).split(":");
 
@@ -180,8 +181,12 @@ export default function HomeScreen() {
       0,
     );
 
+    const preparationBase = new Date(
+      Math.max(now.getTime(), openingTime.getTime()),
+    );
+
     const firstPickupTime = new Date(
-      Math.max(openingTime.getTime(), minimumTime.getTime()),
+      preparationBase.getTime() + minPreparation * 60000,
     );
 
     const remainder = firstPickupTime.getMinutes() % interval;

@@ -193,6 +193,11 @@ Administración de Pedidos:
 Reglas actuales de horario:
 
 * Las reglas operativas son obtenidas dinámicamente desde Configuración de Cafetería.
+* La hora mínima de recojo se calcula mediante:
+
+  MAX(hora actual, hora apertura) + tiempo mínimo de preparación.
+
+* Si el usuario accede antes de la apertura, la preparación inicia desde la hora de apertura configurada.
 
 Estados:
 
@@ -256,6 +261,11 @@ Integraciones:
 
 * Home
 * OrderService
+
+Seguridad:
+
+* GET /api/cafeteria-settings es público.
+* PUT /api/cafeteria-settings requiere rol ADMIN.
 
 ---
 

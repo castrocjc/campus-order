@@ -543,6 +543,11 @@ GET /api/cafeteria-settings
 PUT /api/cafeteria-settings
 ```
 
+Reglas de acceso:
+
+* GET es público.
+* PUT requiere rol ADMIN.
+
 ---
 
 ## Reportes
@@ -801,6 +806,11 @@ Validaciones implementadas:
 * Al cancelar un pedido, el stock de los productos asociados se restaura automáticamente.
 * La reversa de stock aplica tanto desde Mis Pedidos como desde Administración de Pedidos.
 * La reversa solo se ejecuta cuando el pedido cambia por primera vez a CANCELLED.
+* La preparación mínima se calcula usando:
+
+  MAX(hora actual, hora apertura) + tiempo mínimo de preparación.
+
+* Si el usuario realiza un pedido antes de la apertura, la preparación inicia desde la hora de apertura configurada.
 
 Cancelación de pedidos:
 
