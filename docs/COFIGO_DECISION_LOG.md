@@ -1420,4 +1420,96 @@ Evolución futura:
 
 ---
 
+# DEC-031
+
+Fecha: 2026-06
+
+Título:
+Gestión del producto mediante Product Backlog priorizado
+
+Estado:
+Aprobada
+
+Contexto:
+
+Después de la liberación de la versión v2.3, CofiGO alcanzó un nivel de madurez funcional suficiente para comenzar a gestionar su evolución mediante un backlog formal de producto.
+
+Decisión:
+
+Toda nueva funcionalidad deberá evaluarse y priorizarse dentro del Product Backlog oficial del proyecto.
+
+Prioridad actual:
+
+1. Repetir Pedido
+2. Dashboard Administrativo Avanzado
+3. Exportación de Reportes
+4. Auditoría Administrativa
+5. Gestión de Inventario Simple
+6. WhatsApp READY_FOR_PICKUP
+7. Pagos Online
+8. Monedero Universitario
+9. Multi Cafetería
+
+Justificación:
+
+* Permitir evolución controlada del producto.
+* Evitar desarrollo reactivo.
+* Facilitar planificación de iteraciones.
+* Mantener alineación entre negocio y tecnología.
+
+Consecuencias positivas:
+
+* Roadmap visible.
+* Priorización clara.
+* Menor riesgo de desviaciones funcionales.
+
+Consecuencias negativas:
+
+* Requiere mantenimiento periódico del backlog.
+
+---
+
+# DEC-032
+
+Fecha: 2026-06
+
+Título:
+Preparación mínima calculada desde apertura operativa
+
+Estado:
+Aprobada
+
+Contexto:
+
+Se detectó que un usuario podía visualizar horarios de recojo demasiado cercanos a la apertura de la cafetería, permitiendo escenarios donde el pedido podía entregarse exactamente al inicio de la jornada operativa.
+
+Decisión:
+
+La hora mínima de recojo se calcula utilizando:
+
+MAX(hora actual, hora apertura) + tiempo mínimo de preparación
+
+Justificación:
+
+* La cafetería requiere tiempo para preparar pedidos.
+* Un pedido no puede entregarse exactamente a la hora de apertura.
+* Mantiene consistencia entre frontend y backend.
+* Refleja correctamente la operación real del negocio.
+
+Consecuencias positivas:
+
+* Mayor coherencia operativa.
+* Horarios válidos más realistas.
+* Menor riesgo de incumplimiento de tiempos.
+
+Consecuencias negativas:
+
+* Menor cantidad de horarios disponibles al inicio de la jornada.
+
+Observación:
+
+Con apertura 07:00 y preparación mínima 20 minutos, el primer horario disponible será 07:30 cuando el intervalo sea de 30 minutos.
+
+---
+
 Fin del documento.

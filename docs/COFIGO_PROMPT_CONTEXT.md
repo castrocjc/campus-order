@@ -29,9 +29,14 @@ Ya fueron estabilizadas las pantallas:
 * Administración de Pedidos
 * Configuración de Cafetería
 
-Pendiente principal:
+Adaptación Móvil Fase 2:
 
-* Administración de Productos en mobile web.
+Pendientes:
+
+* Administración de Categorías.
+* Administración de Personalizaciones.
+* Administración de Usuarios.
+* Administración de Productos pendiente de cierre en mobile web.
 
 ---
 
@@ -127,7 +132,8 @@ Funcionalidades:
 
 Observación:
 
-Las opciones de personalización se encuentran definidas en frontend como solución MVP.
+Las opciones de personalización son administradas dinámicamente desde backend mediante CustomizationOption.
+Actualmente son globales para todos los productos configurables.
 
 ---
 
@@ -187,6 +193,11 @@ Administración de Pedidos:
 Reglas actuales de horario:
 
 * Las reglas operativas son obtenidas dinámicamente desde Configuración de Cafetería.
+* La hora mínima de recojo se calcula mediante:
+
+  MAX(hora actual, hora apertura) + tiempo mínimo de preparación.
+
+* Si el usuario accede antes de la apertura, la preparación inicia desde la hora de apertura configurada.
 
 Estados:
 
@@ -251,6 +262,11 @@ Integraciones:
 * Home
 * OrderService
 
+Seguridad:
+
+* GET /api/cafeteria-settings es público.
+* PUT /api/cafeteria-settings requiere rol ADMIN.
+
 ---
 
 ## Reportes
@@ -300,20 +316,18 @@ Reglas:
 # Módulos Pendientes
 
 Prioridad Alta:
-
-* Reportes Frontend
-* Notificaciones WhatsApp READY_FOR_PICKUP
-* Notificaciones SMS READY_FOR_PICKUP
+* Repetir Pedido
+* Dashboard Administrativo Avanzado
+* Exportación de Reportes
+* Auditoría Administrativa
 
 Prioridad Media:
-
-* Dashboard Administrativo Avanzado
-* Auditoría
-* Notificaciones
+* Gestión de Inventario Simple
+* WhatsApp READY_FOR_PICKUP
 
 Prioridad Baja:
-
 * Pagos Online
+* Monedero Universitario
 * Multi Cafetería
 
 ---
@@ -453,6 +467,22 @@ Componentes base:
 Regla:
 
 Toda nueva pantalla debe integrarse al layout correspondiente y evitar navegación basada en botones Volver.
+
+---
+
+# Backlog Oficial
+
+La priorización actual del producto es:
+
+1. Repetir Pedido
+2. Dashboard Administrativo Avanzado
+3. Exportación de Reportes
+4. Auditoría Administrativa
+5. Gestión de Inventario Simple
+6. WhatsApp READY_FOR_PICKUP
+7. Pagos Online
+8. Monedero Universitario
+9. Multi Cafetería
 
 ---
 

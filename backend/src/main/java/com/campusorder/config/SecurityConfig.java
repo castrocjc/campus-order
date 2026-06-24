@@ -45,7 +45,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/users/me/profile").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/users/me/password").authenticated()
 
-                        .requestMatchers(HttpMethod.GET, "/api/cafeteria-settings").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/cafeteria-settings").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/cafeteria-settings").hasRole("ADMIN")                        
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
 

@@ -298,17 +298,6 @@ public class OrderService {
                                         "El tiempo mínimo de preparación de la cafetería no es válido");
                 }
 
-                LocalDateTime minimumAllowed = LocalDateTime
-                                .now(cafeteriaZoneId)
-                                .plusMinutes(minPreparationMinutes);
-
-                if (pickupTime.isBefore(minimumAllowed)) {
-                        throw new BusinessException(
-                                        "La hora de recojo debe ser al menos "
-                                                        + minPreparationMinutes
-                                                        + " minutos posterior a la hora actual");
-                }
-
                 DayOfWeek dayOfWeek = pickupTime.getDayOfWeek();
                 String dayOfWeekName = dayOfWeek.name();
 
@@ -334,6 +323,24 @@ public class OrderService {
                                         "El horario de atención configurado para el día seleccionado no es válido");
                 }
 
+                LocalDateTime now = LocalDateTime.now(cafeteriaZoneId);
+
+                LocalDateTime openingDateTime = LocalDateTime.of(
+                                pickupTime.toLocalDate(),
+                                openingTime);
+
+                LocalDateTime preparationBase = now.isBefore(openingDateTime)
+                                ? openingDateTime
+                                : now;
+
+                LocalDateTime minimumAllowed = preparationBase
+                                .plusMinutes(minPreparationMinutes);
+
+                if (pickupTime.isBefore(minimumAllowed)) {
+                        throw new BusinessException(
+                                        "La hora de recojo debe considerar el tiempo mínimo de preparación desde la apertura de la cafetería");
+                }
+
                 if (requestedTime.isBefore(openingTime)
                                 || requestedTime.isAfter(closingTime)) {
 
@@ -341,7 +348,6 @@ public class OrderService {
                                         "La hora de recojo está fuera del horario de atención");
                 }
         }
-
         private void restoreStock(Order order) {
 
         for (OrderItem item : order.getItems()) {

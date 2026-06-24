@@ -10,7 +10,8 @@ CofiGO (Campus Order)
 
 Fecha: Junio 2026
 
-Estado:
+Versión actual: v2.3
+Estado: Operativo en Producción
 
 Primera versión documentada del proyecto.
 
@@ -1967,6 +1968,102 @@ Archivos modificados:
 * Sin cambios de base de datos.
 * Sin cambios de API.
 * Mejora progresiva de compatibilidad mobile web.
+
+---
+
+# v2.3.1 - Gobierno de Producto y Product Backlog
+
+Fecha: Junio 2026
+
+## Mejoras
+
+### Formalización del Product Backlog
+
+Se incorporó un backlog oficial del producto para gestionar futuras iteraciones.
+
+Incluye:
+
+* Priorización funcional.
+* Roadmap de evolución.
+* Clasificación por EPICs.
+* Registro formal de funcionalidades futuras.
+
+### Funcionalidades priorizadas
+
+1. Repetir Pedido
+2. Dashboard Administrativo Avanzado
+3. Exportación de Reportes
+4. Auditoría Administrativa
+5. Gestión de Inventario Simple
+6. WhatsApp READY_FOR_PICKUP
+7. Pagos Online
+8. Monedero Universitario
+9. Multi Cafetería
+
+Impacto:
+
+CofiGO evoluciona desde un enfoque basado en funcionalidades individuales hacia una gestión formal de producto basada en backlog.
+
+---
+
+# v2.3.2 - Corrección de Regla de Preparación desde Apertura
+
+Fecha: Junio 2026
+
+## Correcciones
+
+### Generación y validación de horarios de recojo
+
+Se corrigió la lógica de cálculo de la primera hora disponible para recojo.
+
+Regla anterior:
+
+MAX(hora actual + preparación, hora apertura)
+
+Nueva regla:
+
+MAX(hora actual, hora apertura) + preparación
+
+Incluye:
+
+* Corrección en frontend para generación de horarios.
+* Corrección en backend para validación de pedidos.
+* Alineación completa entre Home y OrderService.
+* Validación utilizando zona horaria configurada de cafetería.
+* Protección para pedidos registrados antes de la apertura.
+
+### Seguridad
+
+Se habilitó acceso público a:
+
+GET /api/cafeteria-settings
+
+Motivación:
+
+* Permitir que Login y Home consuman configuración operativa antes de autenticarse.
+
+## Backend
+
+Archivos modificados:
+
+* OrderService.java
+* SecurityConfig.java
+
+## Frontend
+
+Archivos modificados:
+
+* home.tsx
+
+## Validaciones realizadas
+
+* Simulación 06:00 AM Perú.
+* Primer horario disponible 07:30.
+* Validación backend mediante Postman.
+* Rechazo de horarios inválidos.
+* Validación Login.
+* Validación Home.
+* Validación Mobile Web.
 
 ---
 

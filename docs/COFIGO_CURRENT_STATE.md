@@ -20,11 +20,11 @@ Ambiente Productivo:
 
 # Control de Versiones
 
-| Ambiente   | Versión  | Estado             |
-|----------- |----------|----------          |
-| Producción | v1.9     | Operativo          |
-| Develop    | v2.3     | Desarrollo estable |
-| Main       | v1.9     | Operativo          |
+| Ambiente   | Versión    | Estado     |
+|------------|----------  |------------|
+| Producción | v2.3.2     | Operativo  |
+| Develop    | v2.3.2     | Operativo  |
+| Main       | v2.3.2     | Operativo  |
 
 ---
 
@@ -195,6 +195,11 @@ Funcionalidades:
 Reglas actuales de horario:
 
 * Las reglas operativas se obtienen dinámicamente desde Configuración de Cafetería.
+* La hora mínima de recojo se calcula usando:
+
+  MAX(hora actual, hora apertura) + tiempo mínimo de preparación.
+
+* Si el usuario realiza un pedido antes de la apertura, la preparación inicia desde la hora de apertura.
 
 Estados soportados:
 
@@ -383,12 +388,6 @@ Reglas:
 
 ---
 
-# Funcionalidades No Implementadas
-
-
-
----
-
 ## Recuperar Contraseña
 
 Estado:
@@ -453,7 +452,6 @@ Funcionalidades:
 Pendiente:
 
 * WhatsApp READY_FOR_PICKUP.
-* SMS READY_FOR_PICKUP.
 
 ---
 
@@ -499,6 +497,8 @@ Funcionalidades:
 * Gestión de días cerrados.
 * Configuración dinámica consumida por Home.
 * Configuración dinámica consumida por OrderService.
+* GET /api/cafeteria-settings es público para permitir consumo desde Login y Home.
+* PUT /api/cafeteria-settings continúa restringido a ADMIN.
 
 ---
 
@@ -566,13 +566,25 @@ Las siguientes funcionalidades se consideran estables y no deben modificarse sin
 
 ---
 
-# Próximo Objetivo del Proyecto
+# Product Backlog Priorizado
 
-Prioridad Alta:
+Prioridad Alta
 
-1. Notificaciones WhatsApp READY_FOR_PICKUP
-2. Notificaciones SMS READY_FOR_PICKUP
-3. Auditoría
+1. Repetir Pedido
+2. Dashboard Administrativo Avanzado
+3. Exportación de Reportes
+4. Auditoría Administrativa
+
+Prioridad Media
+
+5. Gestión de Inventario Simple
+6. WhatsApp READY_FOR_PICKUP
+
+Prioridad Baja
+
+7. Pagos Online
+8. Monedero Universitario
+9. Multi Cafetería
 
 ---
 
