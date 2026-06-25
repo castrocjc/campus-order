@@ -2067,4 +2067,50 @@ Archivos modificados:
 
 ---
 
+# v2.3.3 - Priorización Operativa de Pedidos
+
+Fecha: Junio 2026
+
+## Mejoras
+
+### Ordenamiento de pedidos por hora de recojo
+
+Se ajustó el criterio de ordenamiento de los pedidos operativos para mostrar primero aquellos cuya hora de recojo es más próxima.
+
+Incluye:
+
+* Centralización del ordenamiento en backend.
+* Eliminación del ordenamiento duplicado en frontend.
+* Consistencia del criterio para los roles ADMIN y WORKER.
+* Priorización de atención según la hora de recojo.
+
+## Backend
+
+Archivos modificados:
+
+* OrderRepository.java
+* OrderService.java
+
+## Frontend
+
+Archivos modificados:
+
+* admin-orders.tsx
+
+## Validaciones realizadas
+
+* Ordenamiento ascendente por pickupTime.
+* Visualización correcta en Panel Administrador.
+* Visualización correcta en Panel Operario.
+* Sin impacto en estados de pedido.
+* Sin impacto en inventario.
+* Sin impacto en APIs.
+
+## Impacto
+
+* Backend se consolida como fuente de verdad para el ordenamiento operativo.
+* Mejora la experiencia del personal operativo al priorizar correctamente los pedidos.
+
+---
+
 Fin del documento.

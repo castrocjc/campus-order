@@ -32,12 +32,6 @@ export default function AdminOrdersScreen() {
   const loadOrders = async () => {
     try {
       const data = await getAllOrders();
-
-      data.sort(
-        (a: any, b: any) =>
-          new Date(b.pickupTime).getTime() - new Date(a.pickupTime).getTime(),
-      );
-
       setOrders(data);
     } catch (error) {
       console.error("Error cargando pedidos", error);

@@ -240,7 +240,8 @@ Funcionalidades:
 * Filtrado utilizando pickupTime.
 * Exclusión automática de pedidos históricos.
 * Exclusión automática de pedidos futuros.
-* Ordenamiento por hora de recojo descendente.
+* Ordenamiento por hora de recojo ascendente.
+* El pedido con la hora de recojo más próxima aparece primero para facilitar la atención operativa.
 * Mensaje informativo cuando no existen pedidos para el día.
 * Cierre operativo diario manual.
 * Conversión automática de pedidos pendientes a NOT_ATTENDED.
