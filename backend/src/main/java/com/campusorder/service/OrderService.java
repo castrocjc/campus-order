@@ -144,12 +144,12 @@ public class OrderService {
                 LocalDateTime endOfDay = today.plusDays(1).atStartOfDay().minusNanos(1);
 
                 return orderRepository
-                                .findByPickupTimeBetweenOrderByPickupTimeDesc(
-                                                startOfDay,
-                                                endOfDay)
-                                .stream()
-                                .map(this::mapToDTO)
-                                .toList();
+                        .findByPickupTimeBetweenOrderByPickupTimeAsc(
+                                startOfDay,
+                                endOfDay)
+                        .stream()
+                        .map(this::mapToDTO)
+                        .toList();
         }
 
         public OrderResponseDTO updateOrderStatus(

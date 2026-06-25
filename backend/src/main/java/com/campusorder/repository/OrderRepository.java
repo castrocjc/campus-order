@@ -18,9 +18,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
         List<Order> findByUserId(Long userId);
 
-        List<Order> findByPickupTimeBetweenOrderByPickupTimeDesc(
-                        LocalDateTime start,
-                        LocalDateTime end);
+        List<Order> findByPickupTimeBetweenOrderByPickupTimeAsc(
+                LocalDateTime start,
+                LocalDateTime end);
 
         @Query("""
                             SELECT DATE(o.createdAt),

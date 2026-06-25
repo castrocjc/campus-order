@@ -185,7 +185,9 @@ Administración de Pedidos:
 * El filtrado se realiza utilizando pickupTime.
 * Los pedidos históricos quedan fuera de la operación diaria.
 * Los pedidos futuros quedan fuera de la operación diaria.
-* Los pedidos se ordenan por hora de recojo descendente.
+* Los pedidos se ordenan por hora de recojo ascendente.
+* El backend es la fuente de verdad para el ordenamiento operativo.
+* El frontend consume el orden recibido sin aplicar ordenamientos adicionales.
 * Existe cierre operativo diario manual.
 * Los pedidos pendientes pueden pasar a NOT_ATTENDED.
 * El cierre operativo no revierte stock.

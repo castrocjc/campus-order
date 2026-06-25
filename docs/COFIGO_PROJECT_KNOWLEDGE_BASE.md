@@ -533,6 +533,14 @@ GET /api/orders/reports/sales-by-day
 PUT /api/orders/operational-close
 ```
 
+### Regla Operativa
+
+Los pedidos del día son devueltos por el backend ordenados por `pickupTime` de forma ascendente.
+
+Este criterio representa la prioridad oficial de atención para los roles ADMIN y WORKER.
+
+El frontend no debe aplicar ordenamientos adicionales sobre la colección recibida.
+
 ---
 
 ## Cafeteria Settings
@@ -848,6 +856,7 @@ Zona horaria oficial:
 America/Lima
 
 Todas las reglas de horario se calculan usando la hora oficial de Perú, independientemente de la ubicación del usuario o del servidor.
+
 
 ---
 

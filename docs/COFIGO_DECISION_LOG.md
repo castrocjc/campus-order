@@ -1512,4 +1512,45 @@ Con apertura 07:00 y preparación mínima 20 minutos, el primer horario disponib
 
 ---
 
+# DEC-033
+
+Fecha: Junio 2026
+
+Título:
+Centralización del ordenamiento operativo de pedidos
+
+Estado:
+Aprobada
+
+Contexto:
+
+El backend y el frontend aplicaban criterios de ordenamiento sobre los pedidos del día, generando duplicidad de responsabilidades.
+
+Decisión:
+
+Centralizar el ordenamiento por `pickupTime` en el backend.
+
+Los pedidos se devuelven ordenados de forma ascendente, mostrando primero el pedido con la hora de recojo más próxima.
+
+El frontend consume la colección sin aplicar ordenamientos adicionales.
+
+Justificación:
+
+* Backend como fuente de verdad.
+* Eliminación de lógica duplicada.
+* Consistencia entre ADMIN y WORKER.
+* Facilita futuras integraciones con nuevos clientes.
+
+Consecuencias positivas:
+
+* Menor complejidad en frontend.
+* Consistencia funcional.
+* Mejor mantenibilidad.
+
+Consecuencias negativas:
+
+* Cualquier cambio futuro en el criterio de ordenamiento deberá realizarse en backend.
+
+---
+
 Fin del documento.
