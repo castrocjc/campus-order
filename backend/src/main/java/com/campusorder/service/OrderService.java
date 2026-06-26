@@ -33,22 +33,24 @@ public class OrderService {
         private final OrderRepository orderRepository;
         private final ProductRepository productRepository;
         private final NotificationService notificationService;
-
         private final CafeteriaSettingsRepository cafeteriaSettingsRepository;
         private final CafeteriaScheduleRepository cafeteriaScheduleRepository;
-        
+        private final OrderStatusEventService orderStatusEventService;
+
         public OrderService(
                         OrderRepository orderRepository,
                         ProductRepository productRepository,
                         NotificationService notificationService,
                         CafeteriaSettingsRepository cafeteriaSettingsRepository,
-                        CafeteriaScheduleRepository cafeteriaScheduleRepository) {
+                        CafeteriaScheduleRepository cafeteriaScheduleRepository,
+                        OrderStatusEventService orderStatusEventService) {
 
                 this.orderRepository = orderRepository;
                 this.productRepository = productRepository;
                 this.notificationService = notificationService;
                 this.cafeteriaSettingsRepository = cafeteriaSettingsRepository;
                 this.cafeteriaScheduleRepository = cafeteriaScheduleRepository;
+                this.orderStatusEventService = orderStatusEventService;
         }
 
         public OrderResponseDTO createOrder(OrderRequestDTO dto) {
@@ -105,6 +107,13 @@ public class OrderService {
 
                 Order savedOrder = orderRepository.save(order);
 
+                orderStatusEventService.registerTransition(
+                                savedOrder,
+                                null,
+                                OrderStatus.RECEIVED,
+                                "USER",
+                                "Pedido creado");
+
                 return mapToDTO(savedOrder);
         }
 
@@ -144,47 +153,49 @@ public class OrderService {
                 LocalDateTime endOfDay = today.plusDays(1).atStartOfDay().minusNanos(1);
 
                 return orderRepository
-                        .findByPickupTimeBetweenOrderByPickupTimeAsc(
-                                startOfDay,
-                                endOfDay)
-                        .stream()
-                        .map(this::mapToDTO)
-                        .toList();
+                                .findByPickupTimeBetweenOrderByPickupTimeAsc(
+                                                startOfDay,
+                                                endOfDay)
+                                .stream()
+                                .map(this::mapToDTO)
+                                .toList();
         }
 
         public OrderResponseDTO updateOrderStatus(
-                Long orderId,
-                OrderStatus status) {
+                        Long orderId,
+                        OrderStatus status) {
 
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() ->
-                        new BusinessException("Pedido no encontrado"));
+                Order order = orderRepository.findById(orderId)
+                                .orElseThrow(() -> new BusinessException("Pedido no encontrado"));
 
-        OrderStatus previousStatus = order.getStatus();
+                OrderStatus previousStatus = order.getStatus();
 
-        if (
-                status == OrderStatus.CANCELLED
-                && previousStatus != OrderStatus.CANCELLED
-        ) {
-                restoreStock(order);
-        }
+                if (status == OrderStatus.CANCELLED
+                                && previousStatus != OrderStatus.CANCELLED) {
+                        restoreStock(order);
+                }
 
-        order.setStatus(status);
+                order.setStatus(status);
 
-        Order savedOrder = orderRepository.save(order);
+                Order savedOrder = orderRepository.save(order);
 
-        if (
-                previousStatus != OrderStatus.READY_FOR_PICKUP
-                && status == OrderStatus.READY_FOR_PICKUP
-                && !Boolean.TRUE.equals(
-                        savedOrder.getReadyForPickupNotificationSent())
-        ) {
+                orderStatusEventService.registerTransition(
+                                savedOrder,
+                                previousStatus,
+                                status,
+                                "STATUS_UPDATE",
+                                "Cambio manual de estado");
 
-                notificationService
-                        .notifyOrderReadyForPickup(savedOrder);
-        }
+                if (previousStatus != OrderStatus.READY_FOR_PICKUP
+                                && status == OrderStatus.READY_FOR_PICKUP
+                                && !Boolean.TRUE.equals(
+                                                savedOrder.getReadyForPickupNotificationSent())) {
 
-        return mapToDTO(savedOrder);
+                        notificationService
+                                        .notifyOrderReadyForPickup(savedOrder);
+                }
+
+                return mapToDTO(savedOrder);
         }
 
         @Transactional
@@ -220,8 +231,19 @@ public class OrderService {
                                                 endOfDay,
                                                 pendingStatuses);
 
-                pendingOrders.forEach(order ->
-                                order.setStatus(OrderStatus.NOT_ATTENDED));
+                pendingOrders.forEach(order -> {
+                        OrderStatus previousStatus = order.getStatus();
+
+                        order.setStatus(OrderStatus.NOT_ATTENDED);
+
+                        orderStatusEventService.registerTransition(
+                                order,
+                                previousStatus,
+                                OrderStatus.NOT_ATTENDED,
+                                "OPERATIONAL_CLOSE",
+                                "Cierre operativo diario"
+                        );
+                });
 
                 orderRepository.saveAll(pendingOrders);
 
@@ -233,13 +255,12 @@ public class OrderService {
                 List<OrderItemResponseDTO> itemDTOs = order.getItems()
                                 .stream()
                                 .map(item -> new OrderItemResponseDTO(
-                                        item.getProductId(),
-                                        item.getProductName(),
-                                        item.getQuantity(),
-                                        item.getUnitPrice(),
-                                        item.getSubtotal(),
-                                        item.getCustomizationNotes()
-                                        ))
+                                                item.getProductId(),
+                                                item.getProductName(),
+                                                item.getQuantity(),
+                                                item.getUnitPrice(),
+                                                item.getSubtotal(),
+                                                item.getCustomizationNotes()))
                                 .toList();
 
                 return new OrderResponseDTO(
@@ -266,6 +287,13 @@ public class OrderService {
                 order.setStatus(OrderStatus.CANCELLED);
 
                 Order cancelledOrder = orderRepository.save(order);
+
+                orderStatusEventService.registerTransition(
+                                cancelledOrder,
+                                OrderStatus.RECEIVED,
+                                OrderStatus.CANCELLED,
+                                "CANCEL",
+                                "Pedido cancelado");
 
                 return mapToDTO(cancelledOrder);
         }
@@ -348,21 +376,20 @@ public class OrderService {
                                         "La hora de recojo está fuera del horario de atención");
                 }
         }
+
         private void restoreStock(Order order) {
 
-        for (OrderItem item : order.getItems()) {
+                for (OrderItem item : order.getItems()) {
 
-                Product product = productRepository.findById(item.getProductId())
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        "Producto no encontrado: "
-                                                + item.getProductName()));
+                        Product product = productRepository.findById(item.getProductId())
+                                        .orElseThrow(() -> new BusinessException(
+                                                        "Producto no encontrado: "
+                                                                        + item.getProductName()));
 
-                product.setStock(
-                        product.getStock() + item.getQuantity()
-                );
+                        product.setStock(
+                                        product.getStock() + item.getQuantity());
 
-                productRepository.save(product);
+                        productRepository.save(product);
+                }
         }
-        }        
 }

@@ -2113,4 +2113,72 @@ Archivos modificados:
 
 ---
 
+# v2.3.4 - Trazabilidad Temporal del Ciclo de Vida de Pedidos
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Registro histórico de estados de pedido
+
+Se implementó una arquitectura basada en eventos para registrar de forma automática todas las transiciones del ciclo de vida de un pedido.
+
+Incluye:
+
+* Registro del evento de creación del pedido.
+* Registro de todos los cambios de estado.
+* Registro del cierre operativo diario.
+* Conservación del estado anterior y del nuevo estado.
+* Registro de la fecha y hora efectiva del evento.
+* Registro del usuario responsable.
+* Registro del rol responsable.
+* Registro del origen del cambio.
+* Registro de observaciones.
+* Timestamp técnico de persistencia (`created_at`).
+
+## Backend
+
+Archivos creados:
+
+* OrderStatusEvent.java
+* OrderStatusEventRepository.java
+* OrderStatusEventService.java
+
+Archivos modificados:
+
+* OrderService.java
+
+## Base de datos
+
+Nueva tabla:
+
+* order_status_events
+
+Campos:
+
+* id
+* order_id
+* previous_status
+* new_status
+* event_datetime
+* created_at
+* performed_by_user_id
+* performed_by_role
+* source
+* remarks
+
+## Validaciones realizadas
+
+* Registro del evento de creación del pedido.
+* Registro de cambios manuales de estado.
+* Registro de cancelaciones.
+* Registro del cierre operativo.
+* Validación del historial mediante consultas SQL.
+
+## Impacto
+
+CofiGO incorpora trazabilidad temporal completa del ciclo de vida de los pedidos, preparando la plataforma para indicadores operativos, auditoría y análisis de desempeño.
+
+---
+
 Fin del documento.

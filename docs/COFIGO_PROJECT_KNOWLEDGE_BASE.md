@@ -99,6 +99,25 @@ Repository
 Database
 ```
 
+### Arquitectura de Trazabilidad
+
+```text
+Order
+   │
+   ├── Estado actual
+   │
+   └── OrderStatusEvent
+           │
+           ├── RECEIVED
+           ├── IN_PREPARATION
+           ├── READY_FOR_PICKUP
+           ├── DELIVERED
+           ├── CANCELLED
+           └── NOT_ATTENDED
+```
+
+Cada transición genera un nuevo evento histórico sin modificar registros previos.
+
 ### Controllers
 
 ```text
@@ -279,6 +298,29 @@ Order 1 : N OrderItem
 | subtotal           | BigDecimal |
 | orderId            | Long       |
 | customizationNotes | String     |
+
+---
+
+## OrderStatusEvent
+
+| Campo             | Tipo          |
+|--------           |------         |
+| id                | Long          |
+| orderId           | Long          |
+| previousStatus    | OrderStatus   |
+| newStatus         | OrderStatus   |
+| eventDatetime     | LocalDateTime |
+| createdAt         | LocalDateTime |
+| performedByUserId | Long          |
+| performedByRole   | String        |
+| source            | String        |
+| remarks           | String        |
+
+### Relación
+
+```text
+Order 1 : N OrderStatusEvent
+```
 
 ---
 

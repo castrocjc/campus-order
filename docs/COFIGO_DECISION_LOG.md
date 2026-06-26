@@ -1553,4 +1553,61 @@ Consecuencias negativas:
 
 ---
 
+# DEC-034
+
+Fecha: Junio 2026
+
+Título:
+
+Arquitectura basada en eventos para el historial de estados de pedidos
+
+Estado:
+
+Aprobada
+
+Contexto:
+
+El sistema únicamente almacenaba el estado actual del pedido, impidiendo conocer cuándo ocurrió cada transición y limitando la construcción de indicadores operativos.
+
+Decisión:
+
+Implementar una entidad independiente denominada OrderStatusEvent para registrar cada transición del ciclo de vida del pedido.
+
+La entidad Order continúa almacenando únicamente el estado vigente.
+
+Cada cambio de estado genera un nuevo registro histórico.
+
+Información registrada:
+
+* Estado anterior.
+* Estado nuevo.
+* Fecha y hora del evento.
+* Usuario responsable.
+* Rol responsable.
+* Origen del cambio.
+* Observaciones.
+* Timestamp técnico de persistencia.
+
+Justificación:
+
+* Separación de responsabilidades.
+* Preservación completa del historial.
+* Facilidad para auditoría.
+* Base para indicadores operativos.
+* Escalabilidad futura.
+
+Consecuencias positivas:
+
+* Historial inmutable.
+* Mejor trazabilidad.
+* Reportes más completos.
+* Preparación para Business Intelligence.
+
+Consecuencias negativas:
+
+* Incremento moderado del volumen de datos.
+* Nueva entidad dentro del modelo de datos.
+
+---
+
 Fin del documento.
