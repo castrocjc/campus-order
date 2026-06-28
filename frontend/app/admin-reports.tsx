@@ -18,6 +18,7 @@ import {
   getOrdersByStatus,
   getTopProducts,
   getPeakHours,
+  getOperationalMetrics,
 } from "../src/services/reportService";
 
 function getDefaultDates() {
@@ -35,6 +36,12 @@ function formatCurrency(value: number | string | null | undefined) {
   const amount = Number(value || 0);
 
   return `S/ ${amount.toFixed(2)}`;
+}
+
+function formatMinutes(value: number | string | null | undefined) {
+  const minutes = Number(value || 0);
+
+  return `${minutes.toFixed(1)} min`;
 }
 
 function formatStatus(status: string) {
@@ -60,6 +67,7 @@ export default function AdminReportsScreen() {
   const [statuses, setStatuses] = useState<any[]>([]);
   const [topProducts, setTopProducts] = useState<any[]>([]);
   const [peakHours, setPeakHours] = useState<any[]>([]);
+  const [operationalMetrics, setOperationalMetrics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   const defaultDates = getDefaultDates();
@@ -67,26 +75,57 @@ export default function AdminReportsScreen() {
   const [from, setFrom] = useState(defaultDates.from);
   const [to, setTo] = useState(defaultDates.to);
 
+  const operationalCards = [
+    {
+      title: "Inicio de preparación",
+      description: "Recibido → En preparación",
+      metric: operationalMetrics?.timeToPreparation,
+    },
+    {
+      title: "Tiempo de preparación",
+      description: "En preparación → Listo",
+      metric: operationalMetrics?.preparation,
+    },
+    {
+      title: "Espera de recojo",
+      description: "Listo → Entregado",
+      metric: operationalMetrics?.waitingPickup,
+    },
+    {
+      title: "Tiempo total entrega",
+      description: "Recibido → Entregado",
+      metric: operationalMetrics?.totalDelivery,
+    },
+  ];
+
   useEffect(() => {
     loadReports();
   }, []);
 
   async function loadReports() {
     try {
-      const [summaryData, salesData, statusData, productsData, peakData] =
-        await Promise.all([
-          getReportSummary(from, to),
-          getSalesByDay(from, to),
-          getOrdersByStatus(from, to),
-          getTopProducts(from, to, 10),
-          getPeakHours(from, to),
-        ]);
+      const [
+        summaryData,
+        salesData,
+        statusData,
+        productsData,
+        peakData,
+        operationalData,
+      ] = await Promise.all([
+        getReportSummary(from, to),
+        getSalesByDay(from, to),
+        getOrdersByStatus(from, to),
+        getTopProducts(from, to, 10),
+        getPeakHours(from, to),
+        getOperationalMetrics(from, to),
+      ]);
 
       setSummary(summaryData);
       setSales(salesData);
       setStatuses(statusData);
       setTopProducts(productsData);
       setPeakHours(peakData);
+      setOperationalMetrics(operationalData);
     } finally {
       setLoading(false);
     }
@@ -215,6 +254,56 @@ export default function AdminReportsScreen() {
                   <Text style={styles.cardNote}>Cuentas habilitadas</Text>
                 </View>
               </View>
+
+<View style={styles.panelFull}>
+  <View style={styles.operationalHeader}>
+    <View>
+      <Text style={styles.sectionTitle}>Indicadores Operativos</Text>
+      <Text style={styles.operationalSubtitle}>
+        Tiempos calculados desde la trazabilidad histórica de estados.
+      </Text>
+    </View>
+
+    <View style={styles.ordersAnalyzedBadge}>
+      <Text style={styles.ordersAnalyzedLabel}>Pedidos analizados</Text>
+      <Text style={styles.ordersAnalyzedValue}>
+        {operationalMetrics?.ordersAnalyzed || 0}
+      </Text>
+    </View>
+  </View>
+
+  <View style={styles.operationalGrid}>
+    {operationalCards.map((item, index) => (
+      <View key={index} style={styles.operationalCard}>
+        <Text style={styles.operationalCardTitle}>{item.title}</Text>
+        <Text style={styles.operationalCardDescription}>
+          {item.description}
+        </Text>
+
+        <View style={styles.metricMainRow}>
+          <Text style={styles.metricMainLabel}>Promedio</Text>
+          <Text style={styles.metricMainValue}>
+            {formatMinutes(item.metric?.average)}
+          </Text>
+        </View>
+
+        <View style={styles.metricDetailRow}>
+          <Text style={styles.metricDetailLabel}>Mínimo</Text>
+          <Text style={styles.metricDetailValue}>
+            {formatMinutes(item.metric?.minimum)}
+          </Text>
+        </View>
+
+        <View style={styles.metricDetailRow}>
+          <Text style={styles.metricDetailLabel}>Máximo</Text>
+          <Text style={styles.metricDetailValue}>
+            {formatMinutes(item.metric?.maximum)}
+          </Text>
+        </View>
+      </View>
+    ))}
+  </View>
+</View>
 
               <View style={styles.grid}>
                 <View style={styles.panel}>
@@ -531,4 +620,105 @@ const styles = StyleSheet.create({
   searchButtonDisabled: {
     opacity: 0.6,
   },
+
+panelFull: {
+  backgroundColor: "#fff8f1",
+  borderWidth: 1,
+  borderColor: "#ead3bf",
+  padding: 16,
+  borderRadius: 14,
+  marginBottom: 14,
+},
+operationalHeader: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  gap: 12,
+  flexWrap: "wrap",
+  marginBottom: 14,
+},
+operationalSubtitle: {
+  color: "#7b6254",
+  fontWeight: "700",
+  marginTop: -4,
+},
+ordersAnalyzedBadge: {
+  backgroundColor: "#ffffff",
+  borderWidth: 1,
+  borderColor: "#ead3bf",
+  borderRadius: 12,
+  paddingHorizontal: 14,
+  paddingVertical: 10,
+  minWidth: 150,
+},
+ordersAnalyzedLabel: {
+  color: "#7b6254",
+  fontSize: 12,
+  fontWeight: "800",
+},
+ordersAnalyzedValue: {
+  color: "#f57c00",
+  fontSize: 24,
+  fontWeight: "900",
+  marginTop: 2,
+},
+operationalGrid: {
+  flexDirection: "row",
+  flexWrap: "wrap",
+  gap: 12,
+},
+operationalCard: {
+  flexGrow: 1,
+  flexBasis: 220,
+  backgroundColor: "#ffffff",
+  borderWidth: 1,
+  borderColor: "#ead3bf",
+  borderRadius: 12,
+  padding: 14,
+},
+operationalCardTitle: {
+  color: "#3b2418",
+  fontSize: 15,
+  fontWeight: "900",
+},
+operationalCardDescription: {
+  color: "#7b6254",
+  fontSize: 12,
+  fontWeight: "700",
+  marginTop: 4,
+  marginBottom: 12,
+},
+metricMainRow: {
+  borderTopWidth: 1,
+  borderTopColor: "#ead3bf",
+  paddingTop: 10,
+  marginBottom: 8,
+},
+metricMainLabel: {
+  color: "#7b6254",
+  fontSize: 12,
+  fontWeight: "800",
+},
+metricMainValue: {
+  color: "#f57c00",
+  fontSize: 24,
+  fontWeight: "900",
+  marginTop: 2,
+},
+metricDetailRow: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  borderTopWidth: 1,
+  borderTopColor: "#f1dfcf",
+  paddingTop: 8,
+  marginTop: 8,
+},
+metricDetailLabel: {
+  color: "#7b6254",
+  fontWeight: "800",
+},
+metricDetailValue: {
+  color: "#3b2418",
+  fontWeight: "900",
+},
+  
 });

@@ -210,6 +210,12 @@ Estados:
 * NOT_ATTENDED
 * CANCELLED
 
+Arquitectura de trazabilidad:
+
+* Cada transición de estado genera un registro en OrderStatusEvent.
+* Order conserva únicamente el estado actual del pedido.
+* El historial completo del ciclo de vida se obtiene consultando OrderStatusEvent.
+
 ---
 
 ## Gestión Administrativa
@@ -287,6 +293,11 @@ Funcionalidades:
 * Dashboard visual.
 * Integración con AdminLayout.
 * Integración con SideMenu.
+* Indicadores Operativos.
+* Integración con OrderStatusEvent.
+* Tiempo promedio de preparación.
+* Tiempo promedio de entrega.
+* Valores promedio, mínimo y máximo.
 
 ---
 
@@ -355,6 +366,19 @@ Observaciones:
 Order almacena userId.
 
 OrderItem almacena productId y productName para preservar el histórico de ventas.
+
+Nueva entidad:
+
+* OrderStatusEvent
+
+Relaciones:
+
+* Order 1:N OrderItem
+* Order 1:N OrderStatusEvent
+
+OperationalMetricsService consume exclusivamente OrderStatusEvent para el cálculo de indicadores operativos.
+
+OrderService no participa en la generación de métricas.
 
 ---
 
@@ -479,7 +503,17 @@ La priorización actual del producto es:
 1. Repetir Pedido
 2. Dashboard Administrativo Avanzado
 3. Exportación de Reportes
-4. Auditoría Administrativa
+4. Auditoría Administrativa (Fase 2)
+
+La auditoría del ciclo de vida de pedidos ya fue implementada mediante OrderStatusEvent.
+
+Pendiente extender el mismo patrón a:
+
+* Productos
+* Categorías
+* Usuarios
+* Personalizaciones
+* Configuración de Cafetería.
 5. Gestión de Inventario Simple
 6. WhatsApp READY_FOR_PICKUP
 7. Pagos Online

@@ -55,3 +55,14 @@ export async function getPeakHours(
 
   return result.data;
 }
+
+export async function getOperationalMetrics(
+  from: string,
+  to: string
+) {
+  const result = await apiRequest(
+    `/api/reports/operational-metrics?from=${from}&to=${to}`
+  );
+
+  return result.data;
+}

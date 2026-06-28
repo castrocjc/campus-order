@@ -22,9 +22,9 @@ Ambiente Productivo:
 
 | Ambiente   | Versión    | Estado     |
 |------------|----------  |------------|
-| Producción | v2.3.2     | Operativo  |
-| Develop    | v2.3.2     | Operativo  |
-| Main       | v2.3.2     | Operativo  |
+| Producción | v2.4       | Operativo  |
+| Develop    | v2.4       | Operativo  |
+| Main       | v2.4       | Operativo  |
 
 ---
 
@@ -191,6 +191,9 @@ Funcionalidades:
 * Título dinámico por rol:
   * Panel administrador (ADMIN)
   * Panel operario (WORKER)
+* Registro histórico completo de transiciones de estado mediante OrderStatusEvent.
+* Conservación de fecha y hora de cada transición.
+* Registro del usuario, rol y origen de cada cambio de estado.
 
 Reglas actuales de horario:
 
@@ -380,12 +383,23 @@ Funcionalidades:
 * Dashboard visual.
 * Integración con AdminLayout.
 * Integración con SideMenu.
+* Indicadores Operativos.
+* Tiempo promedio de inicio de preparación.
+* Tiempo promedio de preparación.
+* Tiempo promedio de espera para recojo.
+* Tiempo promedio total hasta la entrega.
+* Visualización de promedios, mínimos y máximos.
+* Integración con OrderStatusEvent.
 
 Reglas:
 
 * Ventas consideran únicamente pedidos DELIVERED.
 * Ticket promedio considera únicamente pedidos DELIVERED.
 * Pedidos CANCELLED participan en distribución de estados.
+
+Observación:
+
+Los indicadores operativos ya consumen la información histórica almacenada en OrderStatusEvent. La arquitectura queda preparada para futuras métricas como SLA, percentiles y análisis por producto o franja horaria.
 
 ---
 
@@ -460,7 +474,19 @@ Pendiente:
 
 Estado:
 
-🔴 Pendiente
+🟡 Parcial
+
+Implementado:
+
+* Auditoría del ciclo de vida de pedidos mediante OrderStatusEvent.
+
+Pendiente:
+
+* Auditoría de Productos.
+* Auditoría de Categorías.
+* Auditoría de Usuarios.
+* Auditoría de Personalizaciones.
+* Auditoría de Configuración de Cafetería.
 
 ---
 
@@ -627,6 +653,15 @@ Validaciones realizadas:
 * Validación de imágenes con fallback automático.
 * Validación de catálogo Mobile Web.
 * Validación de flujo completo de compra desde iPhone.
+* Validación del registro histórico de eventos.
+* Validación del evento de creación del pedido.
+* Validación de cambios manuales de estado.
+* Validación del cierre operativo diario.
+* Validación del historial mediante consultas SQL.
+* Validación del endpoint Operational Metrics.
+* Validación de tiempos promedio.
+* Validación de mínimos y máximos.
+* Validación del Dashboard de Indicadores Operativos.
 
 ---
 

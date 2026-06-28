@@ -78,6 +78,36 @@ CREATE TABLE orders (
 );
 
 -- ==========================
+-- ORDER STATUS EVENTS
+-- ==========================
+
+CREATE TABLE order_status_events (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    previous_status VARCHAR(50),
+    new_status VARCHAR(50) NOT NULL,
+    event_datetime DATETIME NOT NULL,
+    performed_by_user_id BIGINT,
+    performed_by_role VARCHAR(50),
+    source VARCHAR(50) NOT NULL,
+    remarks VARCHAR(255),
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT FK_ORDER_STATUS_EVENT_ORDER
+        FOREIGN KEY (order_id)
+        REFERENCES orders(id)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX IDX_ORDER_STATUS_EVENT_ORDER
+ON order_status_events(order_id);
+
+CREATE INDEX IDX_ORDER_STATUS_EVENT_DATETIME
+ON order_status_events(event_datetime);
+
+CREATE INDEX IDX_ORDER_STATUS_EVENT_STATUS
+ON order_status_events(new_status);
+
+-- ==========================
 -- ORDER ITEMS
 -- ==========================
 
@@ -133,4 +163,3 @@ CREATE TABLE cafeteria_schedules (
         FOREIGN KEY (cafeteria_settings_id)
         REFERENCES cafeteria_settings(id)
 );
-

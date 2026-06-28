@@ -99,6 +99,25 @@ Repository
 Database
 ```
 
+### Arquitectura de Trazabilidad
+
+```text
+Order
+   │
+   ├── Estado actual
+   │
+   └── OrderStatusEvent
+           │
+           ├── RECEIVED
+           ├── IN_PREPARATION
+           ├── READY_FOR_PICKUP
+           ├── DELIVERED
+           ├── CANCELLED
+           └── NOT_ATTENDED
+```
+
+Cada transición genera un nuevo evento histórico sin modificar registros previos.
+
 ### Controllers
 
 ```text
@@ -123,6 +142,7 @@ EmailService
 CategoryService
 CafeteriaSettingsService
 ReportsService
+OperationalMetricsService
 ```
 
 ### Repositories
@@ -279,6 +299,29 @@ Order 1 : N OrderItem
 | subtotal           | BigDecimal |
 | orderId            | Long       |
 | customizationNotes | String     |
+
+---
+
+## OrderStatusEvent
+
+| Campo             | Tipo          |
+|--------           |------         |
+| id                | Long          |
+| orderId           | Long          |
+| previousStatus    | OrderStatus   |
+| newStatus         | OrderStatus   |
+| eventDatetime     | LocalDateTime |
+| createdAt         | LocalDateTime |
+| performedByUserId | Long          |
+| performedByRole   | String        |
+| source            | String        |
+| remarks           | String        |
+
+### Relación
+
+```text
+Order 1 : N OrderStatusEvent
+```
 
 ---
 
@@ -570,6 +613,8 @@ GET /api/reports/orders-by-status
 GET /api/reports/top-products
 
 GET /api/reports/peak-hours
+
+GET /api/reports/operational-metrics
 ```
 
 ---
@@ -614,6 +659,16 @@ Gestión de Usuarios:
 * Etiquetas de campos obligatorios.
 * Placeholders de ayuda para captura.
 * Botones Limpiar y Cancelar en mantenimiento.
+
+Dashboard Analítico:
+
+Capacidades:
+
+* Indicadores Operativos.
+* Tiempo promedio de preparación.
+* Tiempo promedio de entrega.
+* Tiempo promedio por estado.
+* Valores promedio, mínimo y máximo.
 
 ### Arquitectura de Navegación
 

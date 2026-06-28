@@ -10,7 +10,7 @@ CofiGO (Campus Order)
 
 Fecha: Junio 2026
 
-Versión actual: v2.3
+Versión actual: v2.4
 Estado: Operativo en Producción
 
 Primera versión documentada del proyecto.
@@ -2110,6 +2110,147 @@ Archivos modificados:
 
 * Backend se consolida como fuente de verdad para el ordenamiento operativo.
 * Mejora la experiencia del personal operativo al priorizar correctamente los pedidos.
+
+---
+
+# v2.3.4 - Trazabilidad Temporal del Ciclo de Vida de Pedidos
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Registro histórico de estados de pedido
+
+Se implementó una arquitectura basada en eventos para registrar de forma automática todas las transiciones del ciclo de vida de un pedido.
+
+Incluye:
+
+* Registro del evento de creación del pedido.
+* Registro de todos los cambios de estado.
+* Registro del cierre operativo diario.
+* Conservación del estado anterior y del nuevo estado.
+* Registro de la fecha y hora efectiva del evento.
+* Registro del usuario responsable.
+* Registro del rol responsable.
+* Registro del origen del cambio.
+* Registro de observaciones.
+* Timestamp técnico de persistencia (`created_at`).
+
+## Backend
+
+Archivos creados:
+
+* OrderStatusEvent.java
+* OrderStatusEventRepository.java
+* OrderStatusEventService.java
+
+Archivos modificados:
+
+* OrderService.java
+
+## Base de datos
+
+Nueva tabla:
+
+* order_status_events
+
+Campos:
+
+* id
+* order_id
+* previous_status
+* new_status
+* event_datetime
+* created_at
+* performed_by_user_id
+* performed_by_role
+* source
+* remarks
+
+## Validaciones realizadas
+
+* Registro del evento de creación del pedido.
+* Registro de cambios manuales de estado.
+* Registro de cancelaciones.
+* Registro del cierre operativo.
+* Validación del historial mediante consultas SQL.
+
+## Impacto
+
+CofiGO incorpora trazabilidad temporal completa del ciclo de vida de los pedidos, preparando la plataforma para indicadores operativos, auditoría y análisis de desempeño.
+
+---
+
+---
+
+# v2.4 - Indicadores Operativos Basados en Trazabilidad
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Indicadores Operativos
+
+Se implementó la primera fase de indicadores operativos utilizando la infraestructura de trazabilidad basada en OrderStatusEvent.
+
+Incluye:
+
+* Tiempo promedio desde RECEIVED hasta IN_PREPARATION.
+* Tiempo promedio de preparación.
+* Tiempo promedio de espera para recojo.
+* Tiempo promedio total hasta la entrega.
+* Cálculo de valores promedio, mínimo y máximo por indicador.
+* Cantidad de pedidos analizados.
+* Integración con el Dashboard de Reportes.
+
+## Backend
+
+Archivos creados:
+
+* OperationalMetricsService.java
+* OperationalMetricsDTO.java
+* MetricStatsDTO.java
+
+Archivos modificados:
+
+* ReportsController.java
+* ReportsService.java
+* OrderStatusEventRepository.java
+
+## Frontend
+
+Archivos modificados:
+
+* admin-reports.tsx
+* reportService.ts
+
+## Arquitectura
+
+Nueva capa especializada:
+
+ReportsController
+
+→ ReportsService
+
+→ OperationalMetricsService
+
+→ OrderStatusEventRepository
+
+La lógica de cálculo permanece desacoplada de OrderService y reutiliza exclusivamente la información histórica registrada en OrderStatusEvent.
+
+## Validaciones realizadas
+
+* Compilación Maven.
+* Validación mediante Postman.
+* Validación de promedios.
+* Validación de mínimos.
+* Validación de máximos.
+* Validación de pedidos analizados.
+* Validación visual del Dashboard Administrativo.
+
+## Impacto
+
+CofiGO incorpora su primer módulo de analítica operativa basado en tiempos reales del ciclo de vida de los pedidos, sentando las bases para futuros indicadores de SLA y desempeño.
 
 ---
 
