@@ -1610,4 +1610,57 @@ Consecuencias negativas:
 
 ---
 
+---
+
+# DEC-035
+
+Fecha: Junio 2026
+
+Título:
+
+Arquitectura especializada para Indicadores Operativos
+
+Estado:
+
+Aprobada
+
+Contexto:
+
+La incorporación de métricas operativas requería reutilizar la información histórica registrada en OrderStatusEvent sin incrementar la complejidad de ReportsService ni afectar la lógica transaccional de pedidos.
+
+Decisión:
+
+Crear OperationalMetricsService como servicio especializado encargado exclusivamente del cálculo de indicadores operativos.
+
+ReportsService mantiene el rol de orquestador y delega el procesamiento de métricas a este nuevo componente.
+
+Justificación:
+
+* Separación de responsabilidades.
+* Bajo acoplamiento.
+* Mayor reutilización.
+* Facilidad para incorporar nuevos indicadores.
+* Independencia respecto a OrderService.
+
+Consecuencias positivas:
+
+* Arquitectura escalable.
+* Fácil incorporación de SLA.
+* Fácil incorporación de nuevos KPI.
+* Reutilización de la infraestructura de trazabilidad.
+
+Consecuencias negativas:
+
+* Nueva clase de servicio dentro del módulo de reportes.
+
+Evolución futura:
+
+* SLA.
+* Percentiles.
+* Tendencias.
+* Métricas por producto.
+* Métricas por franja horaria.
+
+---
+
 Fin del documento.

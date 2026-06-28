@@ -22,9 +22,9 @@ Ambiente Productivo:
 
 | Ambiente   | Versión    | Estado     |
 |------------|----------  |------------|
-| Producción | v2.3.4     | Operativo  |
-| Develop    | v2.3.4     | Operativo  |
-| Main       | v2.3.4     | Operativo  |
+| Producción | v2.4       | Operativo  |
+| Develop    | v2.4       | Operativo  |
+| Main       | v2.4       | Operativo  |
 
 ---
 
@@ -383,6 +383,13 @@ Funcionalidades:
 * Dashboard visual.
 * Integración con AdminLayout.
 * Integración con SideMenu.
+* Indicadores Operativos.
+* Tiempo promedio de inicio de preparación.
+* Tiempo promedio de preparación.
+* Tiempo promedio de espera para recojo.
+* Tiempo promedio total hasta la entrega.
+* Visualización de promedios, mínimos y máximos.
+* Integración con OrderStatusEvent.
 
 Reglas:
 
@@ -392,7 +399,7 @@ Reglas:
 
 Observación:
 
-La plataforma ya dispone de la información necesaria para incorporar indicadores operativos basados en tiempos por estado del pedido.
+Los indicadores operativos ya consumen la información histórica almacenada en OrderStatusEvent. La arquitectura queda preparada para futuras métricas como SLA, percentiles y análisis por producto o franja horaria.
 
 ---
 
@@ -651,6 +658,10 @@ Validaciones realizadas:
 * Validación de cambios manuales de estado.
 * Validación del cierre operativo diario.
 * Validación del historial mediante consultas SQL.
+* Validación del endpoint Operational Metrics.
+* Validación de tiempos promedio.
+* Validación de mínimos y máximos.
+* Validación del Dashboard de Indicadores Operativos.
 
 ---
 

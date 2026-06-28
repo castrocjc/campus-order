@@ -142,6 +142,7 @@ EmailService
 CategoryService
 CafeteriaSettingsService
 ReportsService
+OperationalMetricsService
 ```
 
 ### Repositories
@@ -612,6 +613,8 @@ GET /api/reports/orders-by-status
 GET /api/reports/top-products
 
 GET /api/reports/peak-hours
+
+GET /api/reports/operational-metrics
 ```
 
 ---
@@ -656,6 +659,16 @@ Gestión de Usuarios:
 * Etiquetas de campos obligatorios.
 * Placeholders de ayuda para captura.
 * Botones Limpiar y Cancelar en mantenimiento.
+
+Dashboard Analítico:
+
+Capacidades:
+
+* Indicadores Operativos.
+* Tiempo promedio de preparación.
+* Tiempo promedio de entrega.
+* Tiempo promedio por estado.
+* Valores promedio, mínimo y máximo.
 
 ### Arquitectura de Navegación
 

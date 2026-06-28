@@ -293,6 +293,11 @@ Funcionalidades:
 * Dashboard visual.
 * Integración con AdminLayout.
 * Integración con SideMenu.
+* Indicadores Operativos.
+* Integración con OrderStatusEvent.
+* Tiempo promedio de preparación.
+* Tiempo promedio de entrega.
+* Valores promedio, mínimo y máximo.
 
 ---
 
@@ -370,6 +375,10 @@ Relaciones:
 
 * Order 1:N OrderItem
 * Order 1:N OrderStatusEvent
+
+OperationalMetricsService consume exclusivamente OrderStatusEvent para el cálculo de indicadores operativos.
+
+OrderService no participa en la generación de métricas.
 
 ---
 

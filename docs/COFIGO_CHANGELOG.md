@@ -10,7 +10,7 @@ CofiGO (Campus Order)
 
 Fecha: Junio 2026
 
-Versión actual: v2.3
+Versión actual: v2.4
 Estado: Operativo en Producción
 
 Primera versión documentada del proyecto.
@@ -2178,6 +2178,79 @@ Campos:
 ## Impacto
 
 CofiGO incorpora trazabilidad temporal completa del ciclo de vida de los pedidos, preparando la plataforma para indicadores operativos, auditoría y análisis de desempeño.
+
+---
+
+---
+
+# v2.4 - Indicadores Operativos Basados en Trazabilidad
+
+Fecha: Junio 2026
+
+## Nuevas funcionalidades
+
+### Indicadores Operativos
+
+Se implementó la primera fase de indicadores operativos utilizando la infraestructura de trazabilidad basada en OrderStatusEvent.
+
+Incluye:
+
+* Tiempo promedio desde RECEIVED hasta IN_PREPARATION.
+* Tiempo promedio de preparación.
+* Tiempo promedio de espera para recojo.
+* Tiempo promedio total hasta la entrega.
+* Cálculo de valores promedio, mínimo y máximo por indicador.
+* Cantidad de pedidos analizados.
+* Integración con el Dashboard de Reportes.
+
+## Backend
+
+Archivos creados:
+
+* OperationalMetricsService.java
+* OperationalMetricsDTO.java
+* MetricStatsDTO.java
+
+Archivos modificados:
+
+* ReportsController.java
+* ReportsService.java
+* OrderStatusEventRepository.java
+
+## Frontend
+
+Archivos modificados:
+
+* admin-reports.tsx
+* reportService.ts
+
+## Arquitectura
+
+Nueva capa especializada:
+
+ReportsController
+
+→ ReportsService
+
+→ OperationalMetricsService
+
+→ OrderStatusEventRepository
+
+La lógica de cálculo permanece desacoplada de OrderService y reutiliza exclusivamente la información histórica registrada en OrderStatusEvent.
+
+## Validaciones realizadas
+
+* Compilación Maven.
+* Validación mediante Postman.
+* Validación de promedios.
+* Validación de mínimos.
+* Validación de máximos.
+* Validación de pedidos analizados.
+* Validación visual del Dashboard Administrativo.
+
+## Impacto
+
+CofiGO incorpora su primer módulo de analítica operativa basado en tiempos reales del ciclo de vida de los pedidos, sentando las bases para futuros indicadores de SLA y desempeño.
 
 ---
 
