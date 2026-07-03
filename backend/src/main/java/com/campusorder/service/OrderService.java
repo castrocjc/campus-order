@@ -8,6 +8,7 @@ import com.campusorder.entity.OrderItem;
 import com.campusorder.entity.Product;
 import com.campusorder.entity.User;
 import com.campusorder.enums.OrderStatus;
+import com.campusorder.enums.OrderViewType;
 import com.campusorder.exception.BusinessException;
 import com.campusorder.entity.CafeteriaSettings;
 import com.campusorder.entity.CafeteriaSchedule;
@@ -36,6 +37,7 @@ public class OrderService {
         private final CafeteriaSettingsRepository cafeteriaSettingsRepository;
         private final CafeteriaScheduleRepository cafeteriaScheduleRepository;
         private final OrderStatusEventService orderStatusEventService;
+        private final OrderPrioritizationService orderPrioritizationService;
 
         public OrderService(
                         OrderRepository orderRepository,
@@ -43,7 +45,8 @@ public class OrderService {
                         NotificationService notificationService,
                         CafeteriaSettingsRepository cafeteriaSettingsRepository,
                         CafeteriaScheduleRepository cafeteriaScheduleRepository,
-                        OrderStatusEventService orderStatusEventService) {
+                        OrderStatusEventService orderStatusEventService,
+                        OrderPrioritizationService orderPrioritizationService) {
 
                 this.orderRepository = orderRepository;
                 this.productRepository = productRepository;
@@ -51,6 +54,7 @@ public class OrderService {
                 this.cafeteriaSettingsRepository = cafeteriaSettingsRepository;
                 this.cafeteriaScheduleRepository = cafeteriaScheduleRepository;
                 this.orderStatusEventService = orderStatusEventService;
+                this.orderPrioritizationService = orderPrioritizationService;
         }
 
         public OrderResponseDTO createOrder(OrderRequestDTO dto) {
@@ -118,7 +122,10 @@ public class OrderService {
         }
 
         public List<OrderResponseDTO> getOrdersByUser(Long userId) {
-                return orderRepository.findByUserId(userId)
+                List<Order> orders = orderRepository.findByUserId(userId);
+
+                return orderPrioritizationService
+                                .sort(orders, OrderViewType.CUSTOMER)
                                 .stream()
                                 .map(this::mapToDTO)
                                 .toList();
@@ -152,10 +159,13 @@ public class OrderService {
                 LocalDateTime startOfDay = today.atStartOfDay();
                 LocalDateTime endOfDay = today.plusDays(1).atStartOfDay().minusNanos(1);
 
-                return orderRepository
-                                .findByPickupTimeBetweenOrderByPickupTimeAsc(
+                List<Order> orders = orderRepository
+                                .findByPickupTimeBetween(
                                                 startOfDay,
-                                                endOfDay)
+                                                endOfDay);
+
+                return orderPrioritizationService
+                                .sort(orders, OrderViewType.OPERATIONAL)
                                 .stream()
                                 .map(this::mapToDTO)
                                 .toList();

@@ -185,7 +185,10 @@ Administración de Pedidos:
 * El filtrado se realiza utilizando pickupTime.
 * Los pedidos históricos quedan fuera de la operación diaria.
 * Los pedidos futuros quedan fuera de la operación diaria.
-* Los pedidos se ordenan por hora de recojo ascendente.
+* Los pedidos son priorizados mediante OrderPrioritizationService.
+* El backend determina la estrategia oficial de ordenamiento utilizando prioridad operativa y hora de recojo.
+* El frontend consume el orden recibido sin aplicar ordenamientos adicionales.
+* OrderViewType permite mantener estrategias distintas para futuras vistas operativas y de usuario.
 * El backend es la fuente de verdad para el ordenamiento operativo.
 * El frontend consume el orden recibido sin aplicar ordenamientos adicionales.
 * Existe cierre operativo diario manual.

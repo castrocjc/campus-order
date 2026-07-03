@@ -20,11 +20,11 @@ Ambiente Productivo:
 
 # Control de Versiones
 
-| Ambiente   | Versión    | Estado     |
-|------------|----------  |------------|
-| Producción | v2.4       | Operativo  |
-| Develop    | v2.4       | Operativo  |
-| Main       | v2.4       | Operativo  |
+| Ambiente   | Versión      | Estado     |
+|------------|----------    |------------|
+| Producción | v2.4.1       | Operativo  |
+| Develop    | v2.4.1       | Operativo  |
+| Main       | v2.4.1       | Operativo  |
 
 ---
 
@@ -243,8 +243,10 @@ Funcionalidades:
 * Filtrado utilizando pickupTime.
 * Exclusión automática de pedidos históricos.
 * Exclusión automática de pedidos futuros.
-* Ordenamiento por hora de recojo ascendente.
-* El pedido con la hora de recojo más próxima aparece primero para facilitar la atención operativa.
+* Priorización operativa centralizada en backend mediante OrderPrioritizationService.
+* Los pedidos se ordenan utilizando una estrategia compuesta basada en prioridad del estado y hora de recojo.
+* El frontend consume el orden recibido sin aplicar ordenamientos adicionales.
+* La estrategia de priorización puede evolucionar independientemente para vistas operativas y de usuario.
 * Mensaje informativo cuando no existen pedidos para el día.
 * Cierre operativo diario manual.
 * Conversión automática de pedidos pendientes a NOT_ATTENDED.

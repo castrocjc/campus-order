@@ -1663,4 +1663,59 @@ Evolución futura:
 
 ---
 
+# DEC-036
+
+Fecha: Junio 2026
+
+Título:
+
+Arquitectura desacoplada para la priorización operativa de pedidos
+
+Estado:
+
+Aprobada
+
+Contexto:
+
+El criterio de ordenamiento basado únicamente en pickupTime dejó de representar adecuadamente la prioridad operativa de la cafetería al coexistir pedidos en diferentes estados.
+
+Decisión:
+
+Crear OrderPrioritizationService como componente especializado responsable de definir la estrategia oficial de priorización de pedidos.
+
+OrderRepository recupera únicamente la información.
+
+OrderPrioritizationService determina el orden de visualización.
+
+OrderService coordina ambos componentes.
+
+Se incorpora además OrderViewType para permitir estrategias independientes según el contexto de consumo.
+
+Justificación:
+
+* Separación de responsabilidades.
+* Bajo acoplamiento.
+* Eliminación de lógica de ordenamiento en frontend.
+* Preparación para futuras estrategias de priorización.
+* Escalabilidad del módulo de pedidos.
+
+Consecuencias positivas:
+
+* Arquitectura más mantenible.
+* Reglas de negocio centralizadas.
+* Reutilización de la estrategia.
+* Preparación para Kitchen Display System, SLA y tableros operativos.
+
+Consecuencias negativas:
+
+* Nuevo servicio dentro del dominio de pedidos.
+
+Evolución futura:
+
+* Priorización configurable.
+* Estrategias específicas por rol.
+* Priorización por nivel de urgencia.
+
+---
+
 Fin del documento.
