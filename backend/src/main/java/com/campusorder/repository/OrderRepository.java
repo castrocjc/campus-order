@@ -2,7 +2,6 @@ package com.campusorder.repository;
 
 import com.campusorder.dto.reports.OrdersByStatusDTO;
 import com.campusorder.dto.reports.PeakHourDTO;
-import com.campusorder.dto.reports.SalesByDayDTO;
 import com.campusorder.dto.reports.TopProductDTO;
 import com.campusorder.entity.Order;
 import com.campusorder.enums.OrderStatus;
@@ -18,7 +17,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
         List<Order> findByUserId(Long userId);
 
-        List<Order> findByPickupTimeBetweenOrderByPickupTimeAsc(
+        List<Order> findByPickupTimeBetween(
                 LocalDateTime start,
                 LocalDateTime end);
 

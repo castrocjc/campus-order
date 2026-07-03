@@ -143,6 +143,7 @@ CategoryService
 CafeteriaSettingsService
 ReportsService
 OperationalMetricsService
+OrderPrioritizationService
 ```
 
 ### Repositories
@@ -578,7 +579,17 @@ PUT /api/orders/operational-close
 
 ### Regla Operativa
 
-Los pedidos del día son devueltos por el backend ordenados por `pickupTime` de forma ascendente.
+Los pedidos del día son priorizados mediante OrderPrioritizationService.
+
+La estrategia oficial considera:
+
+* Prioridad operativa.
+* Hora de recojo.
+* Fecha de creación como criterio de desempate.
+
+El frontend consume el orden recibido sin aplicar ordenamientos adicionales.
+
+OrderViewType permite mantener estrategias independientes para vistas operativas y vistas orientadas al usuario.
 
 Este criterio representa la prioridad oficial de atención para los roles ADMIN y WORKER.
 
@@ -1119,7 +1130,7 @@ Estado: Visión futura
 
 # Historial del Documento
 
-Versión actual: v2.3
+Versión actual: v2.4.1
 Estado: Operativo en Producción
 
 Fecha de creación: Junio 2026

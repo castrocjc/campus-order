@@ -11,7 +11,6 @@ import com.campusorder.service.UserService;
 import com.campusorder.entity.User;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import java.security.Principal;
 import java.util.List;
 import jakarta.validation.Valid;
 

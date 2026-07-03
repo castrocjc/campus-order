@@ -10,7 +10,7 @@ CofiGO (Campus Order)
 
 Fecha: Junio 2026
 
-Versión actual: v2.4
+Versión actual: v2.4.1
 Estado: Operativo en Producción
 
 Primera versión documentada del proyecto.
@@ -2251,6 +2251,79 @@ La lógica de cálculo permanece desacoplada de OrderService y reutiliza exclusi
 ## Impacto
 
 CofiGO incorpora su primer módulo de analítica operativa basado en tiempos reales del ciclo de vida de los pedidos, sentando las bases para futuros indicadores de SLA y desempeño.
+
+---
+
+# v2.4.1 - Priorización Operativa Inteligente de Pedidos
+
+Fecha: Junio 2026
+
+## Mejoras
+
+### Arquitectura de Priorización Operativa
+
+Se desacopló completamente la lógica de priorización de pedidos respecto al repositorio de datos, incorporando una estrategia especializada de ordenamiento basada en reglas de negocio.
+
+Incluye:
+
+* Nuevo servicio OrderPrioritizationService.
+* Nuevo enum OrderViewType.
+* Centralización de la prioridad operativa en backend.
+* Eliminación de ordenamientos desde frontend.
+* Separación entre recuperación de datos y estrategia de priorización.
+* Preparación para futuras prioridades específicas por tipo de vista.
+
+## Backend
+
+Archivos creados:
+
+* OrderPrioritizationService.java
+* OrderViewType.java
+
+Archivos modificados:
+
+* OrderService.java
+* OrderRepository.java
+
+## Frontend
+
+Archivos modificados:
+
+* my-orders.tsx
+
+## Arquitectura
+
+Nueva capa:
+
+OrderRepository
+
+↓
+
+OrderPrioritizationService
+
+↓
+
+OrderService
+
+El repositorio recupera la información.
+
+OrderPrioritizationService determina la prioridad oficial de visualización.
+
+OrderService orquesta ambos componentes.
+
+## Validaciones realizadas
+
+* Compilación Maven.
+* Administración de Pedidos.
+* Mis Pedidos.
+* Cambio de estados.
+* Cancelación.
+* Cierre operativo diario.
+* Consistencia entre ADMIN, WORKER y USER.
+
+## Impacto
+
+La estrategia de priorización queda desacoplada del acceso a datos, permitiendo evolucionar independientemente la operación administrativa y la experiencia del usuario sin afectar el modelo de persistencia.
 
 ---
 

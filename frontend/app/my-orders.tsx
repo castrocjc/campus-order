@@ -48,11 +48,6 @@ export default function MyOrdersScreen() {
     try {
       const data = await getMyOrders();
 
-      data.sort(
-        (a: any, b: any) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
-
       const readyOrder = data.find(
         (order: any) => order.status === "READY_FOR_PICKUP",
       );
